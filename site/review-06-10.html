@@ -1,0 +1,1501 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>复习 · 第 6–10 章 · Of Human Bondage</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>/* ===== Of Human Bondage · 阅读器 ===== */
+
+:root {
+  --paper: #faf7f0;
+  --paper-2: #f3eee2;
+  --card: #fffdf8;
+  --ink: #211e19;
+  --ink-soft: #46403a;
+  --muted: #7d7365;
+  --line: #e6ddcd;
+  --line-soft: #f0eade;
+  --accent: #a33b2e;
+  --accent-2: #c9a35d;
+  --accent-soft: #f6e9e3;
+  --green: #3f5d4e;
+  --shadow: 0 1px 2px rgba(33, 30, 25, .05), 0 16px 40px -24px rgba(33, 30, 25, .35);
+  --en: "Iowan Old Style", Charter, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --zh: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --zhb: var(--zh);
+  --title: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 1;
+  --side: 286px;
+}
+
+
+[data-theme="dark"] {
+  --paper: #14120e;
+  --paper-2: #1a1712;
+  --card: #1d1a14;
+  --ink: #ebe4d6;
+  --ink-soft: #cfc6b5;
+  --muted: #9b9080;
+  --line: #2f2a22;
+  --line-soft: #262118;
+  --accent: #d9725d;
+  --accent-2: #c9a35d;
+  --accent-soft: #2c201c;
+  --green: #83ab95;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 44px -24px rgba(0, 0, 0, .85);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--zh);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  height: 58px; padding: 0 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.crumb { font-size: 12.5px; color: var(--muted); letter-spacing: .03em; white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 600; }
+
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: transparent; pointer-events: none;
+}
+.readbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .1s linear; }
+
+.tools { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.icon-btn {
+  height: 32px; min-width: 32px; padding: 0 9px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font: 500 12px/1 var(--zh); cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--muted); color: var(--ink); }
+.set-btn { font-family: var(--en); font-size: 13px; letter-spacing: .02em; }
+
+.menu-btn {
+  display: none; width: 32px; height: 32px; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font-size: 15px; cursor: pointer; flex: none;
+}
+
+/* ---------- 设置面板 ---------- */
+
+.settings {
+  position: fixed; z-index: 50; top: 66px; right: 18px; width: 268px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 16px 12px;
+}
+.settings[hidden] { display: none; }
+.set-title { font: 600 11px/1 var(--zh); letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+.set-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13.5px; }
+.sw em { font-style: normal; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.sw input {
+  appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line);
+  position: relative; cursor: pointer; flex: none; transition: background .18s ease; margin-left: auto; order: 2;
+}
+.sw input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--card); transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.sw input:checked { background: var(--accent); }
+.sw input:checked::after { transform: translateX(14px); }
+
+.set-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.set-row span { margin-right: auto; }
+.set-row button {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  border-radius: 7px; padding: 5px 10px; font: 500 12px/1 var(--zh); cursor: pointer;
+}
+.set-row button:hover { border-color: var(--muted); }
+.set-note { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+/* ---------- 布局：左导航 / 正文 / 右目录 ---------- */
+
+:root { --lw: 264px; --rw: 236px; }
+body.no-left { --lw: 0px; }
+body.no-right { --rw: 0px; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--lw) minmax(0, 1fr) var(--rw);
+  align-items: start;
+}
+body.no-left .nav-left, body.no-right .nav-right { display: none; }
+
+.nav-left { grid-column: 1; }
+main { grid-column: 2; }
+.nav-right { grid-column: 3; }
+
+.nav-left {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 20px 14px 34px;
+  border-right: 1px solid var(--line); scrollbar-width: thin;
+}
+.nav-right {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 18px 14px 34px 16px;
+  border-left: 1px solid var(--line); scrollbar-width: thin;
+}
+
+.brand { font: 600 10px/1 var(--zh); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.site-name { font: 600 calc(17px * var(--fs))/1.4 var(--title); margin: 7px 0 14px; }
+
+.gl-links { display: grid; gap: 2px; margin-bottom: 14px; }
+.gl-links a {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 9px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-soft); font-size: 13px;
+}
+.gl-links a:hover { background: var(--paper-2); color: var(--ink); }
+.gl-links a.cur { background: var(--accent-soft); color: var(--accent); }
+.gl-links span { color: var(--muted); font-size: 10.5px; }
+
+.ch-tools { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0 0 16px; }
+.ch-tools .btn.small { padding: 6px 10px; font-size: 12px; }
+.ch-tools #quizBtn2 { width: auto; justify-content: center; }
+
+.side-label { font: 600 10px/1 var(--zh); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ch-label { margin-top: 4px; }
+
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.ch-list a, .ch-list span {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 8px; border-radius: 6px; text-decoration: none;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.ch-list .n { font: 500 10.5px/1.6 var(--mono); color: var(--muted); width: 20px; flex: none; }
+.ch-list a:hover { background: var(--paper-2); color: var(--ink); }
+.ch-list a.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ch-list a.cur .n { color: var(--accent); }
+.ch-list .off { color: var(--muted); opacity: .45; }
+
+
+.rn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 10.5px/1 var(--zh); letter-spacing: .12em; color: var(--muted);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
+}
+.rn-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; }
+.rn-toggle:hover { color: var(--accent); }
+
+.toc { font-size: 12.6px; line-height: 1.45; }
+.toc a {
+  display: block; padding: 5px 8px; margin: 1px 0; border-radius: 6px;
+  color: var(--muted); text-decoration: none; border-left: 2px solid transparent;
+}
+.toc a:hover { background: var(--paper-2); color: var(--ink); }
+.toc a.lv2 { font-weight: 600; margin-top: 9px; color: var(--ink-soft); font-size: 12.8px; }
+.toc a.lv3 { padding-left: 14px; font-size: 12px; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 9px 15px; border-radius: 8px; font: 500 13px/1 var(--zh); cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.small { padding: 7px 12px; font-size: 12.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.btn.small b { color: var(--accent); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.keys { font-size: 11.5px; color: var(--muted); line-height: 2.1; }
+kbd {
+  font: 500 10px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 2px 4px; background: var(--card); color: var(--ink-soft); margin-right: 2px;
+}
+
+/* ---------- 正文 ---------- */
+
+body[data-split="on"] main { max-width: 1040px; }
+main { width: 100%; max-width: 860px; margin: 0 auto; padding: 32px 40px 120px; container-type: inline-size; }
+.doc-head, .writing, .chnav { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.sec { max-width: 700px; margin: 0 auto 46px; }
+body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+h1.doc-title { font: 600 calc(31px * var(--fs))/1.32 var(--title); margin: 0 0 6px; letter-spacing: -.01em; }
+.doc-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 22px; letter-spacing: .02em; }
+.doc-sub strong { color: var(--ink-soft); font-weight: 500; }
+
+h2.sec-title {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh);
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; letter-spacing: .01em;
+}
+h2.sec-title::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+
+h3 {
+  font: 600 calc(17px * var(--fs))/1.5 var(--zh);
+  margin: 40px 0 10px; scroll-margin-top: 80px; letter-spacing: .01em;
+}
+h3.scene-title { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 48px; }
+h3.scene-title .tag {
+  font: 600 10px/1 var(--zh); letter-spacing: .1em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 4px 7px; border-radius: 4px;
+}
+
+h4 { font: 600 calc(14px * var(--fs))/1.6 var(--zh); margin: 24px 0 6px; color: var(--ink); }
+
+p { margin: 0 0 15px; }
+
+code {
+  font-family: var(--en); font-size: .94em; font-style: normal; color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 0 3px; border-radius: 3px;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+
+.prose-body { font-family: var(--zhb); font-size: calc(15.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft); }
+
+/* 提示条 */
+
+.callout {
+  border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line);
+  padding: 16px 20px; font-size: 13.5px; line-height: 1.9; color: var(--ink-soft); margin: 0 0 22px;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* 首段信息条 */
+
+.spec { display: block; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.spec div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); font-size: 12.8px; }
+.spec div:last-child { border-bottom: 0; }
+.spec dt { flex: 0 0 54px; font: 600 11px/1.9 var(--zh); letter-spacing: .08em; color: var(--muted); margin: 0; }
+.spec dd { flex: 1; margin: 0; color: var(--ink-soft); line-height: 1.75; }
+
+/* ---------- 阅读：原文 ---------- */
+
+.reader { font-family: var(--en); font-size: calc(18px * var(--fs)); line-height: 2; }
+.reader p { margin: 0 0 1.3em; position: relative; }
+
+/* ---------- 场景 ---------- */
+
+.scene { scroll-margin-top: 80px; }
+
+.scene-lead {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--ink-soft); background: var(--paper-2);
+  border-left: 3px solid var(--accent-2); padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 12px 0 22px;
+}
+.scene-lead b { color: var(--ink); font-weight: 600; }
+
+.unit {
+  position: relative; padding: 10px 0 20px; border-bottom: 1px dashed var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.unit:last-of-type { border-bottom: 0; }
+.unit .num {
+  position: absolute; left: -34px; top: 14px;
+  font: 600 11.5px/1 var(--mono); color: var(--muted); width: 24px; text-align: right; opacity: .75;
+}
+.unit.focus { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; }
+.unit.flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+.en { position: relative; font-family: var(--en); font-size: calc(17.5px * var(--fs)); line-height: 1.95; margin: 0 0 10px; }
+
+.trans {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--muted); margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--line-soft);
+}
+
+.speak {
+  position: absolute; left: -32px; top: .5em;
+  width: 20px; height: 20px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--card);
+  color: var(--muted); font-size: 7px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity .16s ease, color .16s ease, border-color .16s ease;
+}
+.en:hover > .speak, .reader p:hover > .speak, .speak:focus { opacity: 1; }
+.speak:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- 词 / 句 ---------- */
+
+.chipbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+
+details.anno { display: inline-block; border: 1px solid var(--line); border-radius: 7px; background: var(--card); }
+details.anno > summary {
+  list-style: none; cursor: pointer; padding: 4px 10px; font: 500 11.5px/1.7 var(--zh); color: var(--muted);
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+details.anno > summary::-webkit-details-marker { display: none; }
+details.anno > summary::before { content: "▸"; font-size: 8px; transition: transform .2s ease; }
+details.anno[open] > summary::before { transform: rotate(90deg); }
+details.anno[open] > summary { color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+details.anno .anno-body { padding: 8px 10px; overflow-x: auto; }
+details.anno[open] { flex: 1 1 100%; }
+
+.wordtable { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.wordtable th {
+  text-align: left; font: 600 10px/1 var(--zh); letter-spacing: .08em; color: var(--muted);
+  padding: 3px 7px 7px; border-bottom: 1px solid var(--line);
+}
+.wordtable td { padding: 6px 7px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.wordtable tr:last-child td { border-bottom: 0; }
+.wordtable td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.wordtable td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wordtable td:nth-child(3) { color: var(--ink-soft); line-height: 1.6; }
+
+.sent {
+  border-left: 3px solid var(--accent-2); padding: 5px 0 5px 12px; margin: 8px 0;
+  font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+}
+.sent code {
+  font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--ink);
+  background: none; padding: 0;
+}
+
+/* ---------- 细读 / 写法 ---------- */
+
+details.notes, details.craft {
+  margin: 18px 0 6px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); overflow: hidden;
+}
+details.notes > summary, details.craft > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 11px 15px; display: flex; align-items: center; gap: 8px;
+  font: 600 12.5px/1 var(--zh); color: var(--ink);
+}
+details.notes > summary::-webkit-details-marker, details.craft > summary::-webkit-details-marker { display: none; }
+details.notes > summary::before, details.craft > summary::before {
+  content: "▸"; font-size: 8px; color: var(--accent); transition: transform .2s ease;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+details.notes > summary em, details.craft > summary em {
+  font-style: normal; font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: auto;
+}
+details .inner {
+  padding: 2px 18px 16px; border-top: 1px solid var(--line-soft);
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft);
+}
+details .inner > :first-child { margin-top: 12px; }
+details .inner strong { color: var(--ink); }
+details .inner ol, details .inner ul { padding-left: 20px; }
+details .inner li { margin-bottom: 7px; }
+details .inner blockquote { font-size: .95em; }
+
+/* ---------- 行内词注 ---------- */
+
+.gloss {
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 50%, transparent);
+  cursor: pointer; position: relative; transition: background .15s ease;
+}
+.gloss:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
+.gloss.saved { border-bottom-style: solid; border-bottom-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.gloss::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: 138%; transform: translateX(-50%) translateY(4px);
+  background: var(--ink); color: var(--paper);
+  font: 400 11.5px/1.5 var(--zh); padding: 6px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: all .16s ease; z-index: 30;
+  box-shadow: var(--shadow);
+}
+.gloss:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 分屏讲解 ---------- */
+
+.companion { display: none; }
+
+@container (min-width: 780px) {
+  body[data-split="on"] .scenes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; align-items: start;
+  }
+  body[data-split="on"] .companion {
+    display: block; position: sticky; top: 74px;
+    max-height: calc(100vh - 96px); overflow-y: auto;
+    border-left: 1px solid var(--line);
+    padding: 2px 4px 20px 24px;
+    scrollbar-width: thin;
+  }
+  body[data-split="on"] details.notes:not(.answers),
+  body[data-split="on"] details.craft { display: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+}
+body[data-split="on"] details.notes,
+body[data-split="on"] details.craft { display: none; }
+
+.cp { padding: 16px 18px 20px; }
+.cp-head {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft); margin-bottom: 12px;
+  font: 600 13px/1.4 var(--zh);
+}
+.cp-head .tag {
+  font: 600 9.5px/1 var(--zh); letter-spacing: .08em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 3px 6px; border-radius: 4px; flex: none;
+}
+.cp-sec { margin-bottom: 18px; }
+.cp-sec h4 {
+  margin: 0 0 6px; font: 600 11px/1 var(--zh); letter-spacing: .12em;
+  color: var(--accent); text-transform: uppercase;
+}
+.cp-inner { font-family: var(--zhb); font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); }
+.cp-inner p { margin: 0 0 10px; }
+.cp-inner strong { color: var(--ink); }
+.cp-inner ul, .cp-inner ol { padding-left: 18px; margin: 0 0 10px; }
+.cp-inner li { margin-bottom: 6px; }
+.cp-inner blockquote { font-size: 13px; margin: 0 0 10px; }
+
+body[data-notes="off"] .cp-sec[data-kind="notes"] { display: none; }
+body[data-craft="off"] .cp-sec[data-kind="craft"] { display: none; }
+
+/* ---------- 表格 ---------- */
+
+.tbl-wrap { overflow-x: auto; margin: 16px 0 20px; }
+table.gen {
+  width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+table.gen th {
+  text-align: left; padding: 9px 13px; background: var(--paper-2);
+  font: 600 11.5px/1.5 var(--zh); color: var(--ink); border-bottom: 1px solid var(--line);
+}
+table.gen td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); color: var(--ink-soft); vertical-align: top; }
+table.gen tr:last-child td { border-bottom: 0; }
+table.gen tr:hover td { background: var(--paper-2); }
+
+a.ref { text-decoration: none; color: var(--accent); font-weight: 600; padding: 0 1px; border-radius: 3px; }
+a.ref:hover { background: var(--accent-soft); }
+
+hr { border: 0; border-top: 1px solid var(--line-soft); margin: 30px 0; }
+.sec[data-kind="scenes"] hr, .sec[data-kind="craft"] hr { display: none; }
+
+/* ---------- 显示开关 ---------- */
+
+body[data-trans="off"] .trans { display: none; }
+body[data-words="off"] .anno[data-kind="w"] { display: none; }
+body[data-sents="off"] .anno[data-kind="s"] { display: none; }
+body[data-words="off"][data-sents="off"] .chipbar { display: none; }
+body[data-notes="off"] details.notes:not(.answers) { display: none; }
+body[data-craft="off"] details.craft { display: none; }
+
+
+/* ---------- 小测 / 生词本 ---------- */
+
+
+.fab:hover { filter: brightness(1.06); }
+
+.modal { position: fixed; inset: 0; z-index: 60; display: none; background: rgba(18, 15, 11, .48); backdrop-filter: blur(3px); }
+.modal.open { display: grid; place-items: center; padding: 18px; }
+.sheet {
+  width: min(540px, 100%); max-height: 84vh; overflow-y: auto; background: var(--card);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 22px 24px; color: var(--ink);
+}
+.sheet h3 { margin: 0 0 4px; font-size: 17px; }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.q { margin-bottom: 16px; }
+.q .w { font: 600 15px/1.5 var(--mono); color: var(--accent); }
+.q .opts { display: grid; gap: 6px; margin-top: 8px; }
+.q .opt {
+  text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper); color: var(--ink-soft); font: 400 13px/1.6 var(--zh); cursor: pointer;
+}
+.q .opt:hover { border-color: var(--muted); }
+.q .opt.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+.q .opt.wrong { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.q .fb { font-size: 12px; color: var(--muted); margin-top: 5px; min-height: 16px; }
+.quiz-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.quiz-foot .score { font-size: 12.5px; color: var(--muted); margin-right: auto; }
+
+.wb-list { display: grid; gap: 6px; }
+.wb-item {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft);
+}
+.wb-item:hover { border-color: var(--accent); }
+.wb-item b { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.wb-item span { font-size: 12px; color: var(--muted); }
+.wb-item em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); }
+.wb-empty { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--paper); font: 500 12.5px/1 var(--zh);
+  padding: 9px 14px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: all .22s ease; z-index: 70;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 写作区 ---------- */
+
+.writing {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-top: 30px;
+}
+.writing h3 { margin: 0 0 4px; font-size: 15px; }
+.writing .hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.writing textarea {
+  width: 100%; min-height: 180px; resize: vertical; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--paper);
+  color: var(--ink); font: 400 14.5px/1.9 var(--zhb); outline: none;
+}
+.writing textarea:focus { border-color: var(--accent); }
+.writing .row { display: flex; align-items: center; gap: 10px; margin-top: 9px; font-size: 12px; color: var(--muted); }
+.writing .row .spacer { margin-left: auto; }
+
+/* ---------- 首页 ---------- */
+
+.home { max-width: none; margin: 0; padding: 26px 0 60px; }
+.home h1 { font: 600 calc(38px * var(--fs))/1.28 var(--title); margin: 0 0 10px; letter-spacing: -.01em; }
+.home .lead { font-size: 14.5px; color: var(--muted); margin-bottom: 30px; line-height: 1.9; }
+.stats { display: flex; gap: 40px; margin: 0 0 40px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat b { display: block; font: 600 26px/1.2 var(--title); color: var(--accent); }
+.stat span { font-size: 11.5px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 9px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  font: 500 12.5px/1 var(--mono); text-decoration: none; transition: all .16s ease;
+}
+a.cell { color: var(--ink); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--card)); }
+a.cell:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.cell.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cell.todo { opacity: .5; }
+
+.home .links { display: flex; gap: 12px; margin-top: 36px; }
+.home .links a {
+  flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px;
+  text-decoration: none; color: var(--ink); background: var(--card); transition: all .16s ease;
+}
+.home .links a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.home .links b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.home .links span { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- 技法页 ---------- */
+
+.doc-main { max-width: none; margin: 0; padding: 6px 0 40px; }
+.doc-main h2 {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh); margin: 42px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line);
+}
+.doc-main h3 { margin-top: 30px; }
+.search {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--card); color: var(--ink); font: 400 13.5px/1.4 var(--zh); outline: none; margin-bottom: 6px;
+}
+.search:focus { border-color: var(--accent); }
+
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1179px) {
+  body[data-split="on"] .layout { padding-right: 0; }
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side {
+    position: fixed; left: 0; top: 58px; bottom: 0; width: 284px; z-index: 35;
+    transform: translateX(-102%); transition: transform .24s ease;
+    background: var(--paper); box-shadow: var(--shadow);
+  }
+  aside.side.open { transform: none; }
+  .menu-btn { display: grid; }
+  main { padding: 26px 20px 110px; }
+  .unit .num { position: static; display: block; width: auto; text-align: left; margin-bottom: 4px; }
+  .en { font-size: calc(17px * var(--fs)); }
+  .speak { display: none; }
+  h1.doc-title { font-size: calc(24px * var(--fs)); }
+  .crumb { display: none; }
+  .settings { width: min(300px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 560px) {
+  .home { padding: 38px 18px 80px; }
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .tbl-wrap { margin-left: -4px; margin-right: -4px; }
+}
+
+@media print {
+  .top, aside.side, .fab, .writing, .modal, .settings, .companion, .toast { display: none !important; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  details .inner { display: block; }
+}
+
+/* 非章节页隐藏与章节无关的开关 */
+body:not([data-page="chapter"]) .settings [data-only="chapter"] { display: none; }
+
+/* 章末翻页 */
+.chnav {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 46px auto 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.chnav a { text-decoration: none; color: var(--accent); }
+.chnav span.off { color: var(--muted); opacity: .5; }
+
+/* 侧栏导航 */
+.side-nav { display: flex; gap: 8px; margin: 10px 0 12px; font-size: 12.5px; }
+.side-nav a, .side-nav .off {
+  flex: 1; text-align: center; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink-soft);
+}
+.side-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.side-nav .off { border-style: dashed; color: var(--muted); opacity: .5; }
+
+.quick-links { display: grid; gap: 2px; font-size: 12.5px; }
+.quick-links a { color: var(--ink-soft); text-decoration: none; padding: 5px 8px; border-radius: 6px; }
+.quick-links a:hover { background: var(--paper-2); color: var(--accent); }
+
+.sec[data-kind="write"] .writing { margin-top: 0; }
+
+
+/* ---------- 头部：篇幅 / 问题 ---------- */
+
+.doc-meta { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; margin: 2px 0 18px; }
+
+.questions {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--card); border-radius: 0 12px 12px 0;
+  padding: 18px 22px 14px; margin: 0 0 26px;
+}
+.questions blockquote { border: 0; padding: 0; margin: 0; }
+.questions p { font-family: var(--zhb); font-size: calc(15px * var(--fs)); line-height: 1.95; margin: 0 0 8px; color: var(--ink); }
+.questions p:first-child { font: 600 12px/1 var(--zh); letter-spacing: .06em; color: var(--accent); margin-bottom: 12px; }
+.questions p:last-child { margin-bottom: 0; }
+
+details.qa { border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 14px 0 6px; }
+details.qa > summary {
+  list-style: none; cursor: pointer; padding: 10px 16px;
+  font: 600 12.5px/1.6 var(--zh); color: var(--accent);
+}
+details.qa > summary::-webkit-details-marker { display: none; }
+details.qa > summary::before { content: "▸"; font-size: 9px; margin-right: 6px; display: inline-block; transition: transform .2s ease; }
+details.qa[open] > summary::before { transform: rotate(90deg); }
+details.qa .inner { padding: 4px 18px 14px; border-top: 1px solid var(--line-soft); font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9; color: var(--ink-soft); }
+details.qa .inner ul { padding-left: 18px; margin: 8px 0 0; }
+details.qa .inner li { margin-bottom: 6px; }
+
+/* ---------- 移动端：两侧变抽屉 ---------- */
+
+@media (max-width: 1080px) {
+  .app { display: block; }
+  .nav-left, .nav-right {
+    position: fixed; top: 58px; bottom: 0; z-index: 45;
+    width: min(300px, 86vw); height: auto; background: var(--paper); box-shadow: var(--shadow);
+    display: none;
+  }
+  .nav-left { left: 0; border-right: 1px solid var(--line); }
+  .nav-right { right: 0; border-left: 1px solid var(--line); }
+  body:not(.no-left) .nav-left { display: block; }
+  body:not(.no-right) .nav-right { display: block; }
+  main { padding: 24px 18px 100px; }
+  .ch-list { max-height: calc(100vh - 330px); overflow-y: auto; }
+}
+
+/* ---------- 移动端：抽屉、遮罩、表格 ---------- */
+
+.scrim { display: none; }
+
+/* 词注提示：触屏没有 hover，直接关掉，避免长提示撑宽页面 */
+@media (hover: none), (max-width: 700px) {
+  .gloss::after { display: none; }
+}
+
+@media (max-width: 1080px) {
+  .scrim {
+    display: none; position: fixed; inset: 58px 0 0; z-index: 40;
+    background: rgba(18, 15, 11, .32);
+    -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+  }
+  body:not(.no-left) .scrim, body:not(.no-right) .scrim { display: block; }
+
+  .nav-left, .nav-right { max-height: calc(100vh - 58px); overflow-y: auto; }
+  .ch-list { max-height: none; }
+
+  main { padding: 22px 16px 96px; }
+  .doc-main { padding: 6px 0 40px; }
+
+  /* 表格：宁可横向滚动，也不挤成一条或截断 */
+  .tbl-wrap { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table.gen { min-width: 560px; }
+  .anno-body { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .anno-body .wordtable { min-width: 470px; }
+  .cp-inner table { min-width: 470px; }
+
+  .questions { padding: 14px 16px 10px; }
+  .writing { padding: 16px; }
+  .settings { right: 10px; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉打开时锁住背景滚动 */
+  body:not(.no-left), body:not(.no-right) { overflow: hidden; }
+}
+
+/* ---------- 移动端：工具栏置底 / 全屏抽屉 / 设置底部弹层 ---------- */
+
+.panel-bar { display: none; }
+
+@media (max-width: 1080px) {
+  /* 顶栏变底栏 */
+  .top {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 14px env(safe-area-inset-bottom);
+    border-bottom: 0; border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -10px 24px -16px rgba(0,0,0,.18);
+    justify-content: space-between;
+  }
+  .top .crumb { display: none; }
+  .top .tools { margin-left: 0; gap: 10px; }
+  .icon-btn { height: 38px; min-width: 42px; font-size: 14px; }
+  .readbar { top: -1px; bottom: auto; }
+
+  /* 正文给底栏留出空间 */
+  main { padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .writing { margin-bottom: 8px; }
+
+  /* 侧栏：全屏弹层 */
+  .nav-left, .nav-right {
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    width: 100%; height: auto; max-height: none; border: 0; border-radius: 0;
+    z-index: 55; padding-bottom: 24px;
+  }
+  .scrim { inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0; z-index: 50; }
+
+  .panel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px 18px; margin: -20px -14px 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    font: 600 12px/1 var(--zh); letter-spacing: .1em; color: var(--muted);
+  }
+  .panel-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
+  }
+  .nav-left, .nav-right { padding-left: 18px; padding-right: 18px; }
+  .nav-left .panel-bar { margin-left: -18px; margin-right: -18px; }
+  .nav-right .rn-head {
+    position: sticky; top: 0; z-index: 2; background: var(--paper);
+    margin: -18px -18px 10px; padding: 14px 18px 10px;
+  }
+
+  /* 设置：底部弹层 */
+  .settings {
+    position: fixed; left: 8px; right: 8px; bottom: calc(64px + env(safe-area-inset-bottom));
+    top: auto; width: auto; max-height: calc(100vh - 140px); overflow-y: auto;
+    border-radius: 16px; padding: 16px 18px 14px;
+    z-index: 60;
+  }
+  .settings .sw { padding: 9px 0; }
+  .set-row button { padding: 7px 14px; }
+
+  /* 弹层与提示避开底栏 */
+  .modal { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .sheet { max-height: calc(100vh - 150px); }
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 1080px) {
+  /* 全屏抽屉：让顶部条与内容对齐 */
+  .nav-left, .nav-right { padding-top: 0; }
+  .nav-left .panel-bar { margin: 0 -18px 14px; }
+  .nav-right .rn-head { margin: 0 -18px 10px; }
+
+  /* 设置弹层的遮罩 */
+  body.settings-open .scrim { display: block; z-index: 55; }
+  .settings { z-index: 60; }
+  body.settings-open { overflow: hidden; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉底部渐隐，避免最后一行贴着工具栏 */
+  .nav-left, .nav-right {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    padding-bottom: 28px;
+  }
+}
+</style>
+</head>
+<body class="" data-page="review">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb"><b>人性的枷锁</b> · 复习</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+<aside class="nav-left" id="navLeft">
+  <div class="panel-bar"><span>导航</span><button class="panel-close" type="button" data-close="left" aria-label="关闭">×</button></div>
+  <div class="brand">Of Human Bondage</div>
+  <div class="site-name">人性的枷锁 · 精读</div>
+  <nav class="gl-links">
+    <a class="" href="index.html">总览<span>122 章</span></a>
+    <a class="" href="reading.html">阅读方法手册<span>初读</span></a>
+    <a class="" href="craft.html">写作技法手册<span>21 条</span></a>
+  </nav>
+  
+  <div class="side-label ch-label">章节</div>
+  <ol class="ch-list"><li><a href="ch01.html"><span class="n">01</span>第 1 章</a></li><li><a href="ch02.html"><span class="n">02</span>第 2 章</a></li><li><a href="ch03.html"><span class="n">03</span>第 3 章</a></li><li><a href="ch04.html"><span class="n">04</span>第 4 章</a></li><li><a href="ch05.html"><span class="n">05</span>第 5 章</a></li><li><a href="review-01-05.html"><span class="n"></span>复习 · 1–5</a></li><li><a href="ch06.html"><span class="n">06</span>第 6 章</a></li><li><a href="ch07.html"><span class="n">07</span>第 7 章</a></li><li><a href="ch08.html"><span class="n">08</span>第 8 章</a></li><li><a href="ch09.html"><span class="n">09</span>第 9 章</a></li><li><a href="ch10.html"><span class="n">10</span>第 10 章</a></li><li><a href="review-06-10.html"><span class="n"></span>复习 · 6–10</a></li><li><span class="off"><span class="n">11</span>第 11 章</span></li><li><span class="off"><span class="n">12</span>第 12 章</span></li><li><span class="off"><span class="n">13</span>第 13 章</span></li><li><span class="off"><span class="n">14</span>第 14 章</span></li><li><span class="off"><span class="n">15</span>第 15 章</span></li><li><span class="off"><span class="n">16</span>第 16 章</span></li><li><span class="off"><span class="n">17</span>第 17 章</span></li><li><span class="off"><span class="n">18</span>第 18 章</span></li><li><span class="off"><span class="n">19</span>第 19 章</span></li><li><span class="off"><span class="n">20</span>第 20 章</span></li><li><span class="off"><span class="n">21</span>第 21 章</span></li><li><span class="off"><span class="n">22</span>第 22 章</span></li><li><span class="off"><span class="n">23</span>第 23 章</span></li><li><span class="off"><span class="n">24</span>第 24 章</span></li><li><span class="off"><span class="n">25</span>第 25 章</span></li><li><span class="off"><span class="n">26</span>第 26 章</span></li><li><span class="off"><span class="n">27</span>第 27 章</span></li><li><span class="off"><span class="n">28</span>第 28 章</span></li><li><span class="off"><span class="n">29</span>第 29 章</span></li><li><span class="off"><span class="n">30</span>第 30 章</span></li><li><span class="off"><span class="n">31</span>第 31 章</span></li><li><span class="off"><span class="n">32</span>第 32 章</span></li><li><span class="off"><span class="n">33</span>第 33 章</span></li><li><span class="off"><span class="n">34</span>第 34 章</span></li><li><span class="off"><span class="n">35</span>第 35 章</span></li><li><span class="off"><span class="n">36</span>第 36 章</span></li><li><span class="off"><span class="n">37</span>第 37 章</span></li><li><span class="off"><span class="n">38</span>第 38 章</span></li><li><span class="off"><span class="n">39</span>第 39 章</span></li><li><span class="off"><span class="n">40</span>第 40 章</span></li><li><span class="off"><span class="n">41</span>第 41 章</span></li><li><span class="off"><span class="n">42</span>第 42 章</span></li><li><span class="off"><span class="n">43</span>第 43 章</span></li><li><span class="off"><span class="n">44</span>第 44 章</span></li><li><span class="off"><span class="n">45</span>第 45 章</span></li><li><span class="off"><span class="n">46</span>第 46 章</span></li><li><span class="off"><span class="n">47</span>第 47 章</span></li><li><span class="off"><span class="n">48</span>第 48 章</span></li><li><span class="off"><span class="n">49</span>第 49 章</span></li><li><span class="off"><span class="n">50</span>第 50 章</span></li><li><span class="off"><span class="n">51</span>第 51 章</span></li><li><span class="off"><span class="n">52</span>第 52 章</span></li><li><span class="off"><span class="n">53</span>第 53 章</span></li><li><span class="off"><span class="n">54</span>第 54 章</span></li><li><span class="off"><span class="n">55</span>第 55 章</span></li><li><span class="off"><span class="n">56</span>第 56 章</span></li><li><span class="off"><span class="n">57</span>第 57 章</span></li><li><span class="off"><span class="n">58</span>第 58 章</span></li><li><span class="off"><span class="n">59</span>第 59 章</span></li><li><span class="off"><span class="n">60</span>第 60 章</span></li><li><span class="off"><span class="n">61</span>第 61 章</span></li><li><span class="off"><span class="n">62</span>第 62 章</span></li><li><span class="off"><span class="n">63</span>第 63 章</span></li><li><span class="off"><span class="n">64</span>第 64 章</span></li><li><span class="off"><span class="n">65</span>第 65 章</span></li><li><span class="off"><span class="n">66</span>第 66 章</span></li><li><span class="off"><span class="n">67</span>第 67 章</span></li><li><span class="off"><span class="n">68</span>第 68 章</span></li><li><span class="off"><span class="n">69</span>第 69 章</span></li><li><span class="off"><span class="n">70</span>第 70 章</span></li><li><span class="off"><span class="n">71</span>第 71 章</span></li><li><span class="off"><span class="n">72</span>第 72 章</span></li><li><span class="off"><span class="n">73</span>第 73 章</span></li><li><span class="off"><span class="n">74</span>第 74 章</span></li><li><span class="off"><span class="n">75</span>第 75 章</span></li><li><span class="off"><span class="n">76</span>第 76 章</span></li><li><span class="off"><span class="n">77</span>第 77 章</span></li><li><span class="off"><span class="n">78</span>第 78 章</span></li><li><span class="off"><span class="n">79</span>第 79 章</span></li><li><span class="off"><span class="n">80</span>第 80 章</span></li><li><span class="off"><span class="n">81</span>第 81 章</span></li><li><span class="off"><span class="n">82</span>第 82 章</span></li><li><span class="off"><span class="n">83</span>第 83 章</span></li><li><span class="off"><span class="n">84</span>第 84 章</span></li><li><span class="off"><span class="n">85</span>第 85 章</span></li><li><span class="off"><span class="n">86</span>第 86 章</span></li><li><span class="off"><span class="n">87</span>第 87 章</span></li><li><span class="off"><span class="n">88</span>第 88 章</span></li><li><span class="off"><span class="n">89</span>第 89 章</span></li><li><span class="off"><span class="n">90</span>第 90 章</span></li><li><span class="off"><span class="n">91</span>第 91 章</span></li><li><span class="off"><span class="n">92</span>第 92 章</span></li><li><span class="off"><span class="n">93</span>第 93 章</span></li><li><span class="off"><span class="n">94</span>第 94 章</span></li><li><span class="off"><span class="n">95</span>第 95 章</span></li><li><span class="off"><span class="n">96</span>第 96 章</span></li><li><span class="off"><span class="n">97</span>第 97 章</span></li><li><span class="off"><span class="n">98</span>第 98 章</span></li><li><span class="off"><span class="n">99</span>第 99 章</span></li><li><span class="off"><span class="n">100</span>第 100 章</span></li><li><span class="off"><span class="n">101</span>第 101 章</span></li><li><span class="off"><span class="n">102</span>第 102 章</span></li><li><span class="off"><span class="n">103</span>第 103 章</span></li><li><span class="off"><span class="n">104</span>第 104 章</span></li><li><span class="off"><span class="n">105</span>第 105 章</span></li><li><span class="off"><span class="n">106</span>第 106 章</span></li><li><span class="off"><span class="n">107</span>第 107 章</span></li><li><span class="off"><span class="n">108</span>第 108 章</span></li><li><span class="off"><span class="n">109</span>第 109 章</span></li><li><span class="off"><span class="n">110</span>第 110 章</span></li><li><span class="off"><span class="n">111</span>第 111 章</span></li><li><span class="off"><span class="n">112</span>第 112 章</span></li><li><span class="off"><span class="n">113</span>第 113 章</span></li><li><span class="off"><span class="n">114</span>第 114 章</span></li><li><span class="off"><span class="n">115</span>第 115 章</span></li><li><span class="off"><span class="n">116</span>第 116 章</span></li><li><span class="off"><span class="n">117</span>第 117 章</span></li><li><span class="off"><span class="n">118</span>第 118 章</span></li><li><span class="off"><span class="n">119</span>第 119 章</span></li><li><span class="off"><span class="n">120</span>第 120 章</span></li><li><span class="off"><span class="n">121</span>第 121 章</span></li><li><span class="off"><span class="n">122</span>第 122 章</span></li></ol>
+</aside>
+<main>
+<div class="doc-main">
+<header class="doc-head">
+  <h1 class="doc-title">复习 · 第 6–10 章</h1>
+  <div class="doc-sub">跨章复习：把散在各章的线收一收，顺便把词和句型过一遍。</div>
+  <input class="search" type="search" placeholder="搜索关键词…">
+</header>
+<div class="sec"><h4>8,265 词 · 五章 · 从“住下来”到“被送出去”</h4>
+<p>第六章到第十章，日子先是安顿，然后裂开：他在牧师宅住惯了，学会了读书，也被送进学校，第一次当众挨了一脚。</p>
+<h2 id="h-1">一、这五章发生了什么</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>章</th><th>时间</th><th>地点</th><th>一句话</th></tr></thead><tbody><tr><td>6</td><td>一个普通日子</td><td>牧师宅与镇上</td><td>报纸轮转、买东西的路线、教会委员、洗澡排班</td></tr><tr><td>7</td><td>第一个星期日</td><td>教堂与牧师宅</td><td>切圣餐面包、募捐、晚祷路上第一次牵叔父的手</td></tr><tr><td>8</td><td>第二个星期日</td><td>牧师宅</td><td>积木塌了；“我恨你”；姨妈哭了，他第一次主动亲她</td></tr><tr><td>9</td><td>又一个星期日</td><td>牧师宅</td><td>背祷文失败；画册；开始读书</td></tr><tr><td>10</td><td>九月底，星期四</td><td>特坎伯里国王学校</td><td>入学；文宁的“你妈妈洗衣服吗”；脚被看见，挨了一脚</td></tr></tbody></table></div>
+<h2 id="h-2">二、人物：谁在变</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>人物</th><th>第 6 章</th><th>第 10 章</th><th>变化</th></tr></thead><tbody><tr><td>菲利普</td><td>在厨房里找自在</td><td>在操场上被问住</td><td>从躲着人到被人看见</td></tr><tr><td>姨妈</td><td>不会亲近他</td><td>他第一次主动亲她</td><td>从笨拙到被接受</td></tr><tr><td>叔父</td><td>安排一切</td><td>送他出门</td><td>从权威到被顶撞</td></tr><tr><td>玛丽·安</td><td>厨房里的同盟</td><td>给他掖被子</td><td>从仆人变成亲人</td></tr><tr><td>格雷夫斯</td><td>教区的实权</td><td>—</td><td>让叔父也没辙的人</td></tr><tr><td>文宁</td><td>—</td><td>用问题欺负新人</td><td>学校世界的第一个敌人</td></tr></tbody></table></div>
+<h2 id="h-3">三、母题</h2>
+<p><strong>读书</strong>：第九章，画册把他从祷文里救出来；《一千零一夜》让他忘了吃饭。毛姆说，这既是避难所，也是“不真实的世界”。</p>
+<p><strong>学校与羞耻</strong>：第十章，高墙像监狱；脚从家里的秘密变成公开的羞耻。</p>
+<p><strong>仪式</strong>：第七章，切面包、擦盘子、打鸡蛋；神圣长在琐事上。</p>
+<p><strong>钱</strong>：报纸轮着看、捐款按面额数、洗澡要排队——这个家的一切都有账。</p>
+<h2 id="h-4">四、词汇：25 个</h2>
+<table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th><th>出自</th></tr><tr><td>chapel</td><td>/ˈtʃæpl/</td><td>非国教小礼拜堂</td><td>6</td></tr><tr><td>scandal</td><td>/ˈskændl/</td><td>丑事</td><td>6</td></tr><tr><td>churchwarden</td><td>/ˌtʃɜːtʃˈwɔːdn/</td><td>教会委员</td><td>6</td></tr><tr><td>reconciliation</td><td>/ˌrekənsɪliˈeɪʃn/</td><td>和解</td><td>6</td></tr><tr><td>boiler</td><td>/ˈbɔɪlə/</td><td>锅炉</td><td>6</td></tr><tr><td>communion</td><td>/kəˈmjuːniən/</td><td>圣餐</td><td>7</td></tr><tr><td>sexton</td><td>/ˈsekstən/</td><td>教堂司事</td><td>7</td></tr><tr><td>florin</td><td>/ˈflɒrɪn/</td><td>两先令硬币</td><td>7</td></tr><tr><td>stale</td><td>/steɪl/</td><td>陈的</td><td>7</td></tr><tr><td>pew</td><td>/pjuː/</td><td>教堂专座</td><td>7</td></tr><tr><td>popish</td><td>/ˈpəʊpɪʃ/</td><td>教皇味的（贬义）</td><td>8</td></tr><tr><td>celibacy</td><td>/ˈselɪbəsi/</td><td>独身</td><td>8</td></tr><tr><td>humiliation</td><td>/hjuːˌmɪliˈeɪʃn/</td><td>羞辱</td><td>8</td></tr><tr><td>sullen</td><td>/ˈsʌlən/</td><td>赌气的</td><td>8</td></tr><tr><td>musty</td><td>/ˈmʌsti/</td><td>发霉的</td><td>9</td></tr><tr><td>quarto</td><td>/ˈkwɔːtəʊ/</td><td>四开本</td><td>9</td></tr><tr><td>cistern</td><td>/ˈsɪstən/</td><td>蓄水池</td><td>9</td></tr><tr><td>precocious</td><td>/prɪˈkəʊʃəs/</td><td>早熟的</td><td>9</td></tr><tr><td>hammock</td><td>/ˈhæmək/</td><td>吊床</td><td>9</td></tr><tr><td>canon</td><td>/ˈkænən/</td><td>座堂牧师</td><td>10</td></tr><tr><td>archdeacon</td><td>/ˌɑːtʃˈdiːkən/</td><td>副主教</td><td>10</td></tr><tr><td>apprehension</td><td>/ˌæprɪˈhenʃn/</td><td>忧虑</td><td>10</td></tr><tr><td>boisterous</td><td>/ˈbɔɪstərəs/</td><td>喧闹的</td><td>10</td></tr><tr><td>facetious</td><td>/fəˈsiːʃəs/</td><td>耍贫嘴的</td><td>10</td></tr><tr><td>dialectic</td><td>/ˌdaɪəˈlektɪk/</td><td>诡辩</td><td>10</td></tr></table>
+<h2 id="h-5">五、练一练</h2>
+<p><strong>A. 选词填空</strong>（6 句）</p>
+<ol><li>The vicar called the churchwarden Bismarck ______ his back.</li><li>The collection was counted in the ______ after the service.</li><li>Philip was so full of ______ that he could not speak.</li><li>Venning kicked him on the ______.</li><li>She read the ______ in an even voice.</li><li>He lay in the ______ for hours, reading.</li></ol>
+<details class="qa"><summary>答案</summary><div class="inner"><ol><li>behind</li><li>vestry</li><li>apprehension</li><li>shin</li><li>collect</li><li>hammock</li></ol></div></details>
+<h4>B. 用三个词写一句</h4>
+<p>用 <code>stale</code>、<code>boisterous</code>、<code>humiliation</code> 写三句话，写一个人走进一间他不属于的屋子。</p>
+<h2 id="h-6">六、三个句型，两次改写</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>句式</th><th>出处</th></tr></thead><tbody><tr><td><code>It was a scandal to which he had never resigned himself that ___.</code></td><td>6</td></tr><tr><td><code>The pain was so great that ___, but greater than the pain was ___.</code></td><td>10</td></tr><tr><td><code>He was too ___ to ___.</code></td><td>10</td></tr></tbody></table></div>
+<p><strong>改写 1</strong>：用第一句写“这家人一直没能接受的一件事”。</p>
+<p><strong>改写 2</strong>：用第二句写“一种比疼更强烈的感觉”。</p>
+<details class="qa"><summary>改写示例</summary><div class="inner"><blockquote><p class="en">It was a scandal to which the household had never resigned itself that the boy had no mother.</p><p class="en">The cold was so great that it made him shake, but greater than the cold was the fear.</p></blockquote></div></details>
+<h2 id="h-7">七、技法：这五章用到的</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>主干</th><th>出现</th><th>例子</th></tr></thead><tbody><tr><td>视角与信息差</td><td>6–10</td><td>孩子不懂祷文；不懂“洗衣服”的圈套</td></tr><tr><td>物件与空间写人</td><td>6、8、10</td><td>报纸路线；积木；高墙；脚</td></tr><tr><td>动作代替情绪</td><td>7、8、9</td><td>牵手；咬紧牙；伸手摸画</td></tr><tr><td>节奏</td><td>8、10</td><td>短句逼问；一桌人沉默</td></tr><tr><td>重复与变奏</td><td>8、9</td><td>“我恨你”；“我有足内翻”</td></tr><tr><td>反讽与对照</td><td>6、9</td><td>神圣与账目；圣书与《一千零一夜》</td></tr><tr><td>时间处理</td><td>6、7</td><td>一周菜单；主日流程</td></tr><tr><td>钱与数字</td><td>6、7</td><td>六便士、弗罗林、洗澡排班</td></tr><tr><td>感官</td><td>6、9</td><td>银行的闷味；旧书的霉味</td></tr><tr><td>场景调度</td><td>8、9</td><td>窗外偷看；门槛</td></tr><tr><td>收尾</td><td>7、8</td><td>晚安吻；眼泪里的两层</td></tr><tr><td>人物出场</td><td>6、10</td><td>格雷夫斯的白头发；校长的嗓门</td></tr></tbody></table></div>
+<h2 id="h-8">八、自测八问</h2>
+<ol><li>第 6–10 章一共跨了多长时间？</li><li>在牧师宅，菲利普最亲近谁？为什么？</li><li>他和姨妈的关系在哪一章、因为什么变了？</li><li>叔父为什么让他背祷文？这件事对他意味着什么？</li><li>读书对菲利普意味着什么？毛姆用哪两个说法点明？</li><li>在学校，他的脚第一次被谁看见？对方是什么反应？</li><li>文宁的欺负为什么让菲利普答不上来？</li><li>这五章里，他得到了什么、失去了什么？</li></ol>
+<details class="qa"><summary>参考答案</summary><div class="inner"><ol><li>大约几个月：从到牧师宅后不久，到九月底入学。</li><li>玛丽·安。她在厨房里给他自在，讲海上的故事，不评判他；姨妈想亲近，却笨拙。</li><li>第八章。他因积木被罚、不准去教堂，把气撒在她身上，说“我希望你死”；她哭了，他第一次主动亲她。</li><li>一半是给他找事做，一半是省心；对他意味着“不许玩”的下午变成一场考试，也第一次让他觉得自己笨。</li><li>避难所，也是“不真实的世界”；读书让他躲开现实，也让现实日后显得失望。</li><li>文宁。他先问“你的脚怎么了”，再要看，被拒后踢了他一脚。</li><li>因为他按正常逻辑回答“洗/不洗”，而对方要的是把他逼进“你妈妈是洗衣妇”的圈套；越解释越输。</li><li>得到：读书的习惯、玛丽·安和姨妈的爱、一次“我恨你”之后的和解；失去：对家的幻想、对学校的想象、脚的秘密。</li></ol></div></details>
+<h2 id="h-9">九、下一步</h2>
+<p>第十一章，国王学校的第一周：课表、宿舍、级长。菲利普要学会的，不只是拉丁文。</p></div>
+</div>
+</main>
+<aside class="nav-right" id="navRight">
+  <div class="rn-head"><span>本页目录</span><button class="rn-toggle" id="toggleRight2" type="button" data-close="right" aria-label="收起目录">×</button></div>
+  <nav class="toc"><a class="lv2" href="#h-1">一、这五章发生了什么</a><a class="lv2" href="#h-2">二、人物：谁在变</a><a class="lv2" href="#h-3">三、母题</a><a class="lv2" href="#h-4">四、词汇：25 个</a><a class="lv2" href="#h-5">五、练一练</a><a class="lv2" href="#h-6">六、三个句型，两次改写</a><a class="lv2" href="#h-7">七、技法：这五章用到的</a><a class="lv2" href="#h-8">八、自测八问</a><a class="lv2" href="#h-9">九、下一步</a></nav>
+</aside>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = {};</script>
+<script>/* ===== Of Human Bondage · 阅读器 ===== */
+(function () {
+  'use strict';
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var CH = window.CHAPTER || {};
+  var KEY = 'ohb:' + (CH.id || 'x');
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  /* ---------------- 设置 ---------------- */
+
+  var DEFAULTS = { trans: 1, words: 1, sents: 1, notes: 1, craft: 1, split: 0, collapse: 0, openanno: 0 };
+  var cfg = Object.assign({}, DEFAULTS, LS.get('ohb:cfg', {}));
+
+  function applyCfg() {
+    document.body.dataset.trans = cfg.trans ? 'on' : 'off';
+    document.body.dataset.words = cfg.words ? 'on' : 'off';
+    document.body.dataset.sents = cfg.sents ? 'on' : 'off';
+    document.body.dataset.notes = cfg.notes ? 'on' : 'off';
+    document.body.dataset.craft = cfg.craft ? 'on' : 'off';
+    document.body.dataset.split = cfg.split ? 'on' : 'off';
+    $$('details.notes:not(.answers), details.craft').forEach(function (d) {
+      d.open = !cfg.collapse;
+    });
+    $$('details.anno').forEach(function (d) {
+      d.open = !!cfg.openanno;
+    });
+    $$('.settings input[data-set]').forEach(function (i) {
+      i.checked = !!cfg[i.dataset.set];
+    });
+  }
+
+  $$('.settings input[data-set]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      cfg[i.dataset.set] = i.checked ? 1 : 0;
+      LS.set('ohb:cfg', cfg);
+      applyCfg();
+      if (i.dataset.set === 'split') syncCompanion(true);
+    });
+  });
+
+  var setBtn = $('#setBtn'), settings = $('#settings');
+  if (setBtn && settings) {
+    setBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      settings.hidden = !settings.hidden;
+      document.body.classList.toggle('settings-open', !settings.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!settings.hidden && !settings.contains(e.target) && e.target !== setBtn) {
+        settings.hidden = true;
+        document.body.classList.remove('settings-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') settings.hidden = true;
+    });
+  }
+
+  /* ---------------- 主题 / 字号 ---------------- */
+
+  var themeBtn = $('.tools .theme');
+  function setTheme(t, remember) {
+    document.documentElement.dataset.theme = t;
+    if (themeBtn) themeBtn.textContent = t === 'dark' ? '☀' : '☾';
+    if (remember) LS.set('ohb:theme', t);
+  }
+  if (themeBtn) themeBtn.addEventListener('click', function () {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+
+  var fs = LS.get('ohb:fs', 1);
+  function applyFs() {
+    fs = Math.min(1.32, Math.max(0.86, fs));
+    document.documentElement.style.setProperty('--fs', String(fs));
+    LS.set('ohb:fs', fs);
+  }
+  $$('[data-fs]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fs += (b.dataset.fs === '+' ? 0.06 : -0.06);
+      applyFs();
+    });
+  });
+
+  /* ---------------- 侧栏 ---------------- */
+
+  var PANELS = { left: 1, right: 1 };
+  try { PANELS = Object.assign(PANELS, LS.get('ohb:panels', {})); } catch (e) {}
+
+  function applyPanels(persist) {
+    document.body.classList.toggle('no-left', !PANELS.left);
+    document.body.classList.toggle('no-right', !PANELS.right);
+    if (persist !== false && window.innerWidth >= 1080) LS.set('ohb:panels', PANELS);
+  }
+
+  var hasLeft = !!$('#navLeft'), hasRight = !!$('#navRight');
+  var forcedMobile = window.innerWidth < 1080;
+  if (forcedMobile) { PANELS.left = 0; PANELS.right = 0; }
+  if (!hasLeft) PANELS.left = 0;
+  if (!hasRight) PANELS.right = 0;
+  applyPanels(false);
+
+  var tl = $('#toggleLeft'), tr = $('#toggleRight'), tr2 = $('#toggleRight2');
+  if (tr && !hasRight) tr.style.display = 'none';
+  $$('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.dataset.close === 'left') PANELS.left = 0; else PANELS.right = 0;
+      applyPanels();
+    });
+  });
+
+  var scrim = $('#scrim');
+  if (scrim) scrim.addEventListener('click', function () {
+    PANELS.left = 0; PANELS.right = 0; applyPanels();
+    var st = $('#settings');
+    if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+  });
+  if (tl) tl.addEventListener('click', function () { PANELS.left = PANELS.left ? 0 : 1; applyPanels(); });
+  if (tr) tr.addEventListener('click', function () { PANELS.right = PANELS.right ? 0 : 1; applyPanels(); });
+  if (tr2) tr2.addEventListener('click', function () { PANELS.right = 0; applyPanels(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+      var st = $('#settings');
+      if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+    }
+    if (e.key === 'e' || e.key === 'E') $$('details').forEach(function (d) { d.open = true; });
+    if (e.key === 'q' || e.key === 'Q') $$('details').forEach(function (d) { d.open = false; });
+  });
+
+  // 移动端：点目录后收起右栏
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-right a, .nav-left a');
+    if (!a) return;
+    if (window.innerWidth < 1080) {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+    }
+  });
+
+  /* ---------------- 阅读进度 ---------------- */
+
+  var readbar = $('#readbar');
+  function paintProgress() {
+    if (!readbar) return;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    readbar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+
+  /* ---------------- 目录高亮 ---------------- */
+
+  var tocLinks = $$('.toc a');
+  var targets = tocLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+      var current = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { current = targets[i].id; break; }
+      }
+      if (current) {
+        tocLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+    }, { rootMargin: '-64px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { io.observe(t); });
+  }
+
+  /* ---------------- 段号跳转 ---------------- */
+
+  function flash(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#p-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(id);
+    history.replaceState(null, '', '#' + id);
+  });
+  if (location.hash && /^#p-/.test(location.hash)) setTimeout(function () { flash(location.hash.slice(1)); }, 300);
+
+  /* ---------------- J / K 逐段 ---------------- */
+
+  var units = $$('.unit');
+  function currentUnit() {
+    var best = 0, bestD = 1e9;
+    units.forEach(function (u, i) {
+      var d = Math.abs(u.getBoundingClientRect().top - 120);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+  function gotoUnit(i) {
+    if (!units.length) return;
+    i = Math.max(0, Math.min(units.length - 1, i));
+    units.forEach(function (u) { u.classList.remove('focus'); });
+    units[i].classList.add('focus');
+    units[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'j' || e.key === 'J') { gotoUnit(currentUnit() + 1); }
+    if (e.key === 'k' || e.key === 'K') { gotoUnit(currentUnit() - 1); }
+  });
+
+  /* ---------------- 朗读 ---------------- */
+
+  if ('speechSynthesis' in window) {
+    $$('.reader p, .en').forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'speak';
+      btn.type = 'button';
+      btn.title = '朗读这一段';
+      btn.textContent = '▶';
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+        var u = new SpeechSynthesisUtterance(p.innerText.replace('▶', ''));
+        u.lang = 'en-GB';
+        u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+      p.appendChild(btn);
+    });
+  }
+
+  /* ---------------- 分屏讲解 ---------------- */
+
+  var scenes = $$('.scene');
+  var panes = $$('.companion .cp');
+  var currentScene = null;
+
+  function syncCompanion(force) {
+    if (!scenes.length || !panes.length) return;
+    if (document.body.dataset.split !== 'on') return;
+    var active = null;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top <= 200) active = scenes[i].dataset.scene;
+    }
+    if (!active) active = scenes[0].dataset.scene;
+    if (active !== currentScene || force) {
+      currentScene = active;
+      panes.forEach(function (p) { p.hidden = p.dataset.scene !== active; });
+    }
+  }
+
+  /* ---------------- 打卡 ---------------- */
+
+  var checks = $$('.check input');
+  var bar = $('.bar i');
+  var barText = $('.bar-label span:last-child');
+
+  function loadChecks() {
+    var saved = LS.get(KEY, {});
+    checks.forEach(function (c) { c.checked = !!saved[c.dataset.k]; });
+    paintChecks();
+  }
+  function paintChecks() {
+    var done = checks.filter(function (c) { return c.checked; }).length;
+    var pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (barText) barText.textContent = done + ' / ' + checks.length;
+  }
+  checks.forEach(function (c) {
+    c.addEventListener('change', function () {
+      var saved = LS.get(KEY, {});
+      saved[c.dataset.k] = c.checked;
+      LS.set(KEY, saved);
+      paintChecks();
+    });
+  });
+
+  /* ---------------- 写作区 ---------------- */
+
+  var ta = $('.writing textarea');
+  if (ta) {
+    var countEl = $('.writing .count');
+    var statusEl = $('.writing .status');
+
+    function count(text) {
+      var en = (text.match(/[A-Za-z][A-Za-z'’\-]*/g) || []).length;
+      var zh = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return en + zh;
+    }
+    ta.value = LS.get(KEY + ':writing', '');
+    var t;
+    function upd() {
+      if (countEl) countEl.textContent = count(ta.value) + ' 词';
+      clearTimeout(t);
+      t = setTimeout(function () {
+        LS.set(KEY + ':writing', ta.value);
+        if (statusEl) { statusEl.textContent = '已保存'; setTimeout(function () { statusEl.textContent = ''; }, 1500); }
+      }, 600);
+    }
+    ta.addEventListener('input', upd);
+    upd();
+
+    var copyBtn = $('.writing .copy');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      ta.select(); document.execCommand('copy');
+      if (statusEl) statusEl.textContent = '已复制';
+    });
+    var clearBtn = $('.writing .clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      if (!confirm('清空这段练习？')) return;
+      ta.value = ''; upd();
+    });
+  }
+
+  /* ---------------- 生词本 ---------------- */
+
+  var WB_KEY = 'ohb:words';
+
+  function wbAll() { return LS.get(WB_KEY, []); }
+  function wbKey(ch, pid, w) { return ch + '|' + pid + '|' + w; }
+
+  function paintWbCount() {
+    var n = wbAll().length;
+    var c = $('#wbCount');
+    if (c) c.textContent = n;
+  }
+
+  function markSaved() {
+    var set = {};
+    wbAll().forEach(function (x) { set[wbKey(x.ch, x.pid, x.w)] = 1; });
+    $$('.gloss').forEach(function (g) {
+      var unit = g.closest('.unit');
+      var pid = unit ? unit.id : '';
+      g.classList.toggle('saved', !!set[wbKey(CH.id, pid, g.textContent)]);
+    });
+  }
+
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 1500);
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('.gloss');
+    if (!g) return;
+    var unit = g.closest('.unit');
+    var pid = unit ? unit.id : '';
+    var w = g.textContent;
+    var tip = g.dataset.tip || '';
+    var list = wbAll();
+    var k = wbKey(CH.id, pid, w);
+    var idx = list.findIndex(function (x) { return wbKey(x.ch, x.pid, x.w) === k; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      LS.set(WB_KEY, list);
+      g.classList.remove('saved');
+      toast('已移出生词本');
+    } else {
+      list.push({ w: w, tip: tip, ch: CH.id, href: CH.href, pid: pid, n: (CH.num || '') });
+      LS.set(WB_KEY, list);
+      g.classList.add('saved');
+      toast('已加入生词本');
+    }
+    paintWbCount();
+  });
+
+  var wbBtn = $('#wbBtn');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () {
+      var list = wbAll();
+      var html = '<h3>生词本</h3><p class="hint">在原文里点虚线词即可收进来；再点一次移出。</p>';
+      if (!list.length) {
+        html += '<div class="wb-empty">还是空的。读到不认识的词，点一下它。</div>';
+      } else {
+        html += '<div class="wb-list">';
+        list.slice().sort(function (a, b) {
+          return (a.n || '').localeCompare(b.n || '', 'zh-Hans-CN', { numeric: true });
+        }).forEach(function (x) {
+          var file = x.href || String(x.ch || '').replace(/^ch(\d)$/, 'ch0$1') + '.html';
+          var href = x.pid ? (file + '#' + x.pid) : file;
+          html += '<a class="wb-item" href="' + href + '"><b>' + esc(x.w) + '</b><span>' +
+                  esc(x.tip) + '</span><em>' + esc(x.n || '') + '</em></a>';
+        });
+        html += '</div>';
+      }
+      html += '<div class="quiz-foot" style="margin-top:14px"><button class="btn" id="closeWb" type="button">关闭</button></div>';
+      openSheet(html);
+      var c = $('#closeWb');
+      if (c) c.addEventListener('click', closeSheet);
+    });
+  }
+
+  /* ---------------- 词汇小测 ---------------- */
+
+  function cleanGloss(g) {
+    var t = String(g || '').replace(/^[=＝]\s*/, '');
+    t = t.split('（')[0].trim();
+    return t.replace(/[；;]\s*$/, '');
+  }
+
+  var words = (CH.words || []).map(function (w) {
+    return { w: w.w, g: cleanGloss(w.g) };
+  }).filter(function (w) { return w.g && w.g.length >= 2 && /[\u4e00-\u9fff]/.test(w.g); });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function buildQuiz() {
+    if (words.length < 5) return;
+    var picked = shuffle(words.slice()).slice(0, Math.min(8, words.length));
+    var html = '<h3>词义小测</h3><p class="hint">从本章词表里抽 8 个，选一个正确释义。</p>';
+    picked.forEach(function (w) {
+      var others = shuffle(words.filter(function (x) { return x.g !== w.g; })).slice(0, 3).map(function (x) { return x.g; });
+      var opts = shuffle(others.concat([w.g]));
+      html += '<div class="q" data-answer="' + esc(w.g) + '"><div class="w">' + esc(w.w) + '</div><div class="opts">';
+      opts.forEach(function (o) { html += '<button class="opt" type="button">' + esc(o) + '</button>'; });
+      html += '</div><div class="fb"></div></div>';
+    });
+    html += '<div class="quiz-foot"><span class="score"></span><button class="btn" id="closeQuiz" type="button">关闭</button></div>';
+    openSheet(html);
+
+    var total = picked.length, right = 0, answered = 0;
+    $$('.sheet .q').forEach(function (q) {
+      var ans = q.dataset.answer;
+      $$('.opt', q).forEach(function (o) {
+        if (o.textContent === ans) o.dataset.correct = '1';
+        o.addEventListener('click', function () {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          answered++;
+          if (o.dataset.correct === '1') { right++; o.classList.add('right'); $('.fb', q).textContent = '对。'; }
+          else {
+            o.classList.add('wrong');
+            $('.opt[data-correct="1"]', q).classList.add('right');
+            $('.fb', q).textContent = '正确释义：' + ans;
+          }
+          var sc = $('.score');
+          if (sc) sc.textContent = answered + ' / ' + total + ' · 答对 ' + right;
+        });
+      });
+    });
+    var c = $('#closeQuiz');
+    if (c) c.addEventListener('click', closeSheet);
+  }
+
+  /* ---------------- 弹层 ---------------- */
+
+  function openSheet(html) {
+    var modal = $('#sheetModal');
+    if (!modal) return;
+    $('.sheet', modal).innerHTML = html;
+    modal.classList.add('open');
+  }
+  function closeSheet() {
+    var modal = $('#sheetModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  var sheetModal = document.createElement('div');
+  sheetModal.className = 'modal';
+  sheetModal.id = 'sheetModal';
+  sheetModal.innerHTML = '<div class="sheet"></div>';
+  document.body.appendChild(sheetModal);
+  sheetModal.addEventListener('click', function (e) { if (e.target === sheetModal) closeSheet(); });
+
+  ['#quizBtn', '#quizBtn2'].forEach(function (sel) {
+    var b = $(sel);
+    if (b) b.addEventListener('click', buildQuiz);
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------------- 搜索（技法页） ---------------- */
+
+  var search = $('.search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      $$('table.gen tr').forEach(function (tr) {
+        if (tr.querySelector('th')) return;
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+      $$('.doc-main h2, .doc-main h3, .doc-main p').forEach(function (el) {
+        el.style.display = (!q || el.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------------- 首页进度 ---------------- */
+
+  var cells = $$('.cell[data-ch]');
+  cells.forEach(function (c) {
+    var saved = LS.get('ohb:ch' + c.dataset.ch, {});
+    var n = Object.keys(saved).filter(function (k) { return saved[k]; }).length;
+    if (n >= 5) c.classList.add('done');
+  });
+
+  /* ---------------- 初始化 ---------------- */
+
+  setTheme(LS.get('ohb:theme', 'light'), false);
+  applyFs();
+  applyCfg();
+  loadChecks();
+  paintWbCount();
+  markSaved();
+
+  if (document.body.dataset.split === 'on') syncCompanion(true);
+
+  var raf = null;
+  window.addEventListener('scroll', function () {
+    paintProgress();
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      syncCompanion(false);
+    });
+  }, { passive: true });
+  paintProgress();
+})();
+</script>
+</body>
+</html>
