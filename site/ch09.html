@@ -1,0 +1,1559 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>第九章 · Of Human Bondage</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>/* ===== Of Human Bondage · 阅读器 ===== */
+
+:root {
+  --paper: #faf7f0;
+  --paper-2: #f3eee2;
+  --card: #fffdf8;
+  --ink: #211e19;
+  --ink-soft: #46403a;
+  --muted: #7d7365;
+  --line: #e6ddcd;
+  --line-soft: #f0eade;
+  --accent: #a33b2e;
+  --accent-2: #c9a35d;
+  --accent-soft: #f6e9e3;
+  --green: #3f5d4e;
+  --shadow: 0 1px 2px rgba(33, 30, 25, .05), 0 16px 40px -24px rgba(33, 30, 25, .35);
+  --en: "Iowan Old Style", Charter, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --zh: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --zhb: var(--zh);
+  --title: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 1;
+  --side: 286px;
+}
+
+
+[data-theme="dark"] {
+  --paper: #14120e;
+  --paper-2: #1a1712;
+  --card: #1d1a14;
+  --ink: #ebe4d6;
+  --ink-soft: #cfc6b5;
+  --muted: #9b9080;
+  --line: #2f2a22;
+  --line-soft: #262118;
+  --accent: #d9725d;
+  --accent-2: #c9a35d;
+  --accent-soft: #2c201c;
+  --green: #83ab95;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 44px -24px rgba(0, 0, 0, .85);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--zh);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  height: 58px; padding: 0 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.crumb { font-size: 12.5px; color: var(--muted); letter-spacing: .03em; white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 600; }
+
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: transparent; pointer-events: none;
+}
+.readbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .1s linear; }
+
+.tools { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.icon-btn {
+  height: 32px; min-width: 32px; padding: 0 9px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font: 500 12px/1 var(--zh); cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--muted); color: var(--ink); }
+.set-btn { font-family: var(--en); font-size: 13px; letter-spacing: .02em; }
+
+.menu-btn {
+  display: none; width: 32px; height: 32px; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font-size: 15px; cursor: pointer; flex: none;
+}
+
+/* ---------- 设置面板 ---------- */
+
+.settings {
+  position: fixed; z-index: 50; top: 66px; right: 18px; width: 268px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 16px 12px;
+}
+.settings[hidden] { display: none; }
+.set-title { font: 600 11px/1 var(--zh); letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+.set-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13.5px; }
+.sw em { font-style: normal; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.sw input {
+  appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line);
+  position: relative; cursor: pointer; flex: none; transition: background .18s ease; margin-left: auto; order: 2;
+}
+.sw input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--card); transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.sw input:checked { background: var(--accent); }
+.sw input:checked::after { transform: translateX(14px); }
+
+.set-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.set-row span { margin-right: auto; }
+.set-row button {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  border-radius: 7px; padding: 5px 10px; font: 500 12px/1 var(--zh); cursor: pointer;
+}
+.set-row button:hover { border-color: var(--muted); }
+.set-note { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+/* ---------- 布局：左导航 / 正文 / 右目录 ---------- */
+
+:root { --lw: 264px; --rw: 236px; }
+body.no-left { --lw: 0px; }
+body.no-right { --rw: 0px; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--lw) minmax(0, 1fr) var(--rw);
+  align-items: start;
+}
+body.no-left .nav-left, body.no-right .nav-right { display: none; }
+
+.nav-left { grid-column: 1; }
+main { grid-column: 2; }
+.nav-right { grid-column: 3; }
+
+.nav-left {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 20px 14px 34px;
+  border-right: 1px solid var(--line); scrollbar-width: thin;
+}
+.nav-right {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 18px 14px 34px 16px;
+  border-left: 1px solid var(--line); scrollbar-width: thin;
+}
+
+.brand { font: 600 10px/1 var(--zh); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.site-name { font: 600 calc(17px * var(--fs))/1.4 var(--title); margin: 7px 0 14px; }
+
+.gl-links { display: grid; gap: 2px; margin-bottom: 14px; }
+.gl-links a {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 9px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-soft); font-size: 13px;
+}
+.gl-links a:hover { background: var(--paper-2); color: var(--ink); }
+.gl-links a.cur { background: var(--accent-soft); color: var(--accent); }
+.gl-links span { color: var(--muted); font-size: 10.5px; }
+
+.ch-tools { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0 0 16px; }
+.ch-tools .btn.small { padding: 6px 10px; font-size: 12px; }
+.ch-tools #quizBtn2 { width: auto; justify-content: center; }
+
+.side-label { font: 600 10px/1 var(--zh); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ch-label { margin-top: 4px; }
+
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.ch-list a, .ch-list span {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 8px; border-radius: 6px; text-decoration: none;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.ch-list .n { font: 500 10.5px/1.6 var(--mono); color: var(--muted); width: 20px; flex: none; }
+.ch-list a:hover { background: var(--paper-2); color: var(--ink); }
+.ch-list a.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ch-list a.cur .n { color: var(--accent); }
+.ch-list .off { color: var(--muted); opacity: .45; }
+
+
+.rn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 10.5px/1 var(--zh); letter-spacing: .12em; color: var(--muted);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
+}
+.rn-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; }
+.rn-toggle:hover { color: var(--accent); }
+
+.toc { font-size: 12.6px; line-height: 1.45; }
+.toc a {
+  display: block; padding: 5px 8px; margin: 1px 0; border-radius: 6px;
+  color: var(--muted); text-decoration: none; border-left: 2px solid transparent;
+}
+.toc a:hover { background: var(--paper-2); color: var(--ink); }
+.toc a.lv2 { font-weight: 600; margin-top: 9px; color: var(--ink-soft); font-size: 12.8px; }
+.toc a.lv3 { padding-left: 14px; font-size: 12px; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 9px 15px; border-radius: 8px; font: 500 13px/1 var(--zh); cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.small { padding: 7px 12px; font-size: 12.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.btn.small b { color: var(--accent); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.keys { font-size: 11.5px; color: var(--muted); line-height: 2.1; }
+kbd {
+  font: 500 10px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 2px 4px; background: var(--card); color: var(--ink-soft); margin-right: 2px;
+}
+
+/* ---------- 正文 ---------- */
+
+body[data-split="on"] main { max-width: 1040px; }
+main { width: 100%; max-width: 860px; margin: 0 auto; padding: 32px 40px 120px; container-type: inline-size; }
+.doc-head, .writing, .chnav { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.sec { max-width: 700px; margin: 0 auto 46px; }
+body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+h1.doc-title { font: 600 calc(31px * var(--fs))/1.32 var(--title); margin: 0 0 6px; letter-spacing: -.01em; }
+.doc-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 22px; letter-spacing: .02em; }
+.doc-sub strong { color: var(--ink-soft); font-weight: 500; }
+
+h2.sec-title {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh);
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; letter-spacing: .01em;
+}
+h2.sec-title::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+
+h3 {
+  font: 600 calc(17px * var(--fs))/1.5 var(--zh);
+  margin: 40px 0 10px; scroll-margin-top: 80px; letter-spacing: .01em;
+}
+h3.scene-title { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 48px; }
+h3.scene-title .tag {
+  font: 600 10px/1 var(--zh); letter-spacing: .1em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 4px 7px; border-radius: 4px;
+}
+
+h4 { font: 600 calc(14px * var(--fs))/1.6 var(--zh); margin: 24px 0 6px; color: var(--ink); }
+
+p { margin: 0 0 15px; }
+
+code {
+  font-family: var(--en); font-size: .94em; font-style: normal; color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 0 3px; border-radius: 3px;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+
+.prose-body { font-family: var(--zhb); font-size: calc(15.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft); }
+
+/* 提示条 */
+
+.callout {
+  border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line);
+  padding: 16px 20px; font-size: 13.5px; line-height: 1.9; color: var(--ink-soft); margin: 0 0 22px;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* 首段信息条 */
+
+.spec { display: block; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.spec div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); font-size: 12.8px; }
+.spec div:last-child { border-bottom: 0; }
+.spec dt { flex: 0 0 54px; font: 600 11px/1.9 var(--zh); letter-spacing: .08em; color: var(--muted); margin: 0; }
+.spec dd { flex: 1; margin: 0; color: var(--ink-soft); line-height: 1.75; }
+
+/* ---------- 阅读：原文 ---------- */
+
+.reader { font-family: var(--en); font-size: calc(18px * var(--fs)); line-height: 2; }
+.reader p { margin: 0 0 1.3em; position: relative; }
+
+/* ---------- 场景 ---------- */
+
+.scene { scroll-margin-top: 80px; }
+
+.scene-lead {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--ink-soft); background: var(--paper-2);
+  border-left: 3px solid var(--accent-2); padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 12px 0 22px;
+}
+.scene-lead b { color: var(--ink); font-weight: 600; }
+
+.unit {
+  position: relative; padding: 10px 0 20px; border-bottom: 1px dashed var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.unit:last-of-type { border-bottom: 0; }
+.unit .num {
+  position: absolute; left: -34px; top: 14px;
+  font: 600 11.5px/1 var(--mono); color: var(--muted); width: 24px; text-align: right; opacity: .75;
+}
+.unit.focus { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; }
+.unit.flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+.en { position: relative; font-family: var(--en); font-size: calc(17.5px * var(--fs)); line-height: 1.95; margin: 0 0 10px; }
+
+.trans {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--muted); margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--line-soft);
+}
+
+.speak {
+  position: absolute; left: -32px; top: .5em;
+  width: 20px; height: 20px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--card);
+  color: var(--muted); font-size: 7px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity .16s ease, color .16s ease, border-color .16s ease;
+}
+.en:hover > .speak, .reader p:hover > .speak, .speak:focus { opacity: 1; }
+.speak:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- 词 / 句 ---------- */
+
+.chipbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+
+details.anno { display: inline-block; border: 1px solid var(--line); border-radius: 7px; background: var(--card); }
+details.anno > summary {
+  list-style: none; cursor: pointer; padding: 4px 10px; font: 500 11.5px/1.7 var(--zh); color: var(--muted);
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+details.anno > summary::-webkit-details-marker { display: none; }
+details.anno > summary::before { content: "▸"; font-size: 8px; transition: transform .2s ease; }
+details.anno[open] > summary::before { transform: rotate(90deg); }
+details.anno[open] > summary { color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+details.anno .anno-body { padding: 8px 10px; overflow-x: auto; }
+details.anno[open] { flex: 1 1 100%; }
+
+.wordtable { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.wordtable th {
+  text-align: left; font: 600 10px/1 var(--zh); letter-spacing: .08em; color: var(--muted);
+  padding: 3px 7px 7px; border-bottom: 1px solid var(--line);
+}
+.wordtable td { padding: 6px 7px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.wordtable tr:last-child td { border-bottom: 0; }
+.wordtable td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.wordtable td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wordtable td:nth-child(3) { color: var(--ink-soft); line-height: 1.6; }
+
+.sent {
+  border-left: 3px solid var(--accent-2); padding: 5px 0 5px 12px; margin: 8px 0;
+  font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+}
+.sent code {
+  font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--ink);
+  background: none; padding: 0;
+}
+
+/* ---------- 细读 / 写法 ---------- */
+
+details.notes, details.craft {
+  margin: 18px 0 6px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); overflow: hidden;
+}
+details.notes > summary, details.craft > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 11px 15px; display: flex; align-items: center; gap: 8px;
+  font: 600 12.5px/1 var(--zh); color: var(--ink);
+}
+details.notes > summary::-webkit-details-marker, details.craft > summary::-webkit-details-marker { display: none; }
+details.notes > summary::before, details.craft > summary::before {
+  content: "▸"; font-size: 8px; color: var(--accent); transition: transform .2s ease;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+details.notes > summary em, details.craft > summary em {
+  font-style: normal; font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: auto;
+}
+details .inner {
+  padding: 2px 18px 16px; border-top: 1px solid var(--line-soft);
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft);
+}
+details .inner > :first-child { margin-top: 12px; }
+details .inner strong { color: var(--ink); }
+details .inner ol, details .inner ul { padding-left: 20px; }
+details .inner li { margin-bottom: 7px; }
+details .inner blockquote { font-size: .95em; }
+
+/* ---------- 行内词注 ---------- */
+
+.gloss {
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 50%, transparent);
+  cursor: pointer; position: relative; transition: background .15s ease;
+}
+.gloss:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
+.gloss.saved { border-bottom-style: solid; border-bottom-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.gloss::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: 138%; transform: translateX(-50%) translateY(4px);
+  background: var(--ink); color: var(--paper);
+  font: 400 11.5px/1.5 var(--zh); padding: 6px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: all .16s ease; z-index: 30;
+  box-shadow: var(--shadow);
+}
+.gloss:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 分屏讲解 ---------- */
+
+.companion { display: none; }
+
+@container (min-width: 780px) {
+  body[data-split="on"] .scenes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; align-items: start;
+  }
+  body[data-split="on"] .companion {
+    display: block; position: sticky; top: 74px;
+    max-height: calc(100vh - 96px); overflow-y: auto;
+    border-left: 1px solid var(--line);
+    padding: 2px 4px 20px 24px;
+    scrollbar-width: thin;
+  }
+  body[data-split="on"] details.notes:not(.answers),
+  body[data-split="on"] details.craft { display: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+}
+body[data-split="on"] details.notes,
+body[data-split="on"] details.craft { display: none; }
+
+.cp { padding: 16px 18px 20px; }
+.cp-head {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft); margin-bottom: 12px;
+  font: 600 13px/1.4 var(--zh);
+}
+.cp-head .tag {
+  font: 600 9.5px/1 var(--zh); letter-spacing: .08em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 3px 6px; border-radius: 4px; flex: none;
+}
+.cp-sec { margin-bottom: 18px; }
+.cp-sec h4 {
+  margin: 0 0 6px; font: 600 11px/1 var(--zh); letter-spacing: .12em;
+  color: var(--accent); text-transform: uppercase;
+}
+.cp-inner { font-family: var(--zhb); font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); }
+.cp-inner p { margin: 0 0 10px; }
+.cp-inner strong { color: var(--ink); }
+.cp-inner ul, .cp-inner ol { padding-left: 18px; margin: 0 0 10px; }
+.cp-inner li { margin-bottom: 6px; }
+.cp-inner blockquote { font-size: 13px; margin: 0 0 10px; }
+
+body[data-notes="off"] .cp-sec[data-kind="notes"] { display: none; }
+body[data-craft="off"] .cp-sec[data-kind="craft"] { display: none; }
+
+/* ---------- 表格 ---------- */
+
+.tbl-wrap { overflow-x: auto; margin: 16px 0 20px; }
+table.gen {
+  width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+table.gen th {
+  text-align: left; padding: 9px 13px; background: var(--paper-2);
+  font: 600 11.5px/1.5 var(--zh); color: var(--ink); border-bottom: 1px solid var(--line);
+}
+table.gen td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); color: var(--ink-soft); vertical-align: top; }
+table.gen tr:last-child td { border-bottom: 0; }
+table.gen tr:hover td { background: var(--paper-2); }
+
+a.ref { text-decoration: none; color: var(--accent); font-weight: 600; padding: 0 1px; border-radius: 3px; }
+a.ref:hover { background: var(--accent-soft); }
+
+hr { border: 0; border-top: 1px solid var(--line-soft); margin: 30px 0; }
+.sec[data-kind="scenes"] hr, .sec[data-kind="craft"] hr { display: none; }
+
+/* ---------- 显示开关 ---------- */
+
+body[data-trans="off"] .trans { display: none; }
+body[data-words="off"] .anno[data-kind="w"] { display: none; }
+body[data-sents="off"] .anno[data-kind="s"] { display: none; }
+body[data-words="off"][data-sents="off"] .chipbar { display: none; }
+body[data-notes="off"] details.notes:not(.answers) { display: none; }
+body[data-craft="off"] details.craft { display: none; }
+
+
+/* ---------- 小测 / 生词本 ---------- */
+
+
+.fab:hover { filter: brightness(1.06); }
+
+.modal { position: fixed; inset: 0; z-index: 60; display: none; background: rgba(18, 15, 11, .48); backdrop-filter: blur(3px); }
+.modal.open { display: grid; place-items: center; padding: 18px; }
+.sheet {
+  width: min(540px, 100%); max-height: 84vh; overflow-y: auto; background: var(--card);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 22px 24px; color: var(--ink);
+}
+.sheet h3 { margin: 0 0 4px; font-size: 17px; }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.q { margin-bottom: 16px; }
+.q .w { font: 600 15px/1.5 var(--mono); color: var(--accent); }
+.q .opts { display: grid; gap: 6px; margin-top: 8px; }
+.q .opt {
+  text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper); color: var(--ink-soft); font: 400 13px/1.6 var(--zh); cursor: pointer;
+}
+.q .opt:hover { border-color: var(--muted); }
+.q .opt.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+.q .opt.wrong { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.q .fb { font-size: 12px; color: var(--muted); margin-top: 5px; min-height: 16px; }
+.quiz-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.quiz-foot .score { font-size: 12.5px; color: var(--muted); margin-right: auto; }
+
+.wb-list { display: grid; gap: 6px; }
+.wb-item {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft);
+}
+.wb-item:hover { border-color: var(--accent); }
+.wb-item b { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.wb-item span { font-size: 12px; color: var(--muted); }
+.wb-item em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); }
+.wb-empty { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--paper); font: 500 12.5px/1 var(--zh);
+  padding: 9px 14px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: all .22s ease; z-index: 70;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 写作区 ---------- */
+
+.writing {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-top: 30px;
+}
+.writing h3 { margin: 0 0 4px; font-size: 15px; }
+.writing .hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.writing textarea {
+  width: 100%; min-height: 180px; resize: vertical; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--paper);
+  color: var(--ink); font: 400 14.5px/1.9 var(--zhb); outline: none;
+}
+.writing textarea:focus { border-color: var(--accent); }
+.writing .row { display: flex; align-items: center; gap: 10px; margin-top: 9px; font-size: 12px; color: var(--muted); }
+.writing .row .spacer { margin-left: auto; }
+
+/* ---------- 首页 ---------- */
+
+.home { max-width: none; margin: 0; padding: 26px 0 60px; }
+.home h1 { font: 600 calc(38px * var(--fs))/1.28 var(--title); margin: 0 0 10px; letter-spacing: -.01em; }
+.home .lead { font-size: 14.5px; color: var(--muted); margin-bottom: 30px; line-height: 1.9; }
+.stats { display: flex; gap: 40px; margin: 0 0 40px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat b { display: block; font: 600 26px/1.2 var(--title); color: var(--accent); }
+.stat span { font-size: 11.5px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 9px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  font: 500 12.5px/1 var(--mono); text-decoration: none; transition: all .16s ease;
+}
+a.cell { color: var(--ink); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--card)); }
+a.cell:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.cell.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cell.todo { opacity: .5; }
+
+.home .links { display: flex; gap: 12px; margin-top: 36px; }
+.home .links a {
+  flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px;
+  text-decoration: none; color: var(--ink); background: var(--card); transition: all .16s ease;
+}
+.home .links a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.home .links b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.home .links span { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- 技法页 ---------- */
+
+.doc-main { max-width: none; margin: 0; padding: 6px 0 40px; }
+.doc-main h2 {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh); margin: 42px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line);
+}
+.doc-main h3 { margin-top: 30px; }
+.search {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--card); color: var(--ink); font: 400 13.5px/1.4 var(--zh); outline: none; margin-bottom: 6px;
+}
+.search:focus { border-color: var(--accent); }
+
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1179px) {
+  body[data-split="on"] .layout { padding-right: 0; }
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side {
+    position: fixed; left: 0; top: 58px; bottom: 0; width: 284px; z-index: 35;
+    transform: translateX(-102%); transition: transform .24s ease;
+    background: var(--paper); box-shadow: var(--shadow);
+  }
+  aside.side.open { transform: none; }
+  .menu-btn { display: grid; }
+  main { padding: 26px 20px 110px; }
+  .unit .num { position: static; display: block; width: auto; text-align: left; margin-bottom: 4px; }
+  .en { font-size: calc(17px * var(--fs)); }
+  .speak { display: none; }
+  h1.doc-title { font-size: calc(24px * var(--fs)); }
+  .crumb { display: none; }
+  .settings { width: min(300px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 560px) {
+  .home { padding: 38px 18px 80px; }
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .tbl-wrap { margin-left: -4px; margin-right: -4px; }
+}
+
+@media print {
+  .top, aside.side, .fab, .writing, .modal, .settings, .companion, .toast { display: none !important; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  details .inner { display: block; }
+}
+
+/* 非章节页隐藏与章节无关的开关 */
+body:not([data-page="chapter"]) .settings [data-only="chapter"] { display: none; }
+
+/* 章末翻页 */
+.chnav {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 46px auto 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.chnav a { text-decoration: none; color: var(--accent); }
+.chnav span.off { color: var(--muted); opacity: .5; }
+
+/* 侧栏导航 */
+.side-nav { display: flex; gap: 8px; margin: 10px 0 12px; font-size: 12.5px; }
+.side-nav a, .side-nav .off {
+  flex: 1; text-align: center; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink-soft);
+}
+.side-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.side-nav .off { border-style: dashed; color: var(--muted); opacity: .5; }
+
+.quick-links { display: grid; gap: 2px; font-size: 12.5px; }
+.quick-links a { color: var(--ink-soft); text-decoration: none; padding: 5px 8px; border-radius: 6px; }
+.quick-links a:hover { background: var(--paper-2); color: var(--accent); }
+
+.sec[data-kind="write"] .writing { margin-top: 0; }
+
+
+/* ---------- 头部：篇幅 / 问题 ---------- */
+
+.doc-meta { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; margin: 2px 0 18px; }
+
+.questions {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--card); border-radius: 0 12px 12px 0;
+  padding: 18px 22px 14px; margin: 0 0 26px;
+}
+.questions blockquote { border: 0; padding: 0; margin: 0; }
+.questions p { font-family: var(--zhb); font-size: calc(15px * var(--fs)); line-height: 1.95; margin: 0 0 8px; color: var(--ink); }
+.questions p:first-child { font: 600 12px/1 var(--zh); letter-spacing: .06em; color: var(--accent); margin-bottom: 12px; }
+.questions p:last-child { margin-bottom: 0; }
+
+details.qa { border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 14px 0 6px; }
+details.qa > summary {
+  list-style: none; cursor: pointer; padding: 10px 16px;
+  font: 600 12.5px/1.6 var(--zh); color: var(--accent);
+}
+details.qa > summary::-webkit-details-marker { display: none; }
+details.qa > summary::before { content: "▸"; font-size: 9px; margin-right: 6px; display: inline-block; transition: transform .2s ease; }
+details.qa[open] > summary::before { transform: rotate(90deg); }
+details.qa .inner { padding: 4px 18px 14px; border-top: 1px solid var(--line-soft); font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9; color: var(--ink-soft); }
+details.qa .inner ul { padding-left: 18px; margin: 8px 0 0; }
+details.qa .inner li { margin-bottom: 6px; }
+
+/* ---------- 移动端：两侧变抽屉 ---------- */
+
+@media (max-width: 1080px) {
+  .app { display: block; }
+  .nav-left, .nav-right {
+    position: fixed; top: 58px; bottom: 0; z-index: 45;
+    width: min(300px, 86vw); height: auto; background: var(--paper); box-shadow: var(--shadow);
+    display: none;
+  }
+  .nav-left { left: 0; border-right: 1px solid var(--line); }
+  .nav-right { right: 0; border-left: 1px solid var(--line); }
+  body:not(.no-left) .nav-left { display: block; }
+  body:not(.no-right) .nav-right { display: block; }
+  main { padding: 24px 18px 100px; }
+  .ch-list { max-height: calc(100vh - 330px); overflow-y: auto; }
+}
+
+/* ---------- 移动端：抽屉、遮罩、表格 ---------- */
+
+.scrim { display: none; }
+
+/* 词注提示：触屏没有 hover，直接关掉，避免长提示撑宽页面 */
+@media (hover: none), (max-width: 700px) {
+  .gloss::after { display: none; }
+}
+
+@media (max-width: 1080px) {
+  .scrim {
+    display: none; position: fixed; inset: 58px 0 0; z-index: 40;
+    background: rgba(18, 15, 11, .32);
+    -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+  }
+  body:not(.no-left) .scrim, body:not(.no-right) .scrim { display: block; }
+
+  .nav-left, .nav-right { max-height: calc(100vh - 58px); overflow-y: auto; }
+  .ch-list { max-height: none; }
+
+  main { padding: 22px 16px 96px; }
+  .doc-main { padding: 6px 0 40px; }
+
+  /* 表格：宁可横向滚动，也不挤成一条或截断 */
+  .tbl-wrap { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table.gen { min-width: 560px; }
+  .anno-body { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .anno-body .wordtable { min-width: 470px; }
+  .cp-inner table { min-width: 470px; }
+
+  .questions { padding: 14px 16px 10px; }
+  .writing { padding: 16px; }
+  .settings { right: 10px; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉打开时锁住背景滚动 */
+  body:not(.no-left), body:not(.no-right) { overflow: hidden; }
+}
+
+/* ---------- 移动端：工具栏置底 / 全屏抽屉 / 设置底部弹层 ---------- */
+
+.panel-bar { display: none; }
+
+@media (max-width: 1080px) {
+  /* 顶栏变底栏 */
+  .top {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 14px env(safe-area-inset-bottom);
+    border-bottom: 0; border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -10px 24px -16px rgba(0,0,0,.18);
+    justify-content: space-between;
+  }
+  .top .crumb { display: none; }
+  .top .tools { margin-left: 0; gap: 10px; }
+  .icon-btn { height: 38px; min-width: 42px; font-size: 14px; }
+  .readbar { top: -1px; bottom: auto; }
+
+  /* 正文给底栏留出空间 */
+  main { padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .writing { margin-bottom: 8px; }
+
+  /* 侧栏：全屏弹层 */
+  .nav-left, .nav-right {
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    width: 100%; height: auto; max-height: none; border: 0; border-radius: 0;
+    z-index: 55; padding-bottom: 24px;
+  }
+  .scrim { inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0; z-index: 50; }
+
+  .panel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px 18px; margin: -20px -14px 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    font: 600 12px/1 var(--zh); letter-spacing: .1em; color: var(--muted);
+  }
+  .panel-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
+  }
+  .nav-left, .nav-right { padding-left: 18px; padding-right: 18px; }
+  .nav-left .panel-bar { margin-left: -18px; margin-right: -18px; }
+  .nav-right .rn-head {
+    position: sticky; top: 0; z-index: 2; background: var(--paper);
+    margin: -18px -18px 10px; padding: 14px 18px 10px;
+  }
+
+  /* 设置：底部弹层 */
+  .settings {
+    position: fixed; left: 8px; right: 8px; bottom: calc(64px + env(safe-area-inset-bottom));
+    top: auto; width: auto; max-height: calc(100vh - 140px); overflow-y: auto;
+    border-radius: 16px; padding: 16px 18px 14px;
+    z-index: 60;
+  }
+  .settings .sw { padding: 9px 0; }
+  .set-row button { padding: 7px 14px; }
+
+  /* 弹层与提示避开底栏 */
+  .modal { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .sheet { max-height: calc(100vh - 150px); }
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 1080px) {
+  /* 全屏抽屉：让顶部条与内容对齐 */
+  .nav-left, .nav-right { padding-top: 0; }
+  .nav-left .panel-bar { margin: 0 -18px 14px; }
+  .nav-right .rn-head { margin: 0 -18px 10px; }
+
+  /* 设置弹层的遮罩 */
+  body.settings-open .scrim { display: block; z-index: 55; }
+  .settings { z-index: 60; }
+  body.settings-open { overflow: hidden; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉底部渐隐，避免最后一行贴着工具栏 */
+  .nav-left, .nav-right {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    padding-bottom: 28px;
+  }
+}
+</style>
+</head>
+<body class="chapter" data-page="chapter">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb"><b>人性的枷锁</b> · 第九章</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+<aside class="nav-left" id="navLeft">
+  <div class="panel-bar"><span>导航</span><button class="panel-close" type="button" data-close="left" aria-label="关闭">×</button></div>
+  <div class="brand">Of Human Bondage</div>
+  <div class="site-name">人性的枷锁 · 精读</div>
+  <nav class="gl-links">
+    <a class="" href="index.html">总览<span>122 章</span></a>
+    <a class="" href="reading.html">阅读方法手册<span>初读</span></a>
+    <a class="" href="craft.html">写作技法手册<span>21 条</span></a>
+  </nav>
+  <div class="ch-tools"><button class="btn small" id="wbBtn" type="button">生词本 <b id="wbCount">0</b></button><button class="btn small" id="quizBtn2" type="button">小测</button></div>
+  <div class="side-label ch-label">章节</div>
+  <ol class="ch-list"><li><a href="ch01.html"><span class="n">01</span>第 1 章</a></li><li><a href="ch02.html"><span class="n">02</span>第 2 章</a></li><li><a href="ch03.html"><span class="n">03</span>第 3 章</a></li><li><a href="ch04.html"><span class="n">04</span>第 4 章</a></li><li><a href="ch05.html"><span class="n">05</span>第 5 章</a></li><li><a href="review-01-05.html"><span class="n"></span>复习 · 1–5</a></li><li><a href="ch06.html"><span class="n">06</span>第 6 章</a></li><li><a href="ch07.html"><span class="n">07</span>第 7 章</a></li><li><a href="ch08.html"><span class="n">08</span>第 8 章</a></li><li><a class="cur" href="ch09.html"><span class="n">09</span>第 9 章</a></li><li><a href="ch10.html"><span class="n">10</span>第 10 章</a></li><li><span class="off"><span class="n">11</span>第 11 章</span></li><li><span class="off"><span class="n">12</span>第 12 章</span></li><li><span class="off"><span class="n">13</span>第 13 章</span></li><li><span class="off"><span class="n">14</span>第 14 章</span></li><li><span class="off"><span class="n">15</span>第 15 章</span></li><li><span class="off"><span class="n">16</span>第 16 章</span></li><li><span class="off"><span class="n">17</span>第 17 章</span></li><li><span class="off"><span class="n">18</span>第 18 章</span></li><li><span class="off"><span class="n">19</span>第 19 章</span></li><li><span class="off"><span class="n">20</span>第 20 章</span></li><li><span class="off"><span class="n">21</span>第 21 章</span></li><li><span class="off"><span class="n">22</span>第 22 章</span></li><li><span class="off"><span class="n">23</span>第 23 章</span></li><li><span class="off"><span class="n">24</span>第 24 章</span></li><li><span class="off"><span class="n">25</span>第 25 章</span></li><li><span class="off"><span class="n">26</span>第 26 章</span></li><li><span class="off"><span class="n">27</span>第 27 章</span></li><li><span class="off"><span class="n">28</span>第 28 章</span></li><li><span class="off"><span class="n">29</span>第 29 章</span></li><li><span class="off"><span class="n">30</span>第 30 章</span></li><li><span class="off"><span class="n">31</span>第 31 章</span></li><li><span class="off"><span class="n">32</span>第 32 章</span></li><li><span class="off"><span class="n">33</span>第 33 章</span></li><li><span class="off"><span class="n">34</span>第 34 章</span></li><li><span class="off"><span class="n">35</span>第 35 章</span></li><li><span class="off"><span class="n">36</span>第 36 章</span></li><li><span class="off"><span class="n">37</span>第 37 章</span></li><li><span class="off"><span class="n">38</span>第 38 章</span></li><li><span class="off"><span class="n">39</span>第 39 章</span></li><li><span class="off"><span class="n">40</span>第 40 章</span></li><li><span class="off"><span class="n">41</span>第 41 章</span></li><li><span class="off"><span class="n">42</span>第 42 章</span></li><li><span class="off"><span class="n">43</span>第 43 章</span></li><li><span class="off"><span class="n">44</span>第 44 章</span></li><li><span class="off"><span class="n">45</span>第 45 章</span></li><li><span class="off"><span class="n">46</span>第 46 章</span></li><li><span class="off"><span class="n">47</span>第 47 章</span></li><li><span class="off"><span class="n">48</span>第 48 章</span></li><li><span class="off"><span class="n">49</span>第 49 章</span></li><li><span class="off"><span class="n">50</span>第 50 章</span></li><li><span class="off"><span class="n">51</span>第 51 章</span></li><li><span class="off"><span class="n">52</span>第 52 章</span></li><li><span class="off"><span class="n">53</span>第 53 章</span></li><li><span class="off"><span class="n">54</span>第 54 章</span></li><li><span class="off"><span class="n">55</span>第 55 章</span></li><li><span class="off"><span class="n">56</span>第 56 章</span></li><li><span class="off"><span class="n">57</span>第 57 章</span></li><li><span class="off"><span class="n">58</span>第 58 章</span></li><li><span class="off"><span class="n">59</span>第 59 章</span></li><li><span class="off"><span class="n">60</span>第 60 章</span></li><li><span class="off"><span class="n">61</span>第 61 章</span></li><li><span class="off"><span class="n">62</span>第 62 章</span></li><li><span class="off"><span class="n">63</span>第 63 章</span></li><li><span class="off"><span class="n">64</span>第 64 章</span></li><li><span class="off"><span class="n">65</span>第 65 章</span></li><li><span class="off"><span class="n">66</span>第 66 章</span></li><li><span class="off"><span class="n">67</span>第 67 章</span></li><li><span class="off"><span class="n">68</span>第 68 章</span></li><li><span class="off"><span class="n">69</span>第 69 章</span></li><li><span class="off"><span class="n">70</span>第 70 章</span></li><li><span class="off"><span class="n">71</span>第 71 章</span></li><li><span class="off"><span class="n">72</span>第 72 章</span></li><li><span class="off"><span class="n">73</span>第 73 章</span></li><li><span class="off"><span class="n">74</span>第 74 章</span></li><li><span class="off"><span class="n">75</span>第 75 章</span></li><li><span class="off"><span class="n">76</span>第 76 章</span></li><li><span class="off"><span class="n">77</span>第 77 章</span></li><li><span class="off"><span class="n">78</span>第 78 章</span></li><li><span class="off"><span class="n">79</span>第 79 章</span></li><li><span class="off"><span class="n">80</span>第 80 章</span></li><li><span class="off"><span class="n">81</span>第 81 章</span></li><li><span class="off"><span class="n">82</span>第 82 章</span></li><li><span class="off"><span class="n">83</span>第 83 章</span></li><li><span class="off"><span class="n">84</span>第 84 章</span></li><li><span class="off"><span class="n">85</span>第 85 章</span></li><li><span class="off"><span class="n">86</span>第 86 章</span></li><li><span class="off"><span class="n">87</span>第 87 章</span></li><li><span class="off"><span class="n">88</span>第 88 章</span></li><li><span class="off"><span class="n">89</span>第 89 章</span></li><li><span class="off"><span class="n">90</span>第 90 章</span></li><li><span class="off"><span class="n">91</span>第 91 章</span></li><li><span class="off"><span class="n">92</span>第 92 章</span></li><li><span class="off"><span class="n">93</span>第 93 章</span></li><li><span class="off"><span class="n">94</span>第 94 章</span></li><li><span class="off"><span class="n">95</span>第 95 章</span></li><li><span class="off"><span class="n">96</span>第 96 章</span></li><li><span class="off"><span class="n">97</span>第 97 章</span></li><li><span class="off"><span class="n">98</span>第 98 章</span></li><li><span class="off"><span class="n">99</span>第 99 章</span></li><li><span class="off"><span class="n">100</span>第 100 章</span></li><li><span class="off"><span class="n">101</span>第 101 章</span></li><li><span class="off"><span class="n">102</span>第 102 章</span></li><li><span class="off"><span class="n">103</span>第 103 章</span></li><li><span class="off"><span class="n">104</span>第 104 章</span></li><li><span class="off"><span class="n">105</span>第 105 章</span></li><li><span class="off"><span class="n">106</span>第 106 章</span></li><li><span class="off"><span class="n">107</span>第 107 章</span></li><li><span class="off"><span class="n">108</span>第 108 章</span></li><li><span class="off"><span class="n">109</span>第 109 章</span></li><li><span class="off"><span class="n">110</span>第 110 章</span></li><li><span class="off"><span class="n">111</span>第 111 章</span></li><li><span class="off"><span class="n">112</span>第 112 章</span></li><li><span class="off"><span class="n">113</span>第 113 章</span></li><li><span class="off"><span class="n">114</span>第 114 章</span></li><li><span class="off"><span class="n">115</span>第 115 章</span></li><li><span class="off"><span class="n">116</span>第 116 章</span></li><li><span class="off"><span class="n">117</span>第 117 章</span></li><li><span class="off"><span class="n">118</span>第 118 章</span></li><li><span class="off"><span class="n">119</span>第 119 章</span></li><li><span class="off"><span class="n">120</span>第 120 章</span></li><li><span class="off"><span class="n">121</span>第 121 章</span></li><li><span class="off"><span class="n">122</span>第 122 章</span></li></ol>
+</aside>
+<main>
+<header class="doc-head">
+<h1 class="doc-title">《人性的枷锁》第九章 · 精读与写作</h1>
+<div class="doc-sub"><strong>Of Human Bondage</strong> · W. Somerset Maugham · 1915</div>
+<p class="doc-meta">2047 词 · 37 个自然段 · 约 13 分钟</p>
+<div class="questions"><blockquote><p><strong>读之前：两个问题</strong></p><p><strong>1.</strong> 故事现在进展到哪了？有什么主要矛盾？</p><p><strong>2.</strong> 上一章写了什么？故事接下来可能怎么发展？</p><p>用 5W2H 的思路读剧情，重点看情节怎么推进、人物怎么变。</p></blockquote></div>
+</header><section class="sec" data-kind="read" id="sec-1">
+<h2 class="sec-title">一、原文</h2>
+<p>读完之后，只想一个问题：<strong>这一章之后，菲利普多了一个什么去处？</strong></p>
+<div class="reader"><p class="en">On the following Sunday, when the Vicar was making his preparations to go into the drawing-room for his nap—all the actions of his life were conducted with ceremony—and Mrs. Carey was about to go upstairs, Philip asked:</p><p class="en">“What shall I do if I’m not allowed to play?”</p><p class="en">“Can’t you sit still for once and be quiet?”</p><p class="en">“I can’t sit still till tea-time.”</p><p class="en">Mr. Carey looked out of the window, but it was cold and raw, and he could not suggest that Philip should go into the garden.</p><p class="en">“I know what you can do. You can learn by heart the collect for the day.”</p><p class="en">He took the prayer-book which was used for prayers from the harmonium, and turned the pages till he came to the place he wanted.</p><p class="en">“It’s not a long one. If you can say it without a mistake when I come in to tea you shall have the top of my egg.”</p><p class="en">Mrs. Carey drew up Philip’s chair to the dining-room table—they had bought him a high chair by now—and placed the book in front of him.</p><p class="en">“The devil finds work for idle hands to do,” said Mr. Carey.</p><p class="en">He put some more coals on the fire so that there should be a cheerful blaze when he came in to tea, and went into the drawing-room. He loosened his collar, arranged the cushions, and settled himself comfortably on the sofa. But thinking the drawing-room a little chilly, Mrs. Carey brought him a rug from the hall; she put it over his legs and tucked it round his feet. She drew the blinds so that the light should not offend his eyes, and since he had closed them already went out of the room on tiptoe. The Vicar was at peace with himself today, and in ten minutes he was asleep. He snored softly.</p><p class="en">It was the Sixth Sunday after Epiphany, and the collect began with the words: O God, whose blessed Son was manifested that he might destroy the works of the devil, and make us the sons of God, and heirs of Eternal life. Philip read it through. He could make no sense of it. He began saying the words aloud to himself, but many of them were unknown to him, and the construction of the sentence was strange. He could not get more than two lines in his head. And his attention was constantly wandering: there were fruit trees trained on the walls of the vicarage, and a long twig beat now and then against the windowpane; sheep grazed stolidly in the field beyond the garden. It seemed as though there were knots inside his brain. Then panic seized him that he would not know the words by tea-time, and he kept on whispering them to himself quickly; he did not try to understand, but merely to get them parrot-like into his memory.</p><p class="en">Mrs. Carey could not sleep that afternoon, and by four o’clock she was so wide awake that she came downstairs. She thought she would hear Philip his collect so that he should make no mistakes when he said it to his uncle. His uncle then would be pleased; he would see that the boy’s heart was in the right place. But when Mrs. Carey came to the dining-room and was about to go in, she heard a sound that made her stop suddenly. Her heart gave a little jump. She turned away and quietly slipped out of the front-door. She walked round the house till she came to the dining-room window and then cautiously looked in. Philip was still sitting on the chair she had put him in, but his head was on the table buried in his arms, and he was sobbing desperately. She saw the convulsive movement of his shoulders. Mrs. Carey was frightened. A thing that had always struck her about the child was that he seemed so collected. She had never seen him cry. And now she realised that his calmness was some instinctive shame of showing his feelings: he hid himself to weep.</p><p class="en">Without thinking that her husband disliked being wakened suddenly, she burst into the drawing-room.</p><p class="en">“William, William,” she said. “The boy’s crying as though his heart would break.”</p><p class="en">Mr. Carey sat up and disentangled himself from the rug about his legs.</p><p class="en">“What’s he got to cry about?”</p><p class="en">“I don’t know…. Oh, William, we can’t let the boy be unhappy. D’you think it’s our fault? If we’d had children we’d have known what to do.”</p><p class="en">Mr. Carey looked at her in perplexity. He felt extraordinarily helpless.</p><p class="en">“He can’t be crying because I gave him the collect to learn. It’s not more than ten lines.”</p><p class="en">“Don’t you think I might take him some picture books to look at, William? There are some of the Holy Land. There couldn’t be anything wrong in that.”</p><p class="en">“Very well, I don’t mind.”</p><p class="en">Mrs. Carey went into the study. To collect books was Mr. Carey’s only passion, and he never went into Tercanbury without spending an hour or two in the second-hand shop; he always brought back four or five musty volumes. He never read them, for he had long lost the habit of reading, but he liked to turn the pages, look at the illustrations if they were illustrated, and mend the bindings. He welcomed wet days because on them he could stay at home without pangs of conscience and spend the afternoon with white of egg and a glue-pot, patching up the Russia leather of some battered quarto. He had many volumes of old travels, with steel engravings, and Mrs. Carey quickly found two which described Palestine. She coughed elaborately at the door so that Philip should have time to compose himself, she felt that he would be humiliated if she came upon him in the midst of his tears, then she rattled the door handle. When she went in Philip was poring over the prayer-book, hiding his eyes with his hands so that she might not see he had been crying.</p><p class="en">“Do you know the collect yet?” she said.</p><p class="en">He did not answer for a moment, and she felt that he did not trust his voice. She was oddly embarrassed.</p><p class="en">“I can’t learn it by heart,” he said at last, with a gasp.</p><p class="en">“Oh, well, never mind,” she said. “You needn’t. I’ve got some picture books for you to look at. Come and sit on my lap, and we’ll look at them together.”</p><p class="en">Philip slipped off his chair and limped over to her. He looked down so that she should not see his eyes. She put her arms round him.</p><p class="en">“Look,” she said, “that’s the place where our blessed Lord was born.”</p><p class="en">She showed him an Eastern town with flat roofs and cupolas and minarets. In the foreground was a group of palm-trees, and under them were resting two Arabs and some camels. Philip passed his hand over the picture as if he wanted to feel the houses and the loose habiliments of the nomads.</p><p class="en">“Read what it says,” he asked.</p><p class="en">Mrs. Carey in her even voice read the opposite page. It was a romantic narrative of some Eastern traveller of the thirties, pompous maybe, but fragrant with the emotion with which the East came to the generation that followed Byron and Chateaubriand. In a moment or two Philip interrupted her.</p><p class="en">“I want to see another picture.”</p><p class="en">When Mary Ann came in and Mrs. Carey rose to help her lay the cloth. Philip took the book in his hands and hurried through the illustrations. It was with difficulty that his aunt induced him to put the book down for tea. He had forgotten his horrible struggle to get the collect by heart; he had forgotten his tears. Next day it was raining, and he asked for the book again. Mrs. Carey gave it him joyfully. Talking over his future with her husband she had found that both desired him to take orders, and this eagerness for the book which described places hallowed by the presence of Jesus seemed a good sign. It looked as though the boy’s mind addressed itself naturally to holy things. But in a day or two he asked for more books. Mr. Carey took him into his study, showed him the shelf in which he kept illustrated works, and chose for him one that dealt with Rome. Philip took it greedily. The pictures led him to a new amusement. He began to read the page before and the page after each engraving to find out what it was about, and soon he lost all interest in his toys.</p><p class="en">Then, when no one was near, he took out books for himself; and perhaps because the first impression on his mind was made by an Eastern town, he found his chief amusement in those which described the Levant. His heart beat with excitement at the pictures of mosques and rich palaces; but there was one, in a book on Constantinople, which peculiarly stirred his imagination. It was called the Hall of the Thousand Columns. It was a Byzantine cistern, which the popular fancy had endowed with fantastic vastness; and the legend which he read told that a boat was always moored at the entrance to tempt the unwary, but no traveller venturing into the darkness had ever been seen again. And Philip wondered whether the boat went on for ever through one pillared alley after another or came at last to some strange mansion.</p><p class="en">One day a good fortune befell him, for he hit upon Lane’s translation of The Thousand Nights and a Night. He was captured first by the illustrations, and then he began to read, to start with, the stories that dealt with magic, and then the others; and those he liked he read again and again. He could think of nothing else. He forgot the life about him. He had to be called two or three times before he would come to his dinner. Insensibly he formed the most delightful habit in the world, the habit of reading: he did not know that thus he was providing himself with a refuge from all the distress of life; he did not know either that he was creating for himself an unreal world which would make the real world of every day a source of bitter disappointment. Presently he began to read other things. His brain was precocious. His uncle and aunt, seeing that he occupied himself and neither worried nor made a noise, ceased to trouble themselves about him. Mr. Carey had so many books that he did not know them, and as he read little he forgot the odd lots he had bought at one time and another because they were cheap. Haphazard among the sermons and homilies, the travels, the lives of the Saints, the Fathers, the histories of the church, were old-fashioned novels; and these Philip at last discovered. He chose them by their titles, and the first he read was The Lancashire Witches, and then he read The Admirable Crichton, and then many more. Whenever he started a book with two solitary travellers riding along the brink of a desperate ravine he knew he was safe.</p><p class="en">The summer was come now, and the gardener, an old sailor, made him a hammock and fixed it up for him in the branches of a weeping willow. And here for long hours he lay, hidden from anyone who might come to the vicarage, reading, reading passionately. Time passed and it was July; August came: on Sundays the church was crowded with strangers, and the collection at the offertory often amounted to two pounds. Neither the Vicar nor Mrs. Carey went out of the garden much during this period; for they disliked strange faces, and they looked upon the visitors from London with aversion. The house opposite was taken for six weeks by a gentleman who had two little boys, and he sent in to ask if Philip would like to go and play with them; but Mrs. Carey returned a polite refusal. She was afraid that Philip would be corrupted by little boys from London. He was going to be a clergyman, and it was necessary that he should be preserved from contamination. She liked to see in him an infant Samuel.</p></div>
+<ol><li>本章写了什么？用 5W2H 说一遍：谁、做了什么、何时、何地、为什么、怎么发生、代价是什么。</li><li>剧情有什么进展？人物关系有什么变化？</li><li>本章中印象最深的是什么？</li><li>本章有几个场景？作者是怎么推进剧情的？</li><li>叔父让菲利普背祷文，是关心，还是打发？</li><li>姨妈为什么不直接进门，先绕到窗外看？</li><li>画册和《一千零一夜》给菲利普带来了什么？作者用哪个词点明？</li></ol>
+</section>
+<section class="sec" data-kind="scenes" id="sec-2">
+<h2 class="sec-title">二、逐场精读</h2>
+<h3 id="h-3">概览</h3>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>场</th><th>场景</th><th>段号</th><th>这一场发生什么</th></tr></thead><tbody><tr><td>1</td><td>客厅门口：背一段祷文</td><td><a class="ref" href="#p-1">①</a>—<a class="ref" href="#p-11">⑪</a></td><td>星期日不许玩；叔父派他背祷文，赢了有蛋尖</td></tr><tr><td>2</td><td>餐厅：背不下来</td><td><a class="ref" href="#p-12">⑫</a>—<a class="ref" href="#p-23">㉓</a></td><td>祷文难懂；他趴在桌上哭；姨妈在窗外看见</td></tr><tr><td>3</td><td>餐桌旁：画册</td><td><a class="ref" href="#p-24">㉔</a>—<a class="ref" href="#p-34">㉞</a></td><td>姨妈拿画册来；巴勒斯坦的图；他开始翻书</td></tr><tr><td>4</td><td>书房与吊床：读书的习惯</td><td><a class="ref" href="#p-35">㉟</a>—<a class="ref" href="#p-37">㊲</a></td><td>千柱厅；《一千零一夜》；夏天躺在吊床里读</td></tr></tbody></table></div><div class="scenes-grid"><div class="scenes-main"><section class="scene" id="scene-1" data-scene="1"><h3 class="scene-title" id="scene-1"><span class="tag">场景 1</span>客厅门口：背一段祷文</h3><div class="scene-lead"><b>这一场　</b>一个不许玩的下午，被安排成一场考试。</div><div class="unit" id="p-1"><span class="num">①</span><p class="en">On the following Sunday, when the Vicar was making his preparations to go into the drawing-room for his nap—all the actions of his life were conducted with ceremony—and Mrs. Carey was about to go upstairs, Philip asked:</p><p class="trans">又一个星期日，牧师正按老规矩准备去客厅午睡（他生活里每个动作都带着仪式），凯里太太正要上楼，菲利普问：</p></div><div class="unit" id="p-2"><span class="num">②</span><p class="en">“What shall I do if I’m not allowed to play?”</p><p class="trans">“要是不许玩，我干什么呢？”</p></div><div class="unit" id="p-3"><span class="num">③</span><p class="en">“Can’t you sit still for once and be quiet?”</p><p class="trans">“你就不能安安静静坐一会儿？”</p></div><div class="unit" id="p-4"><span class="num">④</span><p class="en">“I can’t sit still till tea-time.”</p><p class="trans">“我坐到喝茶都坐不住。”</p></div><div class="unit" id="p-5"><span class="num">⑤</span><p class="en">Mr. Carey looked out of the window, but it was cold and raw, and he could not suggest that Philip should go into the garden.</p><p class="trans">牧师望望窗外，天又冷又湿，也不好叫菲利普到园子里去。</p></div><div class="unit" id="p-6"><span class="num">⑥</span><p class="en">“I know what you can do. You can learn by heart the collect for the day.”</p><p class="trans">“我知道你干什么。你把今天的祷文背下来。”</p></div><div class="unit" id="p-7"><span class="num">⑦</span><p class="en">He took the prayer-book which was used for prayers from the harmonium, and turned the pages till he came to the place he wanted.</p><p class="trans">他从簧风琴上取下做祷告用的《祈祷书》，翻到要找的那一页。</p></div><div class="unit" id="p-8"><span class="num">⑧</span><p class="en">“It’s not a long one. If you can say it without a mistake when I come in to tea you shall have the top of my egg.”</p><p class="trans">“不长。我回来喝茶的时候，你要是能一字不错地背出来，鸡蛋尖就归你。”</p></div><div class="unit" id="p-9"><span class="num">⑨</span><p class="en">Mrs. Carey drew up Philip’s chair to the dining-room table—they had bought him a high chair by now—and placed the book in front of him.</p><p class="trans">凯里太太把菲利普的椅子拉到餐桌前——他们现在给他买了一把高椅子——把书摆在他面前。</p></div><div class="unit" id="p-10"><span class="num">⑩</span><p class="en">“The devil finds work for <span class="gloss" data-tip="/ˈaɪdl/ · 闲着的、无所事事的">idle</span> hands to do,” said Mr. Carey.</p><p class="trans">“闲人的脑袋是魔鬼的作坊。”凯里先生说。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>collect</td><td>/ˈkɒlekt/</td><td>（礼拜用的）短祷文</td></tr><tr><td>idle</td><td>/ˈaɪdl/</td><td>闲着的、无所事事的</td></tr></table></div></details></div></div><div class="unit" id="p-11"><span class="num">⑪</span><p class="en">He put some more coals on the fire so that there should be a cheerful blaze when he came in to tea, and went into the drawing-room. He loosened his collar, arranged the cushions, and settled himself comfortably on the sofa. But thinking the drawing-room a little chilly, Mrs. Carey brought him a rug from the hall; she put it over his legs and tucked it round his feet. She drew the blinds so that the light should not offend his eyes, and since he had closed them already went out of the room on tiptoe. The Vicar was at peace with himself today, and in ten minutes he was asleep. He snored softly.</p><p class="trans">他往炉子里添了几块煤，好让回来喝茶时火旺些，然后进了客厅。他松开领口，摆好靠垫，舒舒服服躺到沙发上。凯里太太觉得客厅有点凉，从门厅给他拿来一条毯子，盖在腿上，把脚边掖好。她拉下百叶窗，免得光刺他的眼；他已经闭上了眼，她就踮着脚出去。牧师今天心里很平安，十分钟就睡着了，轻轻打着鼾。</p></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-6">⑥</a>“你把祷文背下来”——不是陪他，是给他派活；奖赏是半只鸡蛋。</li><li><a class="ref" href="#p-8">⑧</a>“一字不错”——背书的规矩，从这儿开始。</li><li><a class="ref" href="#p-10">⑩</a>“闲人的脑袋是魔鬼的作坊”——一句谚语，把孩子的无聊说成罪。</li><li><a class="ref" href="#p-11">⑪</a>牧师睡得很安稳；同一个下午，孩子在隔壁受罪。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用命令写权力（the assignment）</strong>——一句“你把祷文背下来”，把下午、奖赏、对错都定了。为什么管用：权力不在打骂，在安排别人的时间。怎么用：写一个控制欲强的人，写他怎么分配别人的一下午。</p></div></details></section><section class="scene" id="scene-2" data-scene="2"><h3 class="scene-title" id="scene-2"><span class="tag">场景 2</span>餐厅：背不下来</h3><div class="scene-lead"><b>这一场　</b>孩子在屋里哭，姨妈在窗外看。</div><div class="unit" id="p-12"><span class="num">⑫</span><p class="en">It was the Sixth Sunday after <span class="gloss" data-tip="/ɪˈpɪfəni/ · 主显节">Epiphany</span>, and the collect began with the words: O God, whose blessed Son was manifested that he might destroy the works of the devil, and make us the sons of God, and heirs of Eternal life. Philip read it through. He could make no sense of it. He began saying the words aloud to himself, but many of them were unknown to him, and the construction of the sentence was strange. He could not get more than two lines in his head. And his attention was constantly wandering: there were fruit trees trained on the walls of the vicarage, and a long twig beat now and then against the windowpane; sheep grazed stolidly in the field beyond the garden. It seemed as though there were knots inside his brain. Then panic seized him that he would not know the words by tea-time, and he kept on whispering them to himself quickly; he did not try to understand, but merely to get them <span class="gloss" data-tip="鹦鹉学舌般地">parrot-like</span> into his memory.</p><p class="trans">这是主显节后的第六个星期日，祷文开头是：O God, whose blessed Son was manifested that he might destroy the works of the devil, and make us the sons of God, and heirs of Eternal life. 菲利普读了一遍，一句也不懂。他开始出声念，可很多词他不认识，句子结构也怪。他连两行都记不住。注意力老跑：牧师宅墙上有整枝的果树，一根长枝条时不时敲在窗玻璃上；园子外面的田里有羊在闷头吃草。他脑袋里像打了结。接着一阵恐慌抓住他：到喝茶时还背不出怎么办。他不停地小声快念，不去理解，只想鹦鹉学舌地塞进记忆。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>Epiphany</td><td>/ɪˈpɪfəni/</td><td>主显节</td></tr><tr><td>manifest</td><td>/ˈmænɪfest/</td><td>显现、表明</td></tr><tr><td>parrot-like</td><td>—</td><td>鹦鹉学舌般地</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>It seemed as though there were knots inside his brain.</code>：as though 引导表语从句，用 were 是虚拟语气；knots 把“想不通”写成了摸得着的东西。</div></div></details></div></div><div class="unit" id="p-13"><span class="num">⑬</span><p class="en">Mrs. Carey could not sleep that afternoon, and by four o’clock she was so wide awake that she came downstairs. She thought she would hear Philip his collect so that he should make no mistakes when he said it to his uncle. His uncle then would be pleased; he would see that the boy’s heart was in the right place. But when Mrs. Carey came to the dining-room and was about to go in, she heard a sound that made her stop suddenly. Her heart gave a little jump. She turned away and quietly slipped out of the front-door. She walked round the house till she came to the dining-room window and then cautiously looked in. Philip was still sitting on the chair she had put him in, but his head was on the table buried in his arms, and he was sobbing desperately. She saw the convulsive movement of his shoulders. Mrs. Carey was frightened. A thing that had always struck her about the child was that he seemed so collected. She had never seen him cry. And now she realised that his calmness was some instinctive shame of showing his feelings: he hid himself to weep.</p><p class="trans">凯里太太那天下午睡不着，到四点还清醒得很，就下了楼。她想先听菲利普背一遍，免得他在叔父面前出错；叔父会高兴，会觉得这孩子心是正的。可她走到餐厅门口，正要进去，听见一个声音，猛地停住。她的心一跳。她转身，悄悄从大门溜出去，绕到餐厅窗外，小心往里看。菲利普还坐在她摆的那把椅子上，可头埋在桌上、埋在胳膊里，哭得喘不上气。她看见他肩膀一抽一抽的。凯里太太吓坏了。这孩子一向给她的印象是很能沉得住气；她从没见他哭过。现在她明白了，他的镇定是本能地羞于让人看见自己的情绪：他要躲起来哭。</p></div><div class="unit" id="p-14"><span class="num">⑭</span><p class="en">Without thinking that her husband disliked being wakened suddenly, she burst into the drawing-room.</p><p class="trans">她没想到丈夫不喜欢被人突然叫醒，冲进客厅。</p></div><div class="unit" id="p-15"><span class="num">⑮</span><p class="en">“William, William,” she said. “The boy’s crying as though his heart would break.”</p><p class="trans">“威廉，威廉，”她说，“这孩子哭得心都要碎了。”</p></div><div class="unit" id="p-16"><span class="num">⑯</span><p class="en">Mr. Carey sat up and disentangled himself from the rug about his legs.</p><p class="trans">凯里先生坐起来，从缠在腿上的毯子里挣出来。</p></div><div class="unit" id="p-17"><span class="num">⑰</span><p class="en">“What’s he got to cry about?”</p><p class="trans">“他有什么好哭的？”</p></div><div class="unit" id="p-18"><span class="num">⑱</span><p class="en">“I don’t know…. Oh, William, we can’t let the boy be unhappy. D’you think it’s our fault? If we’d had children we’d have known what to do.”</p><p class="trans">“我不知道……哦，威廉，我们不能让孩子这么不快活。你说，是不是我们的错？要是我们有过孩子，就知道该怎么办了。”</p></div><div class="unit" id="p-19"><span class="num">⑲</span><p class="en">Mr. Carey looked at her in perplexity. He felt extraordinarily helpless.</p><p class="trans">凯里先生困惑地看着她，觉得一点办法也没有。</p></div><div class="unit" id="p-20"><span class="num">⑳</span><p class="en">“He can’t be crying because I gave him the collect to learn. It’s not more than ten lines.”</p><p class="trans">“总不能是因为我让他背祷文吧。还不到十行。”</p></div><div class="unit" id="p-21"><span class="num">㉑</span><p class="en">“Don’t you think I might take him some picture books to look at, William? There are some of the Holy Land. There couldn’t be anything wrong in that.”</p><p class="trans">“你说，我拿几本画册给他看看好不好，威廉？有几本是圣地的。看画册总不会错吧。”</p></div><div class="unit" id="p-22"><span class="num">㉒</span><p class="en">“Very well, I don’t mind.”</p><p class="trans">“行，我不反对。”</p></div><div class="unit" id="p-23"><span class="num">㉓</span><p class="en">Mrs. Carey went into the study. To collect books was Mr. Carey’s only passion, and he never went into Tercanbury without spending an hour or two in the second-hand shop; he always brought back four or five <span class="gloss" data-tip="/ˈmʌsti/ · 发霉的、有霉味的">musty</span> volumes. He never read them, for he had long lost the habit of reading, but he liked to turn the pages, look at the illustrations if they were illustrated, and mend the bindings. He welcomed wet days because on them he could stay at home without pangs of conscience and spend the afternoon with white of egg and a glue-pot, patching up the Russia leather of some battered <span class="gloss" data-tip="/ˈkwɔːtəʊ/ · 四开本">quarto</span>. He had many volumes of old travels, with steel engravings, and Mrs. Carey quickly found two which described Palestine. She coughed elaborately at the door so that Philip should have time to compose himself, she felt that he would be humiliated if she came upon him in the midst of his tears, then she rattled the door handle. When she went in Philip was poring over the prayer-book, hiding his eyes with his hands so that she might not see he had been crying.</p><p class="trans">凯里太太进了书房。收集旧书是凯里先生唯一的爱好；他每回进城，总要在旧书店待上一两个钟头，带回来四五本发霉的书。他从不读，因为他早就没有读书的习惯；可他喜欢翻翻书页，有插图就看插图，修补书脊。他盼着下雨天，因为这种日子待在家里不心虚，可以拿蛋清和胶锅消磨一下午，把一本破旧的四开本的俄罗斯皮面补一补。他有许多旧游记，带钢版画；凯里太太很快找到两本讲巴勒斯坦的。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>musty</td><td>/ˈmʌsti/</td><td>发霉的、有霉味的</td></tr><tr><td>quarto</td><td>/ˈkwɔːtəʊ/</td><td>四开本</td></tr><tr><td>steel engraving</td><td>—</td><td>钢版画</td></tr></table></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-12">⑫</a>祷文他一句不懂，只能“鹦鹉学舌”；背书的恐惧比内容更真。</li><li><a class="ref" href="#p-13">⑬</a>姨妈先听见声音，再绕到窗外看——她怕撞破他的体面。这是她最细的一次。</li><li><a class="ref" href="#p-13">⑬</a>“他的镇定是羞于让人看见情绪”——全章最好的一句人物判断。</li><li><a class="ref" href="#p-20">⑳</a>“还不到十行”——叔父真的不明白孩子为什么哭。</li><li><a class="ref" href="#p-23">㉓</a>旧书、蛋清、胶锅：一个不读书的人，收藏了一屋子书。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用偷看写心疼（the window）</strong>——姨妈不从门进，绕到窗外。为什么管用：关心到极处，会先替对方留脸；一个“绕”字，比十句“她心疼他”都准。怎么用：写一个人想帮另一个人，先写她怎么不惊动他。</p>
+<p><strong>用哭写尊严（hidden tears）</strong>——他躲起来哭，被撞见时用手遮眼。为什么管用：眼泪在这孩子身上不是软弱，是要藏起来的东西；越藏，越让人疼。怎么用：写一个不肯哭的人，写他藏眼泪的动作。</p></div></details></section><section class="scene" id="scene-3" data-scene="3"><h3 class="scene-title" id="scene-3"><span class="tag">场景 3</span>餐桌旁：画册</h3><div class="scene-lead"><b>这一场　</b>一本画册，把他从祷文里救出来。</div><div class="unit" id="p-24"><span class="num">㉔</span><p class="en">“Do you know the collect yet?” she said.</p><p class="trans">她在门口故意咳了一声，好让菲利普有时间收住；她觉得要是撞见他正在哭，他会觉得丢脸；然后她才转动门把手。她进去时，菲利普正低头盯着《祈祷书》，用手遮着眼睛，不让她看出自己哭过。</p></div><div class="unit" id="p-25"><span class="num">㉕</span><p class="en">He did not answer for a moment, and she felt that he did not trust his voice. She was oddly embarrassed.</p><p class="trans">“祷文背会了吗？”她问。</p></div><div class="unit" id="p-26"><span class="num">㉖</span><p class="en">“I can’t learn it by heart,” he said at last, with a gasp.</p><p class="trans">他停了一下没答，她觉得他是不敢开口，怕声音露馅。她也有点说不出的尴尬。</p></div><div class="unit" id="p-27"><span class="num">㉗</span><p class="en">“Oh, well, never mind,” she said. “You needn’t. I’ve got some picture books for you to look at. Come and sit on my lap, and we’ll look at them together.”</p><p class="trans">“我背不下来。”他终于说，抽了口气。</p></div><div class="unit" id="p-28"><span class="num">㉘</span><p class="en">Philip slipped off his chair and limped over to her. He looked down so that she should not see his eyes. She put her arms round him.</p><p class="trans">“哦，算了，没关系，”她说，“不用背了。我拿了几本画册给你看。来，坐到我腿上来，我们一起看。”</p></div><div class="unit" id="p-29"><span class="num">㉙</span><p class="en">“Look,” she said, “that’s the place where our blessed Lord was born.”</p><p class="trans">菲利普从椅子上滑下来，一瘸一拐走过去。他低着头，不让她看自己的眼睛。她搂住他。</p></div><div class="unit" id="p-30"><span class="num">㉚</span><p class="en">She showed him an Eastern town with flat roofs and cupolas and minarets. In the foreground was a group of palm-trees, and under them were resting two Arabs and some camels. Philip passed his hand over the picture as if he wanted to feel the houses and the loose habiliments of the nomads.</p><p class="trans">“看，”她说，“这就是我们的主出生的地方。”</p></div><div class="unit" id="p-31"><span class="num">㉛</span><p class="en">“Read what it says,” he asked.</p><p class="trans">她给他看一座东方城镇：平屋顶、圆顶、尖塔。前景是一丛棕榈树，树下歇着两个阿拉伯人和几头骆驼。菲利普伸手在画上摸，像是想摸到那些房子和游牧人宽松的衣裳。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>cupola</td><td>/ˈkjuːpələ/</td><td>圆顶</td></tr><tr><td>minaret</td><td>/ˌmɪnəˈret/</td><td>清真寺尖塔</td></tr><tr><td>habiliment</td><td>/həˈbɪlɪmənt/</td><td>服装（古雅用词）</td></tr></table></div></details></div></div><div class="unit" id="p-32"><span class="num">㉜</span><p class="en">Mrs. Carey in her even voice read the opposite page. It was a romantic narrative of some Eastern traveller of the thirties, pompous maybe, but fragrant with the emotion with which the East came to the generation that followed Byron and Chateaubriand. In a moment or two Philip interrupted her.</p><p class="trans">“念念上面写的。”他说。</p></div><div class="unit" id="p-33"><span class="num">㉝</span><p class="en">“I want to see another picture.”</p><p class="trans">凯里太太用她平平稳稳的声音念对面那一页。那是一篇三十年代东方旅行家的游记，也许有点浮夸，可带着那一代人（拜伦和夏多布里昂之后）对东方的感情，读起来有股香气。过了一会儿，菲利普打断她：</p></div><div class="unit" id="p-34"><span class="num">㉞</span><p class="en">When Mary Ann came in and Mrs. Carey rose to help her lay the cloth. Philip took the book in his hands and hurried through the illustrations. It was with difficulty that his aunt induced him to put the book down for tea. He had forgotten his horrible struggle to get the collect by heart; he had forgotten his tears. Next day it was raining, and he asked for the book again. Mrs. Carey gave it him joyfully. Talking over his future with her husband she had found that both desired him to take orders, and this eagerness for the book which described places hallowed by the presence of Jesus seemed a good sign. It looked as though the boy’s mind addressed itself naturally to holy things. But in a day or two he asked for more books. Mr. Carey took him into his study, showed him the shelf in which he kept illustrated works, and chose for him one that dealt with Rome. Philip took it greedily. The pictures led him to a new amusement. He began to read the page before and the page after each engraving to find out what it was about, and soon he lost all interest in his toys.</p><p class="trans">“我还要看别的画。”</p></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-24">㉔</a>咳嗽一声、转门把手——她连进门都替他留了台阶。</li><li><a class="ref" href="#p-31">㉛</a>“伸手在画上摸”——他不是在看，是想进去。</li><li><a class="ref" href="#p-33">㉝</a>“读起来有股香气”——毛姆写文字的味道，用的是嗅觉。</li><li><a class="ref" href="#p-34">㉞</a>“我还要看别的画”——第一次主动要东西。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用触摸写想象（the hand on the page）</strong>——他伸手去摸画里的房子和衣裳。为什么管用：想象到了极处，会变成身体的冲动；一个“摸”字，把纸上的世界变成了他想要的世界。怎么用：写一个人被什么东西迷住，写他想伸手。</p></div></details></section><section class="scene" id="scene-4" data-scene="4"><h3 class="scene-title" id="scene-4"><span class="tag">场景 4</span>书房与吊床：读书的习惯</h3><div class="scene-lead"><b>这一场　</b>画册变成书，书变成避难所。</div><div class="unit" id="p-35"><span class="num">㉟</span><p class="en">Then, when no one was near, he took out books for himself; and perhaps because the first impression on his mind was made by an Eastern town, he found his chief amusement in those which described the <span class="gloss" data-tip="/lɪˈvænt/ · 黎凡特（地中海东岸）">Levant</span>. His heart beat with excitement at the pictures of mosques and rich palaces; but there was one, in a book on Constantinople, which peculiarly stirred his imagination. It was called the Hall of the Thousand Columns. It was a Byzantine <span class="gloss" data-tip="/ˈsɪstən/ · 蓄水池">cistern</span>, which the popular fancy had endowed with fantastic vastness; and the legend which he read told that a boat was always moored at the entrance to tempt the <span class="gloss" data-tip="/ʌnˈweəri/ · 不小心的、没戒心的">unwary</span>, but no traveller venturing into the darkness had ever been seen again. And Philip wondered whether the boat went on for ever through one pillared alley after another or came at last to some strange mansion.</p><p class="trans">后来，没人看见的时候，他自己去拿书；也许因为最早印在他心里的是一座东方城镇，他最喜欢看讲黎凡特的书。看到清真寺和华丽宫殿的图，他心跳；可有一幅特别搅动他的想象，在一本讲君士坦丁堡的书里，叫“千柱厅”。那是个拜占庭式的地下蓄水池，民间想象把它夸得奇大无比；他读到的传说说，入口总停着一条船，引诱不小心的旅人，可没有哪个旅行家进去之后出来过。菲利普想：那条船是一直往前，穿过一条又一条柱廊，还是最后会到一座奇怪的宅子？</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>Levant</td><td>/lɪˈvænt/</td><td>黎凡特（地中海东岸）</td></tr><tr><td>cistern</td><td>/ˈsɪstən/</td><td>蓄水池</td></tr><tr><td>unwary</td><td>/ʌnˈweəri/</td><td>不小心的、没戒心的</td></tr></table></div></details></div></div><div class="unit" id="p-36"><span class="num">㊱</span><p class="en">One day a good fortune befell him, for he hit upon Lane’s translation of The Thousand Nights and a Night. He was captured first by the illustrations, and then he began to read, to start with, the stories that dealt with magic, and then the others; and those he liked he read again and again. He could think of nothing else. He forgot the life about him. He had to be called two or three times before he would come to his dinner. Insensibly he formed the most delightful habit in the world, the habit of reading: he did not know that thus he was providing himself with a refuge from all the distress of life; he did not know either that he was creating for himself an unreal world which would make the real world of every day a source of bitter disappointment. Presently he began to read other things. His brain was <span class="gloss" data-tip="/prɪˈkəʊʃəs/ · 早熟的">precocious</span>. His uncle and aunt, seeing that he occupied himself and neither worried nor made a noise, ceased to trouble themselves about him. Mr. Carey had so many books that he did not know them, and as he read little he forgot the odd lots he had bought at one time and another because they were cheap. <span class="gloss" data-tip="/hæpˈhæzəd/ · 随意的、杂乱的">Haphazard</span> among the sermons and homilies, the travels, the lives of the Saints, the Fathers, the histories of the church, were old-fashioned novels; and these Philip at last discovered. He chose them by their titles, and the first he read was The Lancashire Witches, and then he read The Admirable Crichton, and then many more. Whenever he started a book with two solitary travellers riding along the brink of a desperate ravine he knew he was safe.</p><p class="trans">有一天他交了好运，翻到了莱恩译的《一千零一夜》。先抓住他的是插图，然后他开始读，先读讲魔法的故事，再读别的；喜欢的就一遍一遍读。他别的什么也不想，忘了身边的生活；吃饭要叫两三遍才来。不知不觉间，他养成了世上最叫人快活的习惯：读书的习惯。他不知道，他这是在给自己找一个躲开一切苦恼的避难所；他也不知道，他正在给自己造一个不真实的世界，日后会让日常的真实世界变成失望的源头。不久他开始读别的。他脑子早熟。叔父姨妈见他有事做，不吵不闹，也就不再管他。凯里先生的藏书太多，自己都不知道有什么；他读得少，早忘了哪年哪月贪便宜买回来的零本。讲道集、布道文、游记、圣徒传、教父著作、教会史之间，夹着些老小说；菲利普最后发现了它们。他按书名挑，第一本读的是《兰开夏的女巫》，然后是《了不起的克里奇顿》，再后来读了许多。只要开头是两个孤零零的旅人骑马走在深谷边上，他就知道自己安全了。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>precocious</td><td>/prɪˈkəʊʃəs/</td><td>早熟的</td></tr><tr><td>homily</td><td>/ˈhɒməli/</td><td>布道文、说教</td></tr><tr><td>haphazard</td><td>/hæpˈhæzəd/</td><td>随意的、杂乱的</td></tr></table></div></details></div></div><div class="unit" id="p-37"><span class="num">㊲</span><p class="en">The summer was come now, and the gardener, an old sailor, made him a <span class="gloss" data-tip="/ˈhæmək/ · 吊床">hammock</span> and fixed it up for him in the branches of a weeping <span class="gloss" data-tip="/ˈwɪləʊ/ · 柳树">willow</span>. And here for long hours he lay, hidden from anyone who might come to the vicarage, reading, reading passionately. Time passed and it was July; August came: on Sundays the church was crowded with strangers, and the collection at the offertory often amounted to two pounds. Neither the Vicar nor Mrs. Carey went out of the garden much during this period; for they disliked strange faces, and they looked upon the visitors from London with <span class="gloss" data-tip="/əˈvɜːʃn/ · 厌恶">aversion</span>. The house opposite was taken for six weeks by a gentleman who had two little boys, and he sent in to ask if Philip would like to go and play with them; but Mrs. Carey returned a polite refusal. She was afraid that Philip would be corrupted by little boys from London. He was going to be a clergyman, and it was necessary that he should be preserved from <span class="gloss" data-tip="/kənˌtæmɪˈneɪʃn/ · 污染、沾染">contamination</span>. She liked to see in him an infant Samuel.</p><p class="trans">夏天到了，园丁是个老水手，给他在一棵垂柳的枝杈间做了个吊床，挂好。他常常一躺几个钟头，谁也看不见，热切地读，读。时间过去，七月了，八月来了：星期日教堂里挤满外乡人，募捐常常收到两镑。这段时间牧师和凯里太太不大出园子，因为他们不喜欢生面孔，讨厌从伦敦来的游客。对面的房子被一位先生租了六个星期，他带着两个小男孩，托人来问菲利普愿不愿意过去一起玩；凯里太太客客气气回绝了。她怕菲利普被伦敦来的孩子带坏。他将来是要做教士的，必须让他远离污染。她喜欢把他看成一个幼年的撒母耳。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 4</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>hammock</td><td>/ˈhæmək/</td><td>吊床</td></tr><tr><td>willow</td><td>/ˈwɪləʊ/</td><td>柳树</td></tr><tr><td>aversion</td><td>/əˈvɜːʃn/</td><td>厌恶</td></tr><tr><td>contamination</td><td>/kənˌtæmɪˈneɪʃn/</td><td>污染、沾染</td></tr></table></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-35">㉟</a>大人们把“爱看圣地的书”当成好兆头，其实他爱的是东方，不是神。</li><li><a class="ref" href="#p-36">㊱</a>“千柱厅”的传说：一条船、无数柱子、没人回来——这是他日后要面对的世界的样子。</li><li><a class="ref" href="#p-37">㊲</a>“养成了世上最叫人快活的习惯”——毛姆紧接着就说，这也是“避难所”和“不真实的世界”。</li><li><a class="ref" href="#p-38">㊳</a>“幼年的撒母耳”——姨妈把他看成圣殿里的孩子，可他躲在柳树里读的是《一千零一夜》。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用读书写避难所（the refuge）</strong>——不写“他爱上了阅读”，写他忘了吃饭、藏在吊床里、读得发抖。为什么管用：阅读对他的意义不是知识，是逃；把“逃”写出来，读书才成了人物的一部分。怎么用：写一个人痴迷什么，写他为此躲开了什么。</p></div></details></section></div><aside class="companion" id="companion"><div class="cp" data-scene="1" hidden><div class="cp-head"><span class="tag">场景 1</span><b>客厅门口：背一段祷文</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-6">⑥</a>“你把祷文背下来”——不是陪他，是给他派活；奖赏是半只鸡蛋。</li><li><a class="ref" href="#p-8">⑧</a>“一字不错”——背书的规矩，从这儿开始。</li><li><a class="ref" href="#p-10">⑩</a>“闲人的脑袋是魔鬼的作坊”——一句谚语，把孩子的无聊说成罪。</li><li><a class="ref" href="#p-11">⑪</a>牧师睡得很安稳；同一个下午，孩子在隔壁受罪。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用命令写权力（the assignment）</strong>——一句“你把祷文背下来”，把下午、奖赏、对错都定了。为什么管用：权力不在打骂，在安排别人的时间。怎么用：写一个控制欲强的人，写他怎么分配别人的一下午。</p></div></div></div></div><div class="cp" data-scene="2" hidden><div class="cp-head"><span class="tag">场景 2</span><b>餐厅：背不下来</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-12">⑫</a>祷文他一句不懂，只能“鹦鹉学舌”；背书的恐惧比内容更真。</li><li><a class="ref" href="#p-13">⑬</a>姨妈先听见声音，再绕到窗外看——她怕撞破他的体面。这是她最细的一次。</li><li><a class="ref" href="#p-13">⑬</a>“他的镇定是羞于让人看见情绪”——全章最好的一句人物判断。</li><li><a class="ref" href="#p-20">⑳</a>“还不到十行”——叔父真的不明白孩子为什么哭。</li><li><a class="ref" href="#p-23">㉓</a>旧书、蛋清、胶锅：一个不读书的人，收藏了一屋子书。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用偷看写心疼（the window）</strong>——姨妈不从门进，绕到窗外。为什么管用：关心到极处，会先替对方留脸；一个“绕”字，比十句“她心疼他”都准。怎么用：写一个人想帮另一个人，先写她怎么不惊动他。</p>
+<p><strong>用哭写尊严（hidden tears）</strong>——他躲起来哭，被撞见时用手遮眼。为什么管用：眼泪在这孩子身上不是软弱，是要藏起来的东西；越藏，越让人疼。怎么用：写一个不肯哭的人，写他藏眼泪的动作。</p></div></div></div></div><div class="cp" data-scene="3" hidden><div class="cp-head"><span class="tag">场景 3</span><b>餐桌旁：画册</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-24">㉔</a>咳嗽一声、转门把手——她连进门都替他留了台阶。</li><li><a class="ref" href="#p-31">㉛</a>“伸手在画上摸”——他不是在看，是想进去。</li><li><a class="ref" href="#p-33">㉝</a>“读起来有股香气”——毛姆写文字的味道，用的是嗅觉。</li><li><a class="ref" href="#p-34">㉞</a>“我还要看别的画”——第一次主动要东西。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用触摸写想象（the hand on the page）</strong>——他伸手去摸画里的房子和衣裳。为什么管用：想象到了极处，会变成身体的冲动；一个“摸”字，把纸上的世界变成了他想要的世界。怎么用：写一个人被什么东西迷住，写他想伸手。</p></div></div></div></div><div class="cp" data-scene="4" hidden><div class="cp-head"><span class="tag">场景 4</span><b>书房与吊床：读书的习惯</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-35">㉟</a>大人们把“爱看圣地的书”当成好兆头，其实他爱的是东方，不是神。</li><li><a class="ref" href="#p-36">㊱</a>“千柱厅”的传说：一条船、无数柱子、没人回来——这是他日后要面对的世界的样子。</li><li><a class="ref" href="#p-37">㊲</a>“养成了世上最叫人快活的习惯”——毛姆紧接着就说，这也是“避难所”和“不真实的世界”。</li><li><a class="ref" href="#p-38">㊳</a>“幼年的撒母耳”——姨妈把他看成圣殿里的孩子，可他躲在柳树里读的是《一千零一夜》。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用读书写避难所（the refuge）</strong>——不写“他爱上了阅读”，写他忘了吃饭、藏在吊床里、读得发抖。为什么管用：阅读对他的意义不是知识，是逃；把“逃”写出来，读书才成了人物的一部分。怎么用：写一个人痴迷什么，写他为此躲开了什么。</p></div></div></div></div></aside></div>
+</section>
+<section class="sec" data-kind="lang" id="sec-3">
+<h2 class="sec-title">三、词与句</h2>
+<h3>1. 词汇</h3>
+<table class="wordtable"><tr><th>词</th><th>音标</th><th>文中义</th><th>备注</th></tr><tr><td>collect</td><td>/ˈkɒlekt/</td><td>短祷文</td><td>不是“收集”</td></tr><tr><td>Epiphany</td><td>/ɪˈpɪfəni/</td><td>主显节</td><td>一月六日</td></tr><tr><td>manifest</td><td>/ˈmænɪfest/</td><td>显现</td><td>祷文用语</td></tr><tr><td>musty</td><td>/ˈmʌsti/</td><td>发霉的</td><td>旧书的味儿</td></tr><tr><td>quarto</td><td>/ˈkwɔːtəʊ/</td><td>四开本</td><td>书的大小</td></tr><tr><td>cupola</td><td>/ˈkjuːpələ/</td><td>圆顶</td><td>东方城镇</td></tr><tr><td>minaret</td><td>/ˌmɪnəˈret/</td><td>尖塔</td><td>清真寺</td></tr><tr><td>Levant</td><td>/lɪˈvænt/</td><td>黎凡特</td><td>地中海东岸</td></tr><tr><td>cistern</td><td>/ˈsɪstən/</td><td>蓄水池</td><td>千柱厅</td></tr><tr><td>precocious</td><td>/prɪˈkəʊʃəs/</td><td>早熟的</td><td>他的脑子</td></tr><tr><td>hammock</td><td>/ˈhæmək/</td><td>吊床</td><td>柳树间</td></tr><tr><td>aversion</td><td>/əˈvɜːʃn/</td><td>厌恶</td><td>对游客</td></tr></table>
+<h3>2. 三个句型</h3>
+<ol><li><code>It seemed as though there were knots inside his brain.</code> —— as though + 虚拟；用具体的“结”写抽象的理解障碍。</li><li><code>He did not know that thus he was providing himself with a refuge from all the distress of life.</code> —— 宾语从句 + thus；一句话把“读书”定性为“逃”。</li><li><code>he was so wide awake that she came downstairs</code> —— so...that 结果句；用“清醒”推动动作。</li></ol>
+<h3>3. 三个容易读错的地方</h3>
+<ul><li><strong>collect</strong> 在这里是名词“短祷文”，不是动词“收集”。</li><li><strong>manifest</strong> 在祷文里是“显现”，不是“清单”（manifest 另有“舱单”义）。</li><li><strong>haphazard</strong> 是“杂乱无章”，不是“碰巧”；haphazard among the sermons＝夹杂在布道文之间。</li></ul>
+</section>
+<section class="sec" data-kind="craft" id="sec-4">
+<h2 class="sec-title">四、毛姆怎么写</h2>
+<h3 id="h-10">4.1 读一段的时候，脑子里在过什么</h3>
+<p>拿<a class="ref" href="#p-13">⑬</a>（姨妈在窗外看）做示范。</p>
+<p><strong>第一句：<code>Mrs. Carey could not sleep that afternoon, and by four o’clock she was so wide awake that she came downstairs.</code></strong>先给“睡不着”，再给“下楼”。一个“so...that”把失眠变成了行动。</p>
+<p><strong>第二句：<code>She thought she would hear Philip his collect so that he should make no mistakes when he said it to his uncle.</code></strong>她的动机：怕孩子出错，怕丈夫不高兴。</p>
+<p><strong>第三句：<code>But when Mrs. Carey came to the dining-room and was about to go in, she heard a sound that made her stop suddenly.</code></strong>一个“but”把计划打断；声音先到，人还没进去。</p>
+<p><strong>第四句：<code>Her heart gave a little jump. She turned away and quietly slipped out of the front-door.</code></strong>不推门，转身，从大门溜出去。她要绕到窗外。</p>
+<p><strong>第五句：<code>She walked round the house till she came to the dining-room window and then cautiously looked in.</code></strong>“cautiously”——她怕被看见。</p>
+<p><strong>第六句：<code>Philip was still sitting on the chair she had put him in, but his head was on the table buried in his arms, and he was sobbing desperately.</code></strong>镜头给她看见的东西：还是那把椅子，头埋进胳膊。</p>
+<p><strong>第七句：<code>She saw the convulsive movement of his shoulders.</code></strong>一个细节：肩膀一抽一抽。</p>
+<p><strong>第八句：<code>Mrs. Carey was frightened.</code></strong>她的反应。</p>
+<p><strong>第九句：<code>A thing that had always struck her about the child was that he seemed so collected. She had never seen him cry.</code></strong>补一句背景：这孩子一向沉得住气。</p>
+<p><strong>第十句：<code>And now she realised that his calmness was some instinctive shame of showing his feelings: he hid himself to weep.</code></strong>全段的判断：他的镇定是羞耻，是躲起来哭。</p>
+<p>读这一段，可以问自己：如果交给自己写，会怎么写？常见的初稿大概是：姨妈发现菲利普在哭，很心疼，就安慰他。坏在哪：把“发现”写成了推门就看见；把“心疼”写成了形容词。毛姆让她绕到窗外——关心到极处，是先替对方留脸。</p>
+<h3 id="h-11">4.2 这一章真正教的三件事</h3>
+<p><strong>第一件：关心要绕一个弯。</strong>姨妈不推门，先绕到窗外；不劝“别哭”，先拿画册。关心不是冲进去，是想办法不惊动。</p>
+<p><strong>第二件：给孩子一个出口，比给他一个道理有用。</strong>祷文背不下来，讲道理没用；一本画册，把他带走了。</p>
+<p><strong>第三件：最要紧的一笔，往往用最轻的句子写。</strong>“他养成了读书的习惯”后面紧跟一句“他不知道这是避难所”——一句话把一生的底色点出来。</p>
+<h3 id="h-12">4.3 写坏的版本，和改过来的版本</h3>
+<p>同一个场面：孩子被关在屋里背东西，背不下来，哭了；大人发现了。</p>
+<p>先看一版写坏的：</p>
+<blockquote><p class="en">Philip tried to learn the collect but it was too difficult. He felt stupid and began to cry. His aunt heard him and came in. She felt very sorry for him and told him not to worry. She brought him some picture books, and he was happy again.</p></blockquote>
+<p>坏在哪：<code>felt stupid</code>、<code>felt very sorry</code>、<code>was happy again</code> 全是结论；姨妈“进来”太顺；画册的作用被一句“happy”带过。</p>
+<p>改过来：</p>
+<blockquote><p class="en">Mrs. Carey came to the dining-room and was about to go in when she heard a sound that made her stop. She turned away and slipped out of the front-door, and walked round the house to the window.</p><p class="en">Philip was still in the chair she had put him in, his head buried in his arms.</p><p class="en">She coughed at the door so that he should have time to compose himself, then rattled the handle. When she went in he was poring over the prayer-book, hiding his eyes with his hands.</p></blockquote>
+<p>改了什么：把“她进来安慰他”换成“她绕到窗外、在门口咳嗽”；把“他很伤心”换成“头埋在胳膊里”；把“他高兴了”换成他伸手去摸画上的房子。</p>
+<h3 id="h-13">4.4 坐下写一场戏的时候，实际在想什么</h3>
+<p>这场戏先有的是<strong>“她绕到窗外看”</strong>这个动作。有了它，才问：她为什么不进去？因为进去就是撞破；她要先确认，再决定怎么帮。</p>
+<p>每次都可以问五个问题：</p>
+<ul><li>这场里，谁最怕被看见？</li><li>关心的人怎么才能不惊动他？</li><li>有没有一样东西可以当出口？</li><li>哪一句是判断，哪一句是画面？</li><li>最后一句能不能落在一个动作上？</li></ul>
+<h3 id="h-14">4.5 这些招什么时候会害你</h3>
+<p><strong>一、绕弯不能绕太久。</strong> 姨妈绕窗、咳嗽、转门把手，三步刚好；再多，读者会急。</p>
+<p><strong>二、画册不能变成万能药。</strong> 它管用，是因为正好接住他的想象；换成一个不懂画的孩子，这招就不灵。</p>
+<p><strong>三、别把“读书”写成励志。</strong> 毛姆写的是避难所，也是“不真实的世界”；只写好处，就浅了。</p>
+</section>
+<section class="sec" data-kind="bg" id="sec-5">
+<h2 class="sec-title">五、背景</h2>
+<ul><li><strong>主显节后的第六个星期日。</strong> 教会年历里的一个主日，祷文（collect）是固定文本，用古英语写成，孩子背不懂很正常。</li><li><strong>《公祷书》。</strong> 祷文、晚祷、圣餐的文本都在这本书里；牧师家日常用它。</li><li><strong>“幼年的撒母耳”。</strong> 《圣经》里撒母耳从小在圣殿服侍；姨妈用这个形象看菲利普，希望他将来做教士。</li><li><strong>东方热。</strong> 十九世纪英国人对黎凡特、君士坦丁堡、阿拉伯 nights 有浓厚的想象；画册、游记、译本是中产家庭的常见读物。</li><li><strong>《一千零一夜》莱恩译本。</strong> 爱德华·莱恩（E. W. Lane）的英译在 1838–40 年出版，是维多利亚时代最流行的版本之一。</li></ul>
+</section>
+<section class="sec" data-kind="test" id="sec-6">
+<h2 class="sec-title">六、自测</h2>
+<h3>概括</h3>
+<ol><li>用三句话说完这一章：谁、在哪里、发生了什么。</li><li>这一章的转折落在哪一句上？</li></ol>
+<h3>理解</h3>
+<ol start="3"><li>叔父为什么让菲利普背祷文？他真觉得这算关心吗？</li><li>姨妈为什么先绕到窗外，而不是直接进门？</li><li>画册在菲利普这里起了什么作用？</li><li>作者为什么说读书是“避难所”，又是“不真实的世界”？</li></ol>
+<h3>讨论</h3>
+<ol><li>叔父和姨妈，谁更懂孩子？</li><li>“读书是避难所”这句话，对菲利普是好事还是坏事？</li><li>姨妈把他看成“幼年的撒母耳”，这个误读说明了什么？</li></ol>
+<hr><details class="notes answers"><summary>参考答案<em>先自己答，再对</em></summary><div class="inner"><ol><li>又一个不许玩的星期日，叔父让菲利普背一段祷文，背出有蛋尖；他背不下来，趴在桌上哭；姨妈发现后拿来圣地画册，他从此迷上读书，夏天躲在吊床里读。</li><li>“Insensibly he formed the most delightful habit in the world, the habit of reading.”——读书成了他一生的去处。</li><li>一半是给他找事做，一半是省心；他真觉得背几行祷文不算什么，完全没想到孩子会崩。</li><li>她怕推门撞见他哭，让他难堪；先绕到窗外确认，再想办法。</li><li>画册把他从背书的恐惧里带走，先看画，再读画前后的文字，最后读整本书。</li><li>因为读书让他躲开现实的苦恼，同时也在他心里造了一个不真实的世界，日后会让现实显得失望。</li></ol></div></details>
+</section>
+<section class="sec" data-kind="next" id="sec-7">
+<h2 class="sec-title">七、下一章</h2>
+<p>第十章，特坎伯里。菲利普被送进国王学校，红砖墙像监狱；校长嗓门很大，握手像钳子。操场上，一个比他小的男孩问：“你妈妈洗衣服吗？”然后看见了他的脚。</p>
+</section>
+<section class="sec" data-kind="write" id="sec-write">
+<h2 class="sec-title">八、写作练习</h2>
+<div class="writing">
+  <div class="hint">内容只存在本机浏览器。</div>
+  <textarea placeholder="在这里写…"></textarea>
+  <div class="row">
+    <span class="count">0 词</span>
+    <span class="status"></span>
+    <span class="spacer"></span>
+    <button class="btn copy" type="button">复制</button>
+    <button class="btn clear" type="button">清空</button>
+  </div>
+</div>
+</section>
+<nav class="chnav"><a href="ch08.html">← 第八章</a><a href="ch10.html">第十章 →</a></nav>
+</main>
+<aside class="nav-right" id="navRight">
+  <div class="rn-head"><span>本章目录</span><button class="rn-toggle" id="toggleRight2" type="button" data-close="right" aria-label="收起目录">×</button></div>
+  <nav class="toc"><a class="lv2" href="#sec-1">一、原文</a><a class="lv2" href="#sec-2">二、逐场精读</a><a class="lv3" href="#h-3">概览</a><a class="lv3" href="#scene-1">场景 1｜客厅门口：背一段祷文</a><a class="lv3" href="#scene-2">场景 2｜餐厅：背不下来</a><a class="lv3" href="#scene-3">场景 3｜餐桌旁：画册</a><a class="lv3" href="#scene-4">场景 4｜书房与吊床：读书的习惯</a><a class="lv2" href="#sec-3">三、词与句</a><a class="lv2" href="#sec-4">四、毛姆怎么写</a><a class="lv3" href="#h-10">4.1 读一段的时候，脑子里在过什么</a><a class="lv3" href="#h-11">4.2 这一章真正教的三件事</a><a class="lv3" href="#h-12">4.3 写坏的版本，和改过来的版本</a><a class="lv3" href="#h-13">4.4 坐下写一场戏的时候，实际在想什么</a><a class="lv3" href="#h-14">4.5 这些招什么时候会害你</a><a class="lv2" href="#sec-5">五、背景</a><a class="lv2" href="#sec-6">六、自测</a><a class="lv2" href="#sec-7">七、下一章</a><a class="lv2" href="#sec-write">八、写作练习</a></nav>
+</aside>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = {"id": "ch9", "href": "ch09.html", "num": "九", "words": [{"w": "collect", "p": "/ˈkɒlekt/", "g": "（礼拜用的）短祷文"}, {"w": "idle", "p": "/ˈaɪdl/", "g": "闲着的、无所事事的"}, {"w": "Epiphany", "p": "/ɪˈpɪfəni/", "g": "主显节"}, {"w": "manifest", "p": "/ˈmænɪfest/", "g": "显现、表明"}, {"w": "parrot-like", "p": "—", "g": "鹦鹉学舌般地"}, {"w": "musty", "p": "/ˈmʌsti/", "g": "发霉的、有霉味的"}, {"w": "quarto", "p": "/ˈkwɔːtəʊ/", "g": "四开本"}, {"w": "steel engraving", "p": "—", "g": "钢版画"}, {"w": "cupola", "p": "/ˈkjuːpələ/", "g": "圆顶"}, {"w": "minaret", "p": "/ˌmɪnəˈret/", "g": "清真寺尖塔"}, {"w": "habiliment", "p": "/həˈbɪlɪmənt/", "g": "服装（古雅用词）"}, {"w": "Levant", "p": "/lɪˈvænt/", "g": "黎凡特（地中海东岸）"}, {"w": "cistern", "p": "/ˈsɪstən/", "g": "蓄水池"}, {"w": "unwary", "p": "/ʌnˈweəri/", "g": "不小心的、没戒心的"}, {"w": "precocious", "p": "/prɪˈkəʊʃəs/", "g": "早熟的"}, {"w": "homily", "p": "/ˈhɒməli/", "g": "布道文、说教"}, {"w": "haphazard", "p": "/hæpˈhæzəd/", "g": "随意的、杂乱的"}, {"w": "hammock", "p": "/ˈhæmək/", "g": "吊床"}, {"w": "willow", "p": "/ˈwɪləʊ/", "g": "柳树"}, {"w": "aversion", "p": "/əˈvɜːʃn/", "g": "厌恶"}, {"w": "contamination", "p": "/kənˌtæmɪˈneɪʃn/", "g": "污染、沾染"}]};</script>
+<script>/* ===== Of Human Bondage · 阅读器 ===== */
+(function () {
+  'use strict';
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var CH = window.CHAPTER || {};
+  var KEY = 'ohb:' + (CH.id || 'x');
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  /* ---------------- 设置 ---------------- */
+
+  var DEFAULTS = { trans: 1, words: 1, sents: 1, notes: 1, craft: 1, split: 0, collapse: 0, openanno: 0 };
+  var cfg = Object.assign({}, DEFAULTS, LS.get('ohb:cfg', {}));
+
+  function applyCfg() {
+    document.body.dataset.trans = cfg.trans ? 'on' : 'off';
+    document.body.dataset.words = cfg.words ? 'on' : 'off';
+    document.body.dataset.sents = cfg.sents ? 'on' : 'off';
+    document.body.dataset.notes = cfg.notes ? 'on' : 'off';
+    document.body.dataset.craft = cfg.craft ? 'on' : 'off';
+    document.body.dataset.split = cfg.split ? 'on' : 'off';
+    $$('details.notes:not(.answers), details.craft').forEach(function (d) {
+      d.open = !cfg.collapse;
+    });
+    $$('details.anno').forEach(function (d) {
+      d.open = !!cfg.openanno;
+    });
+    $$('.settings input[data-set]').forEach(function (i) {
+      i.checked = !!cfg[i.dataset.set];
+    });
+  }
+
+  $$('.settings input[data-set]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      cfg[i.dataset.set] = i.checked ? 1 : 0;
+      LS.set('ohb:cfg', cfg);
+      applyCfg();
+      if (i.dataset.set === 'split') syncCompanion(true);
+    });
+  });
+
+  var setBtn = $('#setBtn'), settings = $('#settings');
+  if (setBtn && settings) {
+    setBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      settings.hidden = !settings.hidden;
+      document.body.classList.toggle('settings-open', !settings.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!settings.hidden && !settings.contains(e.target) && e.target !== setBtn) {
+        settings.hidden = true;
+        document.body.classList.remove('settings-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') settings.hidden = true;
+    });
+  }
+
+  /* ---------------- 主题 / 字号 ---------------- */
+
+  var themeBtn = $('.tools .theme');
+  function setTheme(t, remember) {
+    document.documentElement.dataset.theme = t;
+    if (themeBtn) themeBtn.textContent = t === 'dark' ? '☀' : '☾';
+    if (remember) LS.set('ohb:theme', t);
+  }
+  if (themeBtn) themeBtn.addEventListener('click', function () {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+
+  var fs = LS.get('ohb:fs', 1);
+  function applyFs() {
+    fs = Math.min(1.32, Math.max(0.86, fs));
+    document.documentElement.style.setProperty('--fs', String(fs));
+    LS.set('ohb:fs', fs);
+  }
+  $$('[data-fs]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fs += (b.dataset.fs === '+' ? 0.06 : -0.06);
+      applyFs();
+    });
+  });
+
+  /* ---------------- 侧栏 ---------------- */
+
+  var PANELS = { left: 1, right: 1 };
+  try { PANELS = Object.assign(PANELS, LS.get('ohb:panels', {})); } catch (e) {}
+
+  function applyPanels(persist) {
+    document.body.classList.toggle('no-left', !PANELS.left);
+    document.body.classList.toggle('no-right', !PANELS.right);
+    if (persist !== false && window.innerWidth >= 1080) LS.set('ohb:panels', PANELS);
+  }
+
+  var hasLeft = !!$('#navLeft'), hasRight = !!$('#navRight');
+  var forcedMobile = window.innerWidth < 1080;
+  if (forcedMobile) { PANELS.left = 0; PANELS.right = 0; }
+  if (!hasLeft) PANELS.left = 0;
+  if (!hasRight) PANELS.right = 0;
+  applyPanels(false);
+
+  var tl = $('#toggleLeft'), tr = $('#toggleRight'), tr2 = $('#toggleRight2');
+  if (tr && !hasRight) tr.style.display = 'none';
+  $$('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.dataset.close === 'left') PANELS.left = 0; else PANELS.right = 0;
+      applyPanels();
+    });
+  });
+
+  var scrim = $('#scrim');
+  if (scrim) scrim.addEventListener('click', function () {
+    PANELS.left = 0; PANELS.right = 0; applyPanels();
+    var st = $('#settings');
+    if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+  });
+  if (tl) tl.addEventListener('click', function () { PANELS.left = PANELS.left ? 0 : 1; applyPanels(); });
+  if (tr) tr.addEventListener('click', function () { PANELS.right = PANELS.right ? 0 : 1; applyPanels(); });
+  if (tr2) tr2.addEventListener('click', function () { PANELS.right = 0; applyPanels(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+      var st = $('#settings');
+      if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+    }
+    if (e.key === 'e' || e.key === 'E') $$('details').forEach(function (d) { d.open = true; });
+    if (e.key === 'q' || e.key === 'Q') $$('details').forEach(function (d) { d.open = false; });
+  });
+
+  // 移动端：点目录后收起右栏
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-right a, .nav-left a');
+    if (!a) return;
+    if (window.innerWidth < 1080) {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+    }
+  });
+
+  /* ---------------- 阅读进度 ---------------- */
+
+  var readbar = $('#readbar');
+  function paintProgress() {
+    if (!readbar) return;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    readbar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+
+  /* ---------------- 目录高亮 ---------------- */
+
+  var tocLinks = $$('.toc a');
+  var targets = tocLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+      var current = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { current = targets[i].id; break; }
+      }
+      if (current) {
+        tocLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+    }, { rootMargin: '-64px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { io.observe(t); });
+  }
+
+  /* ---------------- 段号跳转 ---------------- */
+
+  function flash(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#p-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(id);
+    history.replaceState(null, '', '#' + id);
+  });
+  if (location.hash && /^#p-/.test(location.hash)) setTimeout(function () { flash(location.hash.slice(1)); }, 300);
+
+  /* ---------------- J / K 逐段 ---------------- */
+
+  var units = $$('.unit');
+  function currentUnit() {
+    var best = 0, bestD = 1e9;
+    units.forEach(function (u, i) {
+      var d = Math.abs(u.getBoundingClientRect().top - 120);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+  function gotoUnit(i) {
+    if (!units.length) return;
+    i = Math.max(0, Math.min(units.length - 1, i));
+    units.forEach(function (u) { u.classList.remove('focus'); });
+    units[i].classList.add('focus');
+    units[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'j' || e.key === 'J') { gotoUnit(currentUnit() + 1); }
+    if (e.key === 'k' || e.key === 'K') { gotoUnit(currentUnit() - 1); }
+  });
+
+  /* ---------------- 朗读 ---------------- */
+
+  if ('speechSynthesis' in window) {
+    $$('.reader p, .en').forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'speak';
+      btn.type = 'button';
+      btn.title = '朗读这一段';
+      btn.textContent = '▶';
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+        var u = new SpeechSynthesisUtterance(p.innerText.replace('▶', ''));
+        u.lang = 'en-GB';
+        u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+      p.appendChild(btn);
+    });
+  }
+
+  /* ---------------- 分屏讲解 ---------------- */
+
+  var scenes = $$('.scene');
+  var panes = $$('.companion .cp');
+  var currentScene = null;
+
+  function syncCompanion(force) {
+    if (!scenes.length || !panes.length) return;
+    if (document.body.dataset.split !== 'on') return;
+    var active = null;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top <= 200) active = scenes[i].dataset.scene;
+    }
+    if (!active) active = scenes[0].dataset.scene;
+    if (active !== currentScene || force) {
+      currentScene = active;
+      panes.forEach(function (p) { p.hidden = p.dataset.scene !== active; });
+    }
+  }
+
+  /* ---------------- 打卡 ---------------- */
+
+  var checks = $$('.check input');
+  var bar = $('.bar i');
+  var barText = $('.bar-label span:last-child');
+
+  function loadChecks() {
+    var saved = LS.get(KEY, {});
+    checks.forEach(function (c) { c.checked = !!saved[c.dataset.k]; });
+    paintChecks();
+  }
+  function paintChecks() {
+    var done = checks.filter(function (c) { return c.checked; }).length;
+    var pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (barText) barText.textContent = done + ' / ' + checks.length;
+  }
+  checks.forEach(function (c) {
+    c.addEventListener('change', function () {
+      var saved = LS.get(KEY, {});
+      saved[c.dataset.k] = c.checked;
+      LS.set(KEY, saved);
+      paintChecks();
+    });
+  });
+
+  /* ---------------- 写作区 ---------------- */
+
+  var ta = $('.writing textarea');
+  if (ta) {
+    var countEl = $('.writing .count');
+    var statusEl = $('.writing .status');
+
+    function count(text) {
+      var en = (text.match(/[A-Za-z][A-Za-z'’\-]*/g) || []).length;
+      var zh = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return en + zh;
+    }
+    ta.value = LS.get(KEY + ':writing', '');
+    var t;
+    function upd() {
+      if (countEl) countEl.textContent = count(ta.value) + ' 词';
+      clearTimeout(t);
+      t = setTimeout(function () {
+        LS.set(KEY + ':writing', ta.value);
+        if (statusEl) { statusEl.textContent = '已保存'; setTimeout(function () { statusEl.textContent = ''; }, 1500); }
+      }, 600);
+    }
+    ta.addEventListener('input', upd);
+    upd();
+
+    var copyBtn = $('.writing .copy');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      ta.select(); document.execCommand('copy');
+      if (statusEl) statusEl.textContent = '已复制';
+    });
+    var clearBtn = $('.writing .clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      if (!confirm('清空这段练习？')) return;
+      ta.value = ''; upd();
+    });
+  }
+
+  /* ---------------- 生词本 ---------------- */
+
+  var WB_KEY = 'ohb:words';
+
+  function wbAll() { return LS.get(WB_KEY, []); }
+  function wbKey(ch, pid, w) { return ch + '|' + pid + '|' + w; }
+
+  function paintWbCount() {
+    var n = wbAll().length;
+    var c = $('#wbCount');
+    if (c) c.textContent = n;
+  }
+
+  function markSaved() {
+    var set = {};
+    wbAll().forEach(function (x) { set[wbKey(x.ch, x.pid, x.w)] = 1; });
+    $$('.gloss').forEach(function (g) {
+      var unit = g.closest('.unit');
+      var pid = unit ? unit.id : '';
+      g.classList.toggle('saved', !!set[wbKey(CH.id, pid, g.textContent)]);
+    });
+  }
+
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 1500);
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('.gloss');
+    if (!g) return;
+    var unit = g.closest('.unit');
+    var pid = unit ? unit.id : '';
+    var w = g.textContent;
+    var tip = g.dataset.tip || '';
+    var list = wbAll();
+    var k = wbKey(CH.id, pid, w);
+    var idx = list.findIndex(function (x) { return wbKey(x.ch, x.pid, x.w) === k; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      LS.set(WB_KEY, list);
+      g.classList.remove('saved');
+      toast('已移出生词本');
+    } else {
+      list.push({ w: w, tip: tip, ch: CH.id, href: CH.href, pid: pid, n: (CH.num || '') });
+      LS.set(WB_KEY, list);
+      g.classList.add('saved');
+      toast('已加入生词本');
+    }
+    paintWbCount();
+  });
+
+  var wbBtn = $('#wbBtn');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () {
+      var list = wbAll();
+      var html = '<h3>生词本</h3><p class="hint">在原文里点虚线词即可收进来；再点一次移出。</p>';
+      if (!list.length) {
+        html += '<div class="wb-empty">还是空的。读到不认识的词，点一下它。</div>';
+      } else {
+        html += '<div class="wb-list">';
+        list.slice().sort(function (a, b) {
+          return (a.n || '').localeCompare(b.n || '', 'zh-Hans-CN', { numeric: true });
+        }).forEach(function (x) {
+          var file = x.href || String(x.ch || '').replace(/^ch(\d)$/, 'ch0$1') + '.html';
+          var href = x.pid ? (file + '#' + x.pid) : file;
+          html += '<a class="wb-item" href="' + href + '"><b>' + esc(x.w) + '</b><span>' +
+                  esc(x.tip) + '</span><em>' + esc(x.n || '') + '</em></a>';
+        });
+        html += '</div>';
+      }
+      html += '<div class="quiz-foot" style="margin-top:14px"><button class="btn" id="closeWb" type="button">关闭</button></div>';
+      openSheet(html);
+      var c = $('#closeWb');
+      if (c) c.addEventListener('click', closeSheet);
+    });
+  }
+
+  /* ---------------- 词汇小测 ---------------- */
+
+  function cleanGloss(g) {
+    var t = String(g || '').replace(/^[=＝]\s*/, '');
+    t = t.split('（')[0].trim();
+    return t.replace(/[；;]\s*$/, '');
+  }
+
+  var words = (CH.words || []).map(function (w) {
+    return { w: w.w, g: cleanGloss(w.g) };
+  }).filter(function (w) { return w.g && w.g.length >= 2 && /[\u4e00-\u9fff]/.test(w.g); });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function buildQuiz() {
+    if (words.length < 5) return;
+    var picked = shuffle(words.slice()).slice(0, Math.min(8, words.length));
+    var html = '<h3>词义小测</h3><p class="hint">从本章词表里抽 8 个，选一个正确释义。</p>';
+    picked.forEach(function (w) {
+      var others = shuffle(words.filter(function (x) { return x.g !== w.g; })).slice(0, 3).map(function (x) { return x.g; });
+      var opts = shuffle(others.concat([w.g]));
+      html += '<div class="q" data-answer="' + esc(w.g) + '"><div class="w">' + esc(w.w) + '</div><div class="opts">';
+      opts.forEach(function (o) { html += '<button class="opt" type="button">' + esc(o) + '</button>'; });
+      html += '</div><div class="fb"></div></div>';
+    });
+    html += '<div class="quiz-foot"><span class="score"></span><button class="btn" id="closeQuiz" type="button">关闭</button></div>';
+    openSheet(html);
+
+    var total = picked.length, right = 0, answered = 0;
+    $$('.sheet .q').forEach(function (q) {
+      var ans = q.dataset.answer;
+      $$('.opt', q).forEach(function (o) {
+        if (o.textContent === ans) o.dataset.correct = '1';
+        o.addEventListener('click', function () {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          answered++;
+          if (o.dataset.correct === '1') { right++; o.classList.add('right'); $('.fb', q).textContent = '对。'; }
+          else {
+            o.classList.add('wrong');
+            $('.opt[data-correct="1"]', q).classList.add('right');
+            $('.fb', q).textContent = '正确释义：' + ans;
+          }
+          var sc = $('.score');
+          if (sc) sc.textContent = answered + ' / ' + total + ' · 答对 ' + right;
+        });
+      });
+    });
+    var c = $('#closeQuiz');
+    if (c) c.addEventListener('click', closeSheet);
+  }
+
+  /* ---------------- 弹层 ---------------- */
+
+  function openSheet(html) {
+    var modal = $('#sheetModal');
+    if (!modal) return;
+    $('.sheet', modal).innerHTML = html;
+    modal.classList.add('open');
+  }
+  function closeSheet() {
+    var modal = $('#sheetModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  var sheetModal = document.createElement('div');
+  sheetModal.className = 'modal';
+  sheetModal.id = 'sheetModal';
+  sheetModal.innerHTML = '<div class="sheet"></div>';
+  document.body.appendChild(sheetModal);
+  sheetModal.addEventListener('click', function (e) { if (e.target === sheetModal) closeSheet(); });
+
+  ['#quizBtn', '#quizBtn2'].forEach(function (sel) {
+    var b = $(sel);
+    if (b) b.addEventListener('click', buildQuiz);
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------------- 搜索（技法页） ---------------- */
+
+  var search = $('.search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      $$('table.gen tr').forEach(function (tr) {
+        if (tr.querySelector('th')) return;
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+      $$('.doc-main h2, .doc-main h3, .doc-main p').forEach(function (el) {
+        el.style.display = (!q || el.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------------- 首页进度 ---------------- */
+
+  var cells = $$('.cell[data-ch]');
+  cells.forEach(function (c) {
+    var saved = LS.get('ohb:ch' + c.dataset.ch, {});
+    var n = Object.keys(saved).filter(function (k) { return saved[k]; }).length;
+    if (n >= 5) c.classList.add('done');
+  });
+
+  /* ---------------- 初始化 ---------------- */
+
+  setTheme(LS.get('ohb:theme', 'light'), false);
+  applyFs();
+  applyCfg();
+  loadChecks();
+  paintWbCount();
+  markSaved();
+
+  if (document.body.dataset.split === 'on') syncCompanion(true);
+
+  var raf = null;
+  window.addEventListener('scroll', function () {
+    paintProgress();
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      syncCompanion(false);
+    });
+  }, { passive: true });
+  paintProgress();
+})();
+</script>
+</body>
+</html>

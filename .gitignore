@@ -1,7 +1,5 @@
-# ---- 生成物（改 md 后由 build.py / extract_chapter.py 重新生成）----
-site/
+# ---- 生成物（仅截图不入库；site/ 与 chapter-*.txt 已纳入版本管理）----
 preview/
-chapter-*.txt
 
 # ---- Python ----
 __pycache__/

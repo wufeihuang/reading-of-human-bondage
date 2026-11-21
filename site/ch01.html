@@ -1,0 +1,1676 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>第一章 · Of Human Bondage</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>/* ===== Of Human Bondage · 阅读器 ===== */
+
+:root {
+  --paper: #faf7f0;
+  --paper-2: #f3eee2;
+  --card: #fffdf8;
+  --ink: #211e19;
+  --ink-soft: #46403a;
+  --muted: #7d7365;
+  --line: #e6ddcd;
+  --line-soft: #f0eade;
+  --accent: #a33b2e;
+  --accent-2: #c9a35d;
+  --accent-soft: #f6e9e3;
+  --green: #3f5d4e;
+  --shadow: 0 1px 2px rgba(33, 30, 25, .05), 0 16px 40px -24px rgba(33, 30, 25, .35);
+  --en: "Iowan Old Style", Charter, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --zh: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --zhb: var(--zh);
+  --title: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 1;
+  --side: 286px;
+}
+
+
+[data-theme="dark"] {
+  --paper: #14120e;
+  --paper-2: #1a1712;
+  --card: #1d1a14;
+  --ink: #ebe4d6;
+  --ink-soft: #cfc6b5;
+  --muted: #9b9080;
+  --line: #2f2a22;
+  --line-soft: #262118;
+  --accent: #d9725d;
+  --accent-2: #c9a35d;
+  --accent-soft: #2c201c;
+  --green: #83ab95;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 44px -24px rgba(0, 0, 0, .85);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--zh);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  height: 58px; padding: 0 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.crumb { font-size: 12.5px; color: var(--muted); letter-spacing: .03em; white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 600; }
+
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: transparent; pointer-events: none;
+}
+.readbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .1s linear; }
+
+.tools { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.icon-btn {
+  height: 32px; min-width: 32px; padding: 0 9px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font: 500 12px/1 var(--zh); cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--muted); color: var(--ink); }
+.set-btn { font-family: var(--en); font-size: 13px; letter-spacing: .02em; }
+
+.menu-btn {
+  display: none; width: 32px; height: 32px; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font-size: 15px; cursor: pointer; flex: none;
+}
+
+/* ---------- 设置面板 ---------- */
+
+.settings {
+  position: fixed; z-index: 50; top: 66px; right: 18px; width: 268px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 16px 12px;
+}
+.settings[hidden] { display: none; }
+.set-title { font: 600 11px/1 var(--zh); letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+.set-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13.5px; }
+.sw em { font-style: normal; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.sw input {
+  appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line);
+  position: relative; cursor: pointer; flex: none; transition: background .18s ease; margin-left: auto; order: 2;
+}
+.sw input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--card); transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.sw input:checked { background: var(--accent); }
+.sw input:checked::after { transform: translateX(14px); }
+
+.set-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.set-row span { margin-right: auto; }
+.set-row button {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  border-radius: 7px; padding: 5px 10px; font: 500 12px/1 var(--zh); cursor: pointer;
+}
+.set-row button:hover { border-color: var(--muted); }
+.set-note { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+/* ---------- 布局：左导航 / 正文 / 右目录 ---------- */
+
+:root { --lw: 264px; --rw: 236px; }
+body.no-left { --lw: 0px; }
+body.no-right { --rw: 0px; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--lw) minmax(0, 1fr) var(--rw);
+  align-items: start;
+}
+body.no-left .nav-left, body.no-right .nav-right { display: none; }
+
+.nav-left { grid-column: 1; }
+main { grid-column: 2; }
+.nav-right { grid-column: 3; }
+
+.nav-left {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 20px 14px 34px;
+  border-right: 1px solid var(--line); scrollbar-width: thin;
+}
+.nav-right {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 18px 14px 34px 16px;
+  border-left: 1px solid var(--line); scrollbar-width: thin;
+}
+
+.brand { font: 600 10px/1 var(--zh); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.site-name { font: 600 calc(17px * var(--fs))/1.4 var(--title); margin: 7px 0 14px; }
+
+.gl-links { display: grid; gap: 2px; margin-bottom: 14px; }
+.gl-links a {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 9px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-soft); font-size: 13px;
+}
+.gl-links a:hover { background: var(--paper-2); color: var(--ink); }
+.gl-links a.cur { background: var(--accent-soft); color: var(--accent); }
+.gl-links span { color: var(--muted); font-size: 10.5px; }
+
+.ch-tools { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0 0 16px; }
+.ch-tools .btn.small { padding: 6px 10px; font-size: 12px; }
+.ch-tools #quizBtn2 { width: auto; justify-content: center; }
+
+.side-label { font: 600 10px/1 var(--zh); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ch-label { margin-top: 4px; }
+
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.ch-list a, .ch-list span {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 8px; border-radius: 6px; text-decoration: none;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.ch-list .n { font: 500 10.5px/1.6 var(--mono); color: var(--muted); width: 20px; flex: none; }
+.ch-list a:hover { background: var(--paper-2); color: var(--ink); }
+.ch-list a.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ch-list a.cur .n { color: var(--accent); }
+.ch-list .off { color: var(--muted); opacity: .45; }
+
+
+.rn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 10.5px/1 var(--zh); letter-spacing: .12em; color: var(--muted);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
+}
+.rn-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; }
+.rn-toggle:hover { color: var(--accent); }
+
+.toc { font-size: 12.6px; line-height: 1.45; }
+.toc a {
+  display: block; padding: 5px 8px; margin: 1px 0; border-radius: 6px;
+  color: var(--muted); text-decoration: none; border-left: 2px solid transparent;
+}
+.toc a:hover { background: var(--paper-2); color: var(--ink); }
+.toc a.lv2 { font-weight: 600; margin-top: 9px; color: var(--ink-soft); font-size: 12.8px; }
+.toc a.lv3 { padding-left: 14px; font-size: 12px; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 9px 15px; border-radius: 8px; font: 500 13px/1 var(--zh); cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.small { padding: 7px 12px; font-size: 12.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.btn.small b { color: var(--accent); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.keys { font-size: 11.5px; color: var(--muted); line-height: 2.1; }
+kbd {
+  font: 500 10px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 2px 4px; background: var(--card); color: var(--ink-soft); margin-right: 2px;
+}
+
+/* ---------- 正文 ---------- */
+
+body[data-split="on"] main { max-width: 1040px; }
+main { width: 100%; max-width: 860px; margin: 0 auto; padding: 32px 40px 120px; container-type: inline-size; }
+.doc-head, .writing, .chnav { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.sec { max-width: 700px; margin: 0 auto 46px; }
+body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+h1.doc-title { font: 600 calc(31px * var(--fs))/1.32 var(--title); margin: 0 0 6px; letter-spacing: -.01em; }
+.doc-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 22px; letter-spacing: .02em; }
+.doc-sub strong { color: var(--ink-soft); font-weight: 500; }
+
+h2.sec-title {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh);
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; letter-spacing: .01em;
+}
+h2.sec-title::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+
+h3 {
+  font: 600 calc(17px * var(--fs))/1.5 var(--zh);
+  margin: 40px 0 10px; scroll-margin-top: 80px; letter-spacing: .01em;
+}
+h3.scene-title { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 48px; }
+h3.scene-title .tag {
+  font: 600 10px/1 var(--zh); letter-spacing: .1em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 4px 7px; border-radius: 4px;
+}
+
+h4 { font: 600 calc(14px * var(--fs))/1.6 var(--zh); margin: 24px 0 6px; color: var(--ink); }
+
+p { margin: 0 0 15px; }
+
+code {
+  font-family: var(--en); font-size: .94em; font-style: normal; color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 0 3px; border-radius: 3px;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+
+.prose-body { font-family: var(--zhb); font-size: calc(15.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft); }
+
+/* 提示条 */
+
+.callout {
+  border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line);
+  padding: 16px 20px; font-size: 13.5px; line-height: 1.9; color: var(--ink-soft); margin: 0 0 22px;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* 首段信息条 */
+
+.spec { display: block; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.spec div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); font-size: 12.8px; }
+.spec div:last-child { border-bottom: 0; }
+.spec dt { flex: 0 0 54px; font: 600 11px/1.9 var(--zh); letter-spacing: .08em; color: var(--muted); margin: 0; }
+.spec dd { flex: 1; margin: 0; color: var(--ink-soft); line-height: 1.75; }
+
+/* ---------- 阅读：原文 ---------- */
+
+.reader { font-family: var(--en); font-size: calc(18px * var(--fs)); line-height: 2; }
+.reader p { margin: 0 0 1.3em; position: relative; }
+
+/* ---------- 场景 ---------- */
+
+.scene { scroll-margin-top: 80px; }
+
+.scene-lead {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--ink-soft); background: var(--paper-2);
+  border-left: 3px solid var(--accent-2); padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 12px 0 22px;
+}
+.scene-lead b { color: var(--ink); font-weight: 600; }
+
+.unit {
+  position: relative; padding: 10px 0 20px; border-bottom: 1px dashed var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.unit:last-of-type { border-bottom: 0; }
+.unit .num {
+  position: absolute; left: -34px; top: 14px;
+  font: 600 11.5px/1 var(--mono); color: var(--muted); width: 24px; text-align: right; opacity: .75;
+}
+.unit.focus { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; }
+.unit.flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+.en { position: relative; font-family: var(--en); font-size: calc(17.5px * var(--fs)); line-height: 1.95; margin: 0 0 10px; }
+
+.trans {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--muted); margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--line-soft);
+}
+
+.speak {
+  position: absolute; left: -32px; top: .5em;
+  width: 20px; height: 20px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--card);
+  color: var(--muted); font-size: 7px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity .16s ease, color .16s ease, border-color .16s ease;
+}
+.en:hover > .speak, .reader p:hover > .speak, .speak:focus { opacity: 1; }
+.speak:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- 词 / 句 ---------- */
+
+.chipbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+
+details.anno { display: inline-block; border: 1px solid var(--line); border-radius: 7px; background: var(--card); }
+details.anno > summary {
+  list-style: none; cursor: pointer; padding: 4px 10px; font: 500 11.5px/1.7 var(--zh); color: var(--muted);
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+details.anno > summary::-webkit-details-marker { display: none; }
+details.anno > summary::before { content: "▸"; font-size: 8px; transition: transform .2s ease; }
+details.anno[open] > summary::before { transform: rotate(90deg); }
+details.anno[open] > summary { color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+details.anno .anno-body { padding: 8px 10px; overflow-x: auto; }
+details.anno[open] { flex: 1 1 100%; }
+
+.wordtable { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.wordtable th {
+  text-align: left; font: 600 10px/1 var(--zh); letter-spacing: .08em; color: var(--muted);
+  padding: 3px 7px 7px; border-bottom: 1px solid var(--line);
+}
+.wordtable td { padding: 6px 7px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.wordtable tr:last-child td { border-bottom: 0; }
+.wordtable td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.wordtable td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wordtable td:nth-child(3) { color: var(--ink-soft); line-height: 1.6; }
+
+.sent {
+  border-left: 3px solid var(--accent-2); padding: 5px 0 5px 12px; margin: 8px 0;
+  font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+}
+.sent code {
+  font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--ink);
+  background: none; padding: 0;
+}
+
+/* ---------- 细读 / 写法 ---------- */
+
+details.notes, details.craft {
+  margin: 18px 0 6px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); overflow: hidden;
+}
+details.notes > summary, details.craft > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 11px 15px; display: flex; align-items: center; gap: 8px;
+  font: 600 12.5px/1 var(--zh); color: var(--ink);
+}
+details.notes > summary::-webkit-details-marker, details.craft > summary::-webkit-details-marker { display: none; }
+details.notes > summary::before, details.craft > summary::before {
+  content: "▸"; font-size: 8px; color: var(--accent); transition: transform .2s ease;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+details.notes > summary em, details.craft > summary em {
+  font-style: normal; font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: auto;
+}
+details .inner {
+  padding: 2px 18px 16px; border-top: 1px solid var(--line-soft);
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft);
+}
+details .inner > :first-child { margin-top: 12px; }
+details .inner strong { color: var(--ink); }
+details .inner ol, details .inner ul { padding-left: 20px; }
+details .inner li { margin-bottom: 7px; }
+details .inner blockquote { font-size: .95em; }
+
+/* ---------- 行内词注 ---------- */
+
+.gloss {
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 50%, transparent);
+  cursor: pointer; position: relative; transition: background .15s ease;
+}
+.gloss:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
+.gloss.saved { border-bottom-style: solid; border-bottom-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.gloss::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: 138%; transform: translateX(-50%) translateY(4px);
+  background: var(--ink); color: var(--paper);
+  font: 400 11.5px/1.5 var(--zh); padding: 6px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: all .16s ease; z-index: 30;
+  box-shadow: var(--shadow);
+}
+.gloss:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 分屏讲解 ---------- */
+
+.companion { display: none; }
+
+@container (min-width: 780px) {
+  body[data-split="on"] .scenes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; align-items: start;
+  }
+  body[data-split="on"] .companion {
+    display: block; position: sticky; top: 74px;
+    max-height: calc(100vh - 96px); overflow-y: auto;
+    border-left: 1px solid var(--line);
+    padding: 2px 4px 20px 24px;
+    scrollbar-width: thin;
+  }
+  body[data-split="on"] details.notes:not(.answers),
+  body[data-split="on"] details.craft { display: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+}
+body[data-split="on"] details.notes,
+body[data-split="on"] details.craft { display: none; }
+
+.cp { padding: 16px 18px 20px; }
+.cp-head {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft); margin-bottom: 12px;
+  font: 600 13px/1.4 var(--zh);
+}
+.cp-head .tag {
+  font: 600 9.5px/1 var(--zh); letter-spacing: .08em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 3px 6px; border-radius: 4px; flex: none;
+}
+.cp-sec { margin-bottom: 18px; }
+.cp-sec h4 {
+  margin: 0 0 6px; font: 600 11px/1 var(--zh); letter-spacing: .12em;
+  color: var(--accent); text-transform: uppercase;
+}
+.cp-inner { font-family: var(--zhb); font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); }
+.cp-inner p { margin: 0 0 10px; }
+.cp-inner strong { color: var(--ink); }
+.cp-inner ul, .cp-inner ol { padding-left: 18px; margin: 0 0 10px; }
+.cp-inner li { margin-bottom: 6px; }
+.cp-inner blockquote { font-size: 13px; margin: 0 0 10px; }
+
+body[data-notes="off"] .cp-sec[data-kind="notes"] { display: none; }
+body[data-craft="off"] .cp-sec[data-kind="craft"] { display: none; }
+
+/* ---------- 表格 ---------- */
+
+.tbl-wrap { overflow-x: auto; margin: 16px 0 20px; }
+table.gen {
+  width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+table.gen th {
+  text-align: left; padding: 9px 13px; background: var(--paper-2);
+  font: 600 11.5px/1.5 var(--zh); color: var(--ink); border-bottom: 1px solid var(--line);
+}
+table.gen td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); color: var(--ink-soft); vertical-align: top; }
+table.gen tr:last-child td { border-bottom: 0; }
+table.gen tr:hover td { background: var(--paper-2); }
+
+a.ref { text-decoration: none; color: var(--accent); font-weight: 600; padding: 0 1px; border-radius: 3px; }
+a.ref:hover { background: var(--accent-soft); }
+
+hr { border: 0; border-top: 1px solid var(--line-soft); margin: 30px 0; }
+.sec[data-kind="scenes"] hr, .sec[data-kind="craft"] hr { display: none; }
+
+/* ---------- 显示开关 ---------- */
+
+body[data-trans="off"] .trans { display: none; }
+body[data-words="off"] .anno[data-kind="w"] { display: none; }
+body[data-sents="off"] .anno[data-kind="s"] { display: none; }
+body[data-words="off"][data-sents="off"] .chipbar { display: none; }
+body[data-notes="off"] details.notes:not(.answers) { display: none; }
+body[data-craft="off"] details.craft { display: none; }
+
+
+/* ---------- 小测 / 生词本 ---------- */
+
+
+.fab:hover { filter: brightness(1.06); }
+
+.modal { position: fixed; inset: 0; z-index: 60; display: none; background: rgba(18, 15, 11, .48); backdrop-filter: blur(3px); }
+.modal.open { display: grid; place-items: center; padding: 18px; }
+.sheet {
+  width: min(540px, 100%); max-height: 84vh; overflow-y: auto; background: var(--card);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 22px 24px; color: var(--ink);
+}
+.sheet h3 { margin: 0 0 4px; font-size: 17px; }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.q { margin-bottom: 16px; }
+.q .w { font: 600 15px/1.5 var(--mono); color: var(--accent); }
+.q .opts { display: grid; gap: 6px; margin-top: 8px; }
+.q .opt {
+  text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper); color: var(--ink-soft); font: 400 13px/1.6 var(--zh); cursor: pointer;
+}
+.q .opt:hover { border-color: var(--muted); }
+.q .opt.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+.q .opt.wrong { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.q .fb { font-size: 12px; color: var(--muted); margin-top: 5px; min-height: 16px; }
+.quiz-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.quiz-foot .score { font-size: 12.5px; color: var(--muted); margin-right: auto; }
+
+.wb-list { display: grid; gap: 6px; }
+.wb-item {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft);
+}
+.wb-item:hover { border-color: var(--accent); }
+.wb-item b { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.wb-item span { font-size: 12px; color: var(--muted); }
+.wb-item em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); }
+.wb-empty { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--paper); font: 500 12.5px/1 var(--zh);
+  padding: 9px 14px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: all .22s ease; z-index: 70;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 写作区 ---------- */
+
+.writing {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-top: 30px;
+}
+.writing h3 { margin: 0 0 4px; font-size: 15px; }
+.writing .hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.writing textarea {
+  width: 100%; min-height: 180px; resize: vertical; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--paper);
+  color: var(--ink); font: 400 14.5px/1.9 var(--zhb); outline: none;
+}
+.writing textarea:focus { border-color: var(--accent); }
+.writing .row { display: flex; align-items: center; gap: 10px; margin-top: 9px; font-size: 12px; color: var(--muted); }
+.writing .row .spacer { margin-left: auto; }
+
+/* ---------- 首页 ---------- */
+
+.home { max-width: none; margin: 0; padding: 26px 0 60px; }
+.home h1 { font: 600 calc(38px * var(--fs))/1.28 var(--title); margin: 0 0 10px; letter-spacing: -.01em; }
+.home .lead { font-size: 14.5px; color: var(--muted); margin-bottom: 30px; line-height: 1.9; }
+.stats { display: flex; gap: 40px; margin: 0 0 40px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat b { display: block; font: 600 26px/1.2 var(--title); color: var(--accent); }
+.stat span { font-size: 11.5px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 9px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  font: 500 12.5px/1 var(--mono); text-decoration: none; transition: all .16s ease;
+}
+a.cell { color: var(--ink); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--card)); }
+a.cell:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.cell.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cell.todo { opacity: .5; }
+
+.home .links { display: flex; gap: 12px; margin-top: 36px; }
+.home .links a {
+  flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px;
+  text-decoration: none; color: var(--ink); background: var(--card); transition: all .16s ease;
+}
+.home .links a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.home .links b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.home .links span { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- 技法页 ---------- */
+
+.doc-main { max-width: none; margin: 0; padding: 6px 0 40px; }
+.doc-main h2 {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh); margin: 42px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line);
+}
+.doc-main h3 { margin-top: 30px; }
+.search {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--card); color: var(--ink); font: 400 13.5px/1.4 var(--zh); outline: none; margin-bottom: 6px;
+}
+.search:focus { border-color: var(--accent); }
+
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1179px) {
+  body[data-split="on"] .layout { padding-right: 0; }
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side {
+    position: fixed; left: 0; top: 58px; bottom: 0; width: 284px; z-index: 35;
+    transform: translateX(-102%); transition: transform .24s ease;
+    background: var(--paper); box-shadow: var(--shadow);
+  }
+  aside.side.open { transform: none; }
+  .menu-btn { display: grid; }
+  main { padding: 26px 20px 110px; }
+  .unit .num { position: static; display: block; width: auto; text-align: left; margin-bottom: 4px; }
+  .en { font-size: calc(17px * var(--fs)); }
+  .speak { display: none; }
+  h1.doc-title { font-size: calc(24px * var(--fs)); }
+  .crumb { display: none; }
+  .settings { width: min(300px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 560px) {
+  .home { padding: 38px 18px 80px; }
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .tbl-wrap { margin-left: -4px; margin-right: -4px; }
+}
+
+@media print {
+  .top, aside.side, .fab, .writing, .modal, .settings, .companion, .toast { display: none !important; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  details .inner { display: block; }
+}
+
+/* 非章节页隐藏与章节无关的开关 */
+body:not([data-page="chapter"]) .settings [data-only="chapter"] { display: none; }
+
+/* 章末翻页 */
+.chnav {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 46px auto 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.chnav a { text-decoration: none; color: var(--accent); }
+.chnav span.off { color: var(--muted); opacity: .5; }
+
+/* 侧栏导航 */
+.side-nav { display: flex; gap: 8px; margin: 10px 0 12px; font-size: 12.5px; }
+.side-nav a, .side-nav .off {
+  flex: 1; text-align: center; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink-soft);
+}
+.side-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.side-nav .off { border-style: dashed; color: var(--muted); opacity: .5; }
+
+.quick-links { display: grid; gap: 2px; font-size: 12.5px; }
+.quick-links a { color: var(--ink-soft); text-decoration: none; padding: 5px 8px; border-radius: 6px; }
+.quick-links a:hover { background: var(--paper-2); color: var(--accent); }
+
+.sec[data-kind="write"] .writing { margin-top: 0; }
+
+
+/* ---------- 头部：篇幅 / 问题 ---------- */
+
+.doc-meta { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; margin: 2px 0 18px; }
+
+.questions {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--card); border-radius: 0 12px 12px 0;
+  padding: 18px 22px 14px; margin: 0 0 26px;
+}
+.questions blockquote { border: 0; padding: 0; margin: 0; }
+.questions p { font-family: var(--zhb); font-size: calc(15px * var(--fs)); line-height: 1.95; margin: 0 0 8px; color: var(--ink); }
+.questions p:first-child { font: 600 12px/1 var(--zh); letter-spacing: .06em; color: var(--accent); margin-bottom: 12px; }
+.questions p:last-child { margin-bottom: 0; }
+
+details.qa { border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 14px 0 6px; }
+details.qa > summary {
+  list-style: none; cursor: pointer; padding: 10px 16px;
+  font: 600 12.5px/1.6 var(--zh); color: var(--accent);
+}
+details.qa > summary::-webkit-details-marker { display: none; }
+details.qa > summary::before { content: "▸"; font-size: 9px; margin-right: 6px; display: inline-block; transition: transform .2s ease; }
+details.qa[open] > summary::before { transform: rotate(90deg); }
+details.qa .inner { padding: 4px 18px 14px; border-top: 1px solid var(--line-soft); font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9; color: var(--ink-soft); }
+details.qa .inner ul { padding-left: 18px; margin: 8px 0 0; }
+details.qa .inner li { margin-bottom: 6px; }
+
+/* ---------- 移动端：两侧变抽屉 ---------- */
+
+@media (max-width: 1080px) {
+  .app { display: block; }
+  .nav-left, .nav-right {
+    position: fixed; top: 58px; bottom: 0; z-index: 45;
+    width: min(300px, 86vw); height: auto; background: var(--paper); box-shadow: var(--shadow);
+    display: none;
+  }
+  .nav-left { left: 0; border-right: 1px solid var(--line); }
+  .nav-right { right: 0; border-left: 1px solid var(--line); }
+  body:not(.no-left) .nav-left { display: block; }
+  body:not(.no-right) .nav-right { display: block; }
+  main { padding: 24px 18px 100px; }
+  .ch-list { max-height: calc(100vh - 330px); overflow-y: auto; }
+}
+
+/* ---------- 移动端：抽屉、遮罩、表格 ---------- */
+
+.scrim { display: none; }
+
+/* 词注提示：触屏没有 hover，直接关掉，避免长提示撑宽页面 */
+@media (hover: none), (max-width: 700px) {
+  .gloss::after { display: none; }
+}
+
+@media (max-width: 1080px) {
+  .scrim {
+    display: none; position: fixed; inset: 58px 0 0; z-index: 40;
+    background: rgba(18, 15, 11, .32);
+    -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+  }
+  body:not(.no-left) .scrim, body:not(.no-right) .scrim { display: block; }
+
+  .nav-left, .nav-right { max-height: calc(100vh - 58px); overflow-y: auto; }
+  .ch-list { max-height: none; }
+
+  main { padding: 22px 16px 96px; }
+  .doc-main { padding: 6px 0 40px; }
+
+  /* 表格：宁可横向滚动，也不挤成一条或截断 */
+  .tbl-wrap { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table.gen { min-width: 560px; }
+  .anno-body { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .anno-body .wordtable { min-width: 470px; }
+  .cp-inner table { min-width: 470px; }
+
+  .questions { padding: 14px 16px 10px; }
+  .writing { padding: 16px; }
+  .settings { right: 10px; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉打开时锁住背景滚动 */
+  body:not(.no-left), body:not(.no-right) { overflow: hidden; }
+}
+
+/* ---------- 移动端：工具栏置底 / 全屏抽屉 / 设置底部弹层 ---------- */
+
+.panel-bar { display: none; }
+
+@media (max-width: 1080px) {
+  /* 顶栏变底栏 */
+  .top {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 14px env(safe-area-inset-bottom);
+    border-bottom: 0; border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -10px 24px -16px rgba(0,0,0,.18);
+    justify-content: space-between;
+  }
+  .top .crumb { display: none; }
+  .top .tools { margin-left: 0; gap: 10px; }
+  .icon-btn { height: 38px; min-width: 42px; font-size: 14px; }
+  .readbar { top: -1px; bottom: auto; }
+
+  /* 正文给底栏留出空间 */
+  main { padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .writing { margin-bottom: 8px; }
+
+  /* 侧栏：全屏弹层 */
+  .nav-left, .nav-right {
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    width: 100%; height: auto; max-height: none; border: 0; border-radius: 0;
+    z-index: 55; padding-bottom: 24px;
+  }
+  .scrim { inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0; z-index: 50; }
+
+  .panel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px 18px; margin: -20px -14px 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    font: 600 12px/1 var(--zh); letter-spacing: .1em; color: var(--muted);
+  }
+  .panel-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
+  }
+  .nav-left, .nav-right { padding-left: 18px; padding-right: 18px; }
+  .nav-left .panel-bar { margin-left: -18px; margin-right: -18px; }
+  .nav-right .rn-head {
+    position: sticky; top: 0; z-index: 2; background: var(--paper);
+    margin: -18px -18px 10px; padding: 14px 18px 10px;
+  }
+
+  /* 设置：底部弹层 */
+  .settings {
+    position: fixed; left: 8px; right: 8px; bottom: calc(64px + env(safe-area-inset-bottom));
+    top: auto; width: auto; max-height: calc(100vh - 140px); overflow-y: auto;
+    border-radius: 16px; padding: 16px 18px 14px;
+    z-index: 60;
+  }
+  .settings .sw { padding: 9px 0; }
+  .set-row button { padding: 7px 14px; }
+
+  /* 弹层与提示避开底栏 */
+  .modal { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .sheet { max-height: calc(100vh - 150px); }
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 1080px) {
+  /* 全屏抽屉：让顶部条与内容对齐 */
+  .nav-left, .nav-right { padding-top: 0; }
+  .nav-left .panel-bar { margin: 0 -18px 14px; }
+  .nav-right .rn-head { margin: 0 -18px 10px; }
+
+  /* 设置弹层的遮罩 */
+  body.settings-open .scrim { display: block; z-index: 55; }
+  .settings { z-index: 60; }
+  body.settings-open { overflow: hidden; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉底部渐隐，避免最后一行贴着工具栏 */
+  .nav-left, .nav-right {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    padding-bottom: 28px;
+  }
+}
+</style>
+</head>
+<body class="chapter" data-page="chapter">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb"><b>人性的枷锁</b> · 第一章</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+<aside class="nav-left" id="navLeft">
+  <div class="panel-bar"><span>导航</span><button class="panel-close" type="button" data-close="left" aria-label="关闭">×</button></div>
+  <div class="brand">Of Human Bondage</div>
+  <div class="site-name">人性的枷锁 · 精读</div>
+  <nav class="gl-links">
+    <a class="" href="index.html">总览<span>122 章</span></a>
+    <a class="" href="reading.html">阅读方法手册<span>初读</span></a>
+    <a class="" href="craft.html">写作技法手册<span>21 条</span></a>
+  </nav>
+  <div class="ch-tools"><button class="btn small" id="wbBtn" type="button">生词本 <b id="wbCount">0</b></button><button class="btn small" id="quizBtn2" type="button">小测</button></div>
+  <div class="side-label ch-label">章节</div>
+  <ol class="ch-list"><li><a class="cur" href="ch01.html"><span class="n">01</span>第 1 章</a></li><li><a href="ch02.html"><span class="n">02</span>第 2 章</a></li><li><a href="ch03.html"><span class="n">03</span>第 3 章</a></li><li><a href="ch04.html"><span class="n">04</span>第 4 章</a></li><li><a href="ch05.html"><span class="n">05</span>第 5 章</a></li><li><a href="review-01-05.html"><span class="n"></span>复习 · 1–5</a></li><li><a href="ch06.html"><span class="n">06</span>第 6 章</a></li><li><a href="ch07.html"><span class="n">07</span>第 7 章</a></li><li><a href="ch08.html"><span class="n">08</span>第 8 章</a></li><li><a href="ch09.html"><span class="n">09</span>第 9 章</a></li><li><a href="ch10.html"><span class="n">10</span>第 10 章</a></li><li><span class="off"><span class="n">11</span>第 11 章</span></li><li><span class="off"><span class="n">12</span>第 12 章</span></li><li><span class="off"><span class="n">13</span>第 13 章</span></li><li><span class="off"><span class="n">14</span>第 14 章</span></li><li><span class="off"><span class="n">15</span>第 15 章</span></li><li><span class="off"><span class="n">16</span>第 16 章</span></li><li><span class="off"><span class="n">17</span>第 17 章</span></li><li><span class="off"><span class="n">18</span>第 18 章</span></li><li><span class="off"><span class="n">19</span>第 19 章</span></li><li><span class="off"><span class="n">20</span>第 20 章</span></li><li><span class="off"><span class="n">21</span>第 21 章</span></li><li><span class="off"><span class="n">22</span>第 22 章</span></li><li><span class="off"><span class="n">23</span>第 23 章</span></li><li><span class="off"><span class="n">24</span>第 24 章</span></li><li><span class="off"><span class="n">25</span>第 25 章</span></li><li><span class="off"><span class="n">26</span>第 26 章</span></li><li><span class="off"><span class="n">27</span>第 27 章</span></li><li><span class="off"><span class="n">28</span>第 28 章</span></li><li><span class="off"><span class="n">29</span>第 29 章</span></li><li><span class="off"><span class="n">30</span>第 30 章</span></li><li><span class="off"><span class="n">31</span>第 31 章</span></li><li><span class="off"><span class="n">32</span>第 32 章</span></li><li><span class="off"><span class="n">33</span>第 33 章</span></li><li><span class="off"><span class="n">34</span>第 34 章</span></li><li><span class="off"><span class="n">35</span>第 35 章</span></li><li><span class="off"><span class="n">36</span>第 36 章</span></li><li><span class="off"><span class="n">37</span>第 37 章</span></li><li><span class="off"><span class="n">38</span>第 38 章</span></li><li><span class="off"><span class="n">39</span>第 39 章</span></li><li><span class="off"><span class="n">40</span>第 40 章</span></li><li><span class="off"><span class="n">41</span>第 41 章</span></li><li><span class="off"><span class="n">42</span>第 42 章</span></li><li><span class="off"><span class="n">43</span>第 43 章</span></li><li><span class="off"><span class="n">44</span>第 44 章</span></li><li><span class="off"><span class="n">45</span>第 45 章</span></li><li><span class="off"><span class="n">46</span>第 46 章</span></li><li><span class="off"><span class="n">47</span>第 47 章</span></li><li><span class="off"><span class="n">48</span>第 48 章</span></li><li><span class="off"><span class="n">49</span>第 49 章</span></li><li><span class="off"><span class="n">50</span>第 50 章</span></li><li><span class="off"><span class="n">51</span>第 51 章</span></li><li><span class="off"><span class="n">52</span>第 52 章</span></li><li><span class="off"><span class="n">53</span>第 53 章</span></li><li><span class="off"><span class="n">54</span>第 54 章</span></li><li><span class="off"><span class="n">55</span>第 55 章</span></li><li><span class="off"><span class="n">56</span>第 56 章</span></li><li><span class="off"><span class="n">57</span>第 57 章</span></li><li><span class="off"><span class="n">58</span>第 58 章</span></li><li><span class="off"><span class="n">59</span>第 59 章</span></li><li><span class="off"><span class="n">60</span>第 60 章</span></li><li><span class="off"><span class="n">61</span>第 61 章</span></li><li><span class="off"><span class="n">62</span>第 62 章</span></li><li><span class="off"><span class="n">63</span>第 63 章</span></li><li><span class="off"><span class="n">64</span>第 64 章</span></li><li><span class="off"><span class="n">65</span>第 65 章</span></li><li><span class="off"><span class="n">66</span>第 66 章</span></li><li><span class="off"><span class="n">67</span>第 67 章</span></li><li><span class="off"><span class="n">68</span>第 68 章</span></li><li><span class="off"><span class="n">69</span>第 69 章</span></li><li><span class="off"><span class="n">70</span>第 70 章</span></li><li><span class="off"><span class="n">71</span>第 71 章</span></li><li><span class="off"><span class="n">72</span>第 72 章</span></li><li><span class="off"><span class="n">73</span>第 73 章</span></li><li><span class="off"><span class="n">74</span>第 74 章</span></li><li><span class="off"><span class="n">75</span>第 75 章</span></li><li><span class="off"><span class="n">76</span>第 76 章</span></li><li><span class="off"><span class="n">77</span>第 77 章</span></li><li><span class="off"><span class="n">78</span>第 78 章</span></li><li><span class="off"><span class="n">79</span>第 79 章</span></li><li><span class="off"><span class="n">80</span>第 80 章</span></li><li><span class="off"><span class="n">81</span>第 81 章</span></li><li><span class="off"><span class="n">82</span>第 82 章</span></li><li><span class="off"><span class="n">83</span>第 83 章</span></li><li><span class="off"><span class="n">84</span>第 84 章</span></li><li><span class="off"><span class="n">85</span>第 85 章</span></li><li><span class="off"><span class="n">86</span>第 86 章</span></li><li><span class="off"><span class="n">87</span>第 87 章</span></li><li><span class="off"><span class="n">88</span>第 88 章</span></li><li><span class="off"><span class="n">89</span>第 89 章</span></li><li><span class="off"><span class="n">90</span>第 90 章</span></li><li><span class="off"><span class="n">91</span>第 91 章</span></li><li><span class="off"><span class="n">92</span>第 92 章</span></li><li><span class="off"><span class="n">93</span>第 93 章</span></li><li><span class="off"><span class="n">94</span>第 94 章</span></li><li><span class="off"><span class="n">95</span>第 95 章</span></li><li><span class="off"><span class="n">96</span>第 96 章</span></li><li><span class="off"><span class="n">97</span>第 97 章</span></li><li><span class="off"><span class="n">98</span>第 98 章</span></li><li><span class="off"><span class="n">99</span>第 99 章</span></li><li><span class="off"><span class="n">100</span>第 100 章</span></li><li><span class="off"><span class="n">101</span>第 101 章</span></li><li><span class="off"><span class="n">102</span>第 102 章</span></li><li><span class="off"><span class="n">103</span>第 103 章</span></li><li><span class="off"><span class="n">104</span>第 104 章</span></li><li><span class="off"><span class="n">105</span>第 105 章</span></li><li><span class="off"><span class="n">106</span>第 106 章</span></li><li><span class="off"><span class="n">107</span>第 107 章</span></li><li><span class="off"><span class="n">108</span>第 108 章</span></li><li><span class="off"><span class="n">109</span>第 109 章</span></li><li><span class="off"><span class="n">110</span>第 110 章</span></li><li><span class="off"><span class="n">111</span>第 111 章</span></li><li><span class="off"><span class="n">112</span>第 112 章</span></li><li><span class="off"><span class="n">113</span>第 113 章</span></li><li><span class="off"><span class="n">114</span>第 114 章</span></li><li><span class="off"><span class="n">115</span>第 115 章</span></li><li><span class="off"><span class="n">116</span>第 116 章</span></li><li><span class="off"><span class="n">117</span>第 117 章</span></li><li><span class="off"><span class="n">118</span>第 118 章</span></li><li><span class="off"><span class="n">119</span>第 119 章</span></li><li><span class="off"><span class="n">120</span>第 120 章</span></li><li><span class="off"><span class="n">121</span>第 121 章</span></li><li><span class="off"><span class="n">122</span>第 122 章</span></li></ol>
+</aside>
+<main>
+<header class="doc-head">
+<h1 class="doc-title">《人性的枷锁》第一章 · 精读与写作</h1>
+<div class="doc-sub"><strong>Of Human Bondage</strong> · W. Somerset Maugham · 1915</div>
+<p class="doc-meta">620 词 · 33 个自然段 · 约 4 分钟</p>
+<div class="questions"><blockquote><p><strong>读之前：两个问题</strong></p><p><strong>1.</strong> 你对这本书知道多少？书名里的“枷锁”，你猜指什么？</p><p><strong>2.</strong> 你希望从这个故事里得到什么？</p><p>用 5W2H 的思路读剧情，重点看情节怎么推进、人物怎么变。</p></blockquote></div>
+</header><section class="sec" data-kind="read" id="sec-1">
+<h2 class="sec-title">一、原文</h2>
+<p>读完之后，只想一个问题：<strong>这个早晨，家里发生了什么？</strong></p>
+<div class="reader"><p class="en">The day broke gray and dull. The clouds hung heavily, and there was a rawness in the air that suggested snow. A woman servant came into a room in which a child was sleeping and drew the curtains. She glanced mechanically at the house opposite, a stucco house with a portico, and went to the child’s bed.</p><p class="en">“Wake up, Philip,” she said.</p><p class="en">She pulled down the bed-clothes, took him in her arms, and carried him downstairs. He was only half awake.</p><p class="en">“Your mother wants you,” she said.</p><p class="en">She opened the door of a room on the floor below and took the child over to a bed in which a woman was lying. It was his mother. She stretched out her arms, and the child nestled by her side. He did not ask why he had been awakened. The woman kissed his eyes, and with thin, small hands felt the warm body through his white flannel nightgown. She pressed him closer to herself.</p><p class="en">“Are you sleepy, darling?” she said.</p><p class="en">Her voice was so weak that it seemed to come already from a great distance. The child did not answer, but smiled comfortably. He was very happy in the large, warm bed, with those soft arms about him. He tried to make himself smaller still as he cuddled up against his mother, and he kissed her sleepily. In a moment he closed his eyes and was fast asleep. The doctor came forwards and stood by the bed-side.</p><p class="en">“Oh, don’t take him away yet,” she moaned.</p><p class="en">The doctor, without answering, looked at her gravely. Knowing she would not be allowed to keep the child much longer, the woman kissed him again; and she passed her hand down his body till she came to his feet; she held the right foot in her hand and felt the five small toes; and then slowly passed her hand over the left one. She gave a sob.</p><p class="en">“What’s the matter?” said the doctor. “You’re tired.”</p><p class="en">She shook her head, unable to speak, and the tears rolled down her cheeks. The doctor bent down.</p><p class="en">“Let me take him.”</p><p class="en">She was too weak to resist his wish, and she gave the child up. The doctor handed him back to his nurse.</p><p class="en">“You’d better put him back in his own bed.”</p><p class="en">“Very well, sir.” The little boy, still sleeping, was taken away. His mother sobbed now broken-heartedly.</p><p class="en">“What will happen to him, poor child?”</p><p class="en">The monthly nurse tried to quiet her, and presently, from exhaustion, the crying ceased. The doctor walked to a table on the other side of the room, upon which, under a towel, lay the body of a still-born child. He lifted the towel and looked. He was hidden from the bed by a screen, but the woman guessed what he was doing.</p><p class="en">“Was it a girl or a boy?” she whispered to the nurse.</p><p class="en">“Another boy.”</p><p class="en">The woman did not answer. In a moment the child’s nurse came back. She approached the bed.</p><p class="en">“Master Philip never woke up,” she said. There was a pause. Then the doctor felt his patient’s pulse once more.</p><p class="en">“I don’t think there’s anything I can do just now,” he said. “I’ll call again after breakfast.”</p><p class="en">“I’ll show you out, sir,” said the child’s nurse.</p><p class="en">They walked downstairs in silence. In the hall the doctor stopped.</p><p class="en">“You’ve sent for Mrs. Carey’s brother-in-law, haven’t you?”</p><p class="en">“Yes, sir.”</p><p class="en">“D’you know at what time he’ll be here?”</p><p class="en">“No, sir, I’m expecting a telegram.”</p><p class="en">“What about the little boy? I should think he’d be better out of the way.”</p><p class="en">“Miss Watkin said she’d take him, sir.”</p><p class="en">“Who’s she?”</p><p class="en">“She’s his godmother, sir. D’you think Mrs. Carey will get over it, sir?”</p><p class="en">The doctor shook his head.</p></div>
+<ol><li>本章写了什么？用 5W2H 说一遍：谁、做了什么、何时、何地、为什么、怎么发生、代价是什么。</li><li>剧情有什么进展？人物关系有什么变化？</li><li>本章中印象最深的是什么？</li><li>本章有几个场景？作者是怎么推进剧情的？</li><li>全章没有出现“死”字，作者用哪些东西代替了它？</li><li>母亲的手最后停在孩子身上的什么地方？这个动作说明了什么？</li><li>医生离开前为什么只是摇头，没有说一句话？</li></ol>
+</section>
+<section class="sec" data-kind="scenes" id="sec-2">
+<h2 class="sec-title">二、逐场精读</h2>
+<h3 id="h-3">概览</h3>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>场</th><th>场景</th><th>段号</th><th>这一场发生什么</th></tr></thead><tbody><tr><td>1</td><td>破晓</td><td><a class="ref" href="#p-1">①</a></td><td>仆人叫醒菲利普，天要下雪</td></tr><tr><td>2</td><td>楼下的床</td><td><a class="ref" href="#p-2">②</a>—<a class="ref" href="#p-7">⑦</a></td><td>孩子被抱到母亲床上，母亲抱住他</td></tr><tr><td>3</td><td>五只脚趾</td><td><a class="ref" href="#p-8">⑧</a>—<a class="ref" href="#p-13">⑬</a></td><td>医生要抱走孩子，母亲摸遍他的脚趾</td></tr><tr><td>4</td><td>屏风后</td><td><a class="ref" href="#p-14">⑭</a>—<a class="ref" href="#p-19">⑲</a></td><td>孩子被抱走；毛巾下的死婴；“又是个男孩”</td></tr><tr><td>5</td><td>门厅</td><td><a class="ref" href="#p-20">⑳</a>—<a class="ref" href="#p-33">㉝</a></td><td>医生下楼，交代后事；摇头</td></tr></tbody></table></div>
+<hr><div class="scenes-grid"><div class="scenes-main"><section class="scene" id="scene-1" data-scene="1"><h3 class="scene-title" id="scene-1"><span class="tag">场景 1</span>破晓：仆人叫醒菲利普</h3><div class="scene-lead"><b>这一场　</b>作者只给天气和一个人的习惯动作，故意不交代任何背景。读完先问自己：这一段里有几个人？我们知道了什么？</div><div class="unit" id="p-1"><span class="num">①</span><p class="en">The day broke gray and dull. The clouds hung heavily, and there was a <span class="gloss" data-tip="/ˈrɔːnəs/ · 湿冷刺骨">rawness</span> in the air that suggested snow. A woman servant came into a room in which a child was sleeping and drew the curtains. She glanced mechanically at the house opposite, a <span class="gloss" data-tip="/ˈstʌkəʊ/ · 灰泥（外墙）">stucco</span> house with a <span class="gloss" data-tip="/ˈpɔːtɪkəʊ/ · 门廊（有柱）">portico</span>, and went to the child’s bed.</p><p class="trans">天亮时，天色灰暗阴沉。云压得很低，空气里有一股刺骨的湿冷，像是要下雪。一个女仆走进一间孩子正在睡觉的房间，拉开窗帘。她朝对面那幢房子机械地看了一眼——灰泥外墙，带门廊——然后走到孩子床边。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>rawness</td><td>/ˈrɔːnəs/</td><td>湿冷刺骨</td></tr><tr><td>stucco</td><td>/ˈstʌkəʊ/</td><td>灰泥（外墙）</td></tr><tr><td>portico</td><td>/ˈpɔːtɪkəʊ/</td><td>门廊（有柱）</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>a room in which a child was sleeping</code>：介词 + which 引导的定语从句，修饰 room；比用 where 更书面。后面的 <code>that suggested snow</code> 也是定语从句，修饰 a rawness。</div></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-1">①</a>是整章唯一还站在屋外的句子：叙述者先看天，之后才钻进孩子的感官。</li><li><code>mechanically</code>（机械地）是全段的钥匙：仆人每天这样拉开窗帘，今天也一样——用例行公事衬这一天的非常。</li><li>对面那栋“灰泥外墙、带门廊”的房子，交代了这是一个体面的中产家庭，但世界不会为这个早晨停一秒。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p>这一场是全书第一页，值得慢慢讲：开头到底在干什么。</p>
+<p>先看一版写坏的。</p>
+<blockquote><p class="en">It was a cold morning in March 1885, and Mrs. Carey was dying. She had been ill for three days, and the doctor had told the family there was no hope. In the house in Onslow Gardens a servant went up to wake her son Philip, who was nine and did not know that his mother was about to die.</p></blockquote>
+<p>没有语法错，五个信息全对：年份、病情、医生的判断、孩子九岁、母亲要死。它坏在哪？<strong>它把整章的底牌一次打完了。</strong> 读者读完第一段，剩下三十三段只是确认。最糟的是最后半句——它把全章要慢慢建立的反讽，一句话说破了。你要的效果是读者替孩子着急；现在孩子还没出场，读者已经知道了，急不起来。</p>
+<p>毛姆怎么做？第一段只给三样东西：天、一个习惯动作、一个睡着的孩子。</p>
+<p><code>The day broke gray and dull.</code> 五个词。注意动词是 broke——天“破”了。他没写 became light，也没写“1885 年 3 月的一个寒冷的早晨”。<strong>先给世界，不给日历。</strong> 世界不带感情，先把它摆好，人再进来，人的感情才像真的。</p>
+<p><code>there was a rawness in the air that suggested snow</code> —— rawness 是湿冷刺骨，像伤口没愈合那种疼。关键是 suggested：只说“像要下雪”，没说“要下雪”。<strong>第一段就给全书定了规矩：能暗示的，绝不说破。</strong> 你在第一段定的调子，后面三十三段都得守；守不住，读者会觉得被骗。</p>
+<p>然后是 <code>A woman servant came into a room in which a child was sleeping and drew the curtains.</code> 一个女仆，一个孩子。都没有名字。为什么？因为此刻还不重要。名字是亲密的开始，得等：第二段才给 “Philip”，到门厅才是 “Master Philip”。这条漏斗是从冷到热、从远到近：世界 → 房子 → 房间 → 孩子 → 名字 → “你妈妈要见你”。</p>
+<p><code>She glanced mechanically at the house opposite, a stucco house with a portico, and went to the child’s bed.</code> mechanically 是这一段的钥匙：她每天早上都这么拉窗帘、都这么看一眼。<strong>例行公事，才衬得出今天不一样。</strong> 对面那栋房子还顺手干了另一件事：给了一个跟剧情毫无关系的细节。它不为情节服务，它为“真”服务——人清早起来真的会看见对面的房子。新手舍不得写这种“没用”的细节，所以场景总像布景板。</p>
+<p>所以开头第一段的任务，从来不是介绍。是<strong>示范读者该怎么看</strong>：用感官不用判断，用习惯不用抒情，用暗示不用说明。门道在第四节展开讲。</p>
+<hr></div></details></section><section class="scene" id="scene-2" data-scene="2"><h3 class="scene-title" id="scene-2"><span class="tag">场景 2</span>楼下的床：母亲抱住孩子</h3><div class="scene-lead"><b>这一场　</b>盯住两件事：孩子感到了什么（床、手臂、睡衣的料子），以及他不知道什么（这是最后一面）。</div><div class="unit" id="p-2"><span class="num">②</span><p class="en">“Wake up, <span class="gloss" data-tip="/ˈfɪlɪp/ · 菲利普（男名）">Philip</span>,” she said.</p><p class="trans">“醒醒，菲利普。”她说。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>Philip</td><td>/ˈfɪlɪp/</td><td>菲利普（男名）</td></tr></table></div></details></div></div><div class="unit" id="p-3"><span class="num">③</span><p class="en">She pulled down the <span class="gloss" data-tip="被褥（今多写 bedclothes）">bed-clothes</span>, took him in her arms, and carried him downstairs. He was only half awake.</p><p class="trans">她掀开被子，把他抱起来，抱下楼。他还没完全醒。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>bed-clothes</td><td>—</td><td>被褥（今多写 bedclothes）</td></tr><tr><td>take sb in one’s arms</td><td>—</td><td>把某人抱在怀里</td></tr></table></div></details></div></div><div class="unit" id="p-4"><span class="num">④</span><p class="en">“Your mother wants you,” she said.</p><p class="trans">“你妈妈要见你。”她说。</p></div><div class="unit" id="p-5"><span class="num">⑤</span><p class="en">She opened the door of a room on the floor below and took the child over to a bed in which a woman was lying. It was his mother. She stretched out her arms, and the child nestled by her side. He did not ask why he had been awakened. The woman kissed his eyes, and with thin, small hands felt the warm body through his white <span class="gloss" data-tip="/ˈflænl/ · 法兰绒">flannel</span> <span class="gloss" data-tip="/ˈnaɪtɡaʊn/ · 长睡衣">nightgown</span>. She pressed him closer to herself.</p><p class="trans">她推开楼下一间屋子的门，把孩子抱到一张床前，床上躺着一个女人。那是他母亲。她伸出双臂，孩子便依偎过去。他没有问为什么把他叫醒。女人吻他的眼睛，用一双又瘦又小的手隔着白色法兰绒睡衣摸他温热的身子。她把他搂得更紧。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>nestle</td><td>/ˈnesl/</td><td>依偎</td></tr><tr><td>flannel</td><td>/ˈflænl/</td><td>法兰绒</td></tr><tr><td>nightgown</td><td>/ˈnaɪtɡaʊn/</td><td>长睡衣</td></tr></table></div></details></div></div><div class="unit" id="p-6"><span class="num">⑥</span><p class="en">“Are you sleepy, darling?” she said.</p><p class="trans">“你困吗，宝贝？”她说。</p></div><div class="unit" id="p-7"><span class="num">⑦</span><p class="en">Her voice was so weak that it seemed to come already from a great distance. The child did not answer, but smiled comfortably. He was very happy in the large, warm bed, with those soft arms about him. He tried to make himself smaller still as he cuddled up against his mother, and he kissed her sleepily. In a moment he closed his eyes and was <span class="gloss" data-tip="熟睡（fast 这里是副词）">fast asleep</span>. The doctor came <span class="gloss" data-tip="/ˈfɔːwədz/ · 向前（旧式，今多用 forward）">forwards</span> and stood by the <span class="gloss" data-tip="床边">bed-side</span>.</p><p class="trans">她的声音太弱了，仿佛已经是从很远的地方传来。孩子没有回答，只是舒服地笑了。躺在这张大而温暖的床上，被那两条柔软的手臂搂着，他快活极了。他往母亲怀里又缩了缩，想把身子变得更小，迷迷糊糊地亲了她一下。不一会儿，他就闭上眼睛，睡沉了。医生走上前来，在床边站定。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 4</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>cuddle up</td><td>—</td><td>蜷缩着贴近</td></tr><tr><td>fast asleep</td><td>—</td><td>熟睡（fast 这里是副词）</td></tr><tr><td>forwards</td><td>/ˈfɔːwədz/</td><td>向前（旧式，今多用 forward）</td></tr><tr><td>bed-side</td><td>—</td><td>床边</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>Her voice was so weak that it seemed to come already from a great distance.</code>：so...that 引导结果状语从句（“如此……以至于”）；seem to do 表示“似乎”，already 是副词，暗示“人还在这里，声音已经走了”。</div></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-2">②</a>—<a class="ref" href="#p-5">⑤</a>是最短的接力：叫醒、抱下楼、说一句“你妈妈要见你”。整章只有这一句解释，还是借仆人的嘴说的。</li><li><a class="ref" href="#p-5">⑤</a><code>He did not ask why he had been awakened.</code> 否定句写顺从：孩子不追问，因为在这个家里，孩子不被解释。</li><li><a class="ref" href="#p-7">⑦</a><code>already</code> 是重心：人还在这边，声音已经到了“那边”。</li><li><code>He was very happy</code> 只有四个词，却和“临终”睡在同一张床上：孩子的快乐是真的，母亲的悲伤也是真的。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p>这一场教三样：让读者站在谁的肩膀上、怎么用布料和温度代替“温馨”、怎么把两个相反的事实摆在一起。</p>
+<p>坏版本先来：</p>
+<blockquote><p class="en">She carried him downstairs to his mother’s room. His mother was very ill and could not move. She held him tightly and kissed him, and he felt safe and warm in her arms, though he did not understand what was happening.</p></blockquote>
+<p>毛病三处：<code>very ill and could not move</code> 是病历，不是画面；<code>felt safe and warm</code> 是结论；<code>though he did not understand</code> 是作者在提醒读者“注意，这里有反讽”。三句都在替读者干活。</p>
+<p>毛姆的做法是先把镜头<strong>钉在孩子的身高上</strong>：他被抱着下楼，看不见母亲的脸，只看见床、手臂、睡衣的料子。这就是限制视角——不是“用孩子的口吻写”，是<strong>先答四个问题：他站哪、多高、看得见什么、听不见什么</strong>。答案决定了他能写什么：他看不见医生站在哪，所以医生“走上前来”，是在他自己睡熟之后才被提到的。</p>
+<p>第二样是感官锚点：<code>white flannel nightgown</code>、<code>warm body</code>、<code>thin, small hands</code>、<code>soft arms</code>。一个“温馨”都没有，可你摸到了。<strong>写温情别用形容词，用布料、温度、重量。</strong> 顺带一句：<code>thin, small hands</code> 这四个词同时是病情——那双手瘦得不像活人的手，孩子不知道，读者知道。</p>
+<p>第三样是并置：<code>Her voice was so weak that it seemed to come already from a great distance.</code> 下一句是 <code>The child did not answer, but smiled comfortably. He was very happy...</code> 中间只有一个句号，没有 but。为什么不加？<strong>因为转折词一出现，作者就替读者把判断下了。</strong> 删掉它，读者自己撞上这个反差，那一沉才是他自己的。写并置记住一条：两个相反的事实挨着，中间什么都别放。</p>
+<hr></div></details></section><section class="scene" id="scene-3" data-scene="3"><h3 class="scene-title" id="scene-3"><span class="tag">场景 3</span>五只脚趾：母亲最后的告别</h3><div class="scene-lead"><b>这一场　</b>全章最重的一场。注意作者怎么用一双手，替掉所有该有的抒情。</div><div class="unit" id="p-8"><span class="num">⑧</span><p class="en">“Oh, don’t take him away yet,” she moaned.</p><p class="trans">“哦，别现在就把他抱走。”她呻吟着说。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>moan</td><td>/məʊn/</td><td>呻吟（比 groan 更弱、更委屈）</td></tr></table></div></details></div></div><div class="unit" id="p-9"><span class="num">⑨</span><p class="en">The doctor, without answering, looked at her <span class="gloss" data-tip="/ˈɡreɪvli/ · 严肃地">gravely</span>. Knowing she would not be allowed to keep the child much longer, the woman kissed him again; and she passed her hand down his body till she came to his feet; she held the right foot in her hand and felt the five small toes; and then slowly passed her hand over the left one. She gave a <span class="gloss" data-tip="/sɒb/ · 抽泣">sob</span>.</p><p class="trans">医生没有答话，只是严肃地看着她。她知道自己留不了孩子多久了，便又吻了他；手顺着他的身子往下摸，一直摸到脚；她握住他的右脚，摸那五只小小的脚趾；然后慢慢地，把手抚过左脚。她抽泣了一声。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 4</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>gravely</td><td>/ˈɡreɪvli/</td><td>严肃地</td></tr><tr><td>be allowed to do</td><td>—</td><td>被允许做</td></tr><tr><td>toe</td><td>/təʊ/</td><td>脚趾</td></tr><tr><td>sob</td><td>/sɒb/</td><td>抽泣</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>Knowing she would not be allowed to keep the child much longer, the woman kissed him again</code>：现在分词短语作原因状语，逻辑主语必须与主句主语一致（都是 the woman）；would not be allowed to do 是被动结构，“不被允许”。</div></div></details></div></div><div class="unit" id="p-10"><span class="num">⑩</span><p class="en">“What’s the matter?” said the doctor. “You’re tired.”</p><p class="trans">“怎么了？”医生说，“你累了。”</p></div><div class="unit" id="p-11"><span class="num">⑪</span><p class="en">She shook her head, unable to speak, and the tears rolled down her cheeks. The doctor bent down.</p><p class="trans">她摇摇头，说不出话，眼泪顺着脸颊滚下来。医生俯下身。</p></div><div class="unit" id="p-12"><span class="num">⑫</span><p class="en">“Let me take him.”</p><p class="trans">“让我抱他吧。”</p></div><div class="unit" id="p-13"><span class="num">⑬</span><p class="en">She was too weak to <span class="gloss" data-tip="/rɪˈzɪst/ · 抗拒">resist</span> his wish, and she gave the child up. The doctor handed him back to his nurse.</p><p class="trans">她太虚弱了，拗不过他，只好把孩子交出去。医生把孩子交还给保姆。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>resist</td><td>/rɪˈzɪst/</td><td>抗拒</td></tr><tr><td>give sb up</td><td>—</td><td>把某人交出去</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>She was too weak to resist his wish</code>：too...to 结构表示否定结果：“太虚弱，以至于无法抗拒”。</div></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-9">⑨</a>的被动语态是关键：不是她不肯放手，是“不被允许”——身体、命运、医生替她做了决定。</li><li><a class="ref" href="#p-9">⑨</a>的三个分句由分号和 and 串起来，节奏被拉慢，像一只手在身上移动；till、and then 既是时间，也是告别。</li><li><a class="ref" href="#p-9">⑨</a><code>She gave a sob.</code> 四个词。前面长句蓄的力，在这里只放出一个音节。</li><li><strong>伏笔</strong>：菲利普天生足内翻（club foot），这只脚是他一生的痛处。第一章以脚收尾，不是偶然。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p>全章最重的一场，也是最能教你“情绪怎么落地”的一场。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">She did not want to let him go. She was afraid she would never see him again, and her heart ached. She kissed him again and again, and then she began to cry.</p></blockquote>
+<p>问题不在词，在<strong>它替读者哭了</strong>。<code>her heart ached</code> 是作者的心疼，<code>again and again</code> 是想让读者也疼。读者最不吃这一套。</p>
+<p>毛姆写的是：手顺着孩子的身体往下，到脚，握住右脚，摸那五只小脚趾，然后慢慢抚过左脚。<code>She gave a sob.</code> 四个词。</p>
+<p>这就是客观对应物：<strong>不写“舍不得”，写手走到哪儿、数了什么。</strong> 情绪词是作者的结论，动作才是读者的证据。而“五只脚趾”这个数字里有三样东西：确认（一只不少）、清点（像在盘货）、告别（最后一次数）。你要是写“她摸了摸他的脚”，这些全没了——<strong>数字里有信息</strong>。</p>
+<p>再往里一层：她的动作是分镜的——身体 → 脚 → 右脚 → 左脚，一句一个动作。这叫动作分镜。为什么有效？读者跟着那只手走完这段路，告别就完成了，不用作者说“这是告别”。你写大动作，把它拆成三四个小动作，按顺序写，不评价。</p>
+<p>最后是短句刹车。前面那句长得要命（<code>and she passed her hand down his body till she came to his feet; she held the right foot in her hand and felt the five small toes; and then slowly passed her hand over the left one</code>），后面接 <code>She gave a sob.</code> 长句蓄的力，全在四个词上放出来。<strong>长句推着走，短句刹车。</strong></p>
+<p>伏笔那句细读里说过，不重复：这只脚是菲利普一生的痛处，第一章就让母亲的手停在那儿，不是偶然。</p>
+<hr></div></details></section><section class="scene" id="scene-4" data-scene="4"><h3 class="scene-title" id="scene-4"><span class="tag">场景 4</span>屏风后：一个死婴，“又是个男孩”</h3><div class="scene-lead"><b>这一场　</b>注意“死”这个字出现在哪：房间另一头、毛巾底下、屏风后面。作者把最狠的东西放得最远。</div><div class="unit" id="p-14"><span class="num">⑭</span><p class="en">“You’d better put him back in his own bed.”</p><p class="trans">“最好把他放回他自己的床上去。”</p></div><div class="unit" id="p-15"><span class="num">⑮</span><p class="en">“Very well, sir.” The little boy, still sleeping, was taken away. His mother sobbed now <span class="gloss" data-tip="/ˌbrəʊkənˈhɑːtɪdli/ · 肝肠寸断地">broken-heartedly</span>.</p><p class="trans">“好的，先生。”小男孩还睡着，被抱走了。做母亲的这时哭得肝肠寸断。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>broken-heartedly</td><td>/ˌbrəʊkənˈhɑːtɪdli/</td><td>肝肠寸断地</td></tr></table></div></details></div></div><div class="unit" id="p-16"><span class="num">⑯</span><p class="en">“What will happen to him, poor child?”</p><p class="trans">“他以后可怎么办啊，可怜的孩子？”</p></div><div class="unit" id="p-17"><span class="num">⑰</span><p class="en">The <span class="gloss" data-tip="月嫂（产后一个月内上门照护的护士，与后文 the child’s nurse 保姆不同）">monthly nurse</span> tried to quiet her, and <span class="gloss" data-tip="/ˈprezntli/ · 不久之后（不是“目前”）">presently</span>, from <span class="gloss" data-tip="/ɪɡˈzɔːstʃən/ · 精疲力竭">exhaustion</span>, the crying ceased. The doctor walked to a table on the other side of the room, upon which, under a towel, lay the body of a <span class="gloss" data-tip="/ˌstɪlˈbɔːn/ · 死产的（今多写 stillborn）">still-born</span> child. He lifted the towel and looked. He was hidden from the bed by a <span class="gloss" data-tip="/skriːn/ · 屏风">screen</span>, but the woman guessed what he was doing.</p><p class="trans">月嫂想劝她安静下来；过了一会儿，她哭得没了力气，便停了。医生走到房间另一头的一张桌子旁，桌上一条毛巾底下，躺着一具死产的婴尸。他掀开毛巾看了看。一道屏风把他和床隔开，可女人猜得到他在做什么。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 5</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>monthly nurse</td><td>—</td><td>月嫂（产后一个月内上门照护的护士，与后文 the child’s nurse 保姆不同）</td></tr><tr><td>presently</td><td>/ˈprezntli/</td><td>不久之后（不是“目前”）</td></tr><tr><td>exhaustion</td><td>/ɪɡˈzɔːstʃən/</td><td>精疲力竭</td></tr><tr><td>still-born</td><td>/ˌstɪlˈbɔːn/</td><td>死产的（今多写 stillborn）</td></tr><tr><td>screen</td><td>/skriːn/</td><td>屏风</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 2</summary><div class="anno-body"><div class="sent"><code>upon which, under a towel, lay the body of a still-born child</code>：完全倒装：地点状语（under a towel）提到句首，谓语 lay 放在主语 the body 之前；upon which 引导定语从句，修饰 a table。正常语序是 the body of a still-born child lay upon the table。</div><div class="sent"><code>He was hidden from the bed by a screen</code>：被动语态；hide sb/sth from sb 表示“把……挡在……视线之外”。</div></div></details></div></div><div class="unit" id="p-18"><span class="num">⑱</span><p class="en">“Was it a girl or a boy?” she whispered to the nurse.</p><p class="trans">“是女孩还是男孩？”她悄声问护士。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>whisper</td><td>/ˈwɪspə/</td><td>低声说</td></tr></table></div></details></div></div><div class="unit" id="p-19"><span class="num">⑲</span><p class="en">“Another boy.”</p><p class="trans">“又是个男孩。”</p></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-17">⑰</a>全章第一次出现“死”的实词（<code>still-born</code>），位置在房间另一头、毛巾底下、屏风后面。</li><li><a class="ref" href="#p-17">⑰</a>屏风是“隐瞒”的物证：她知道，但看不见；读者也一样——我们和她一起猜。</li><li><a class="ref" href="#p-19">⑲</a><code>Another boy.</code> 三个词，信息量极大：她刚失去第二个儿子；菲利普是剩下的那个；她先前问“他以后可怎么办”，问的是那个“剩下的”孩子。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p>这一场教“最狠的东西放在哪儿”。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">Behind the screen lay the body of a stillborn child. The doctor looked at it and felt very sad. Mrs. Carey knew it was there, and she asked whether it was a girl or a boy. “Another boy,” said the nurse.</p></blockquote>
+<p>毛病：第一句就把答案给了，屏风白设；<code>felt very sad</code> 是替医生抒情；<code>knew it was there</code> 把“猜”变成了“知道”，读者不用猜了。</p>
+<p>毛姆的顺序是：护士劝、哭声停（先把注意力从“死”上引开）→ 医生走到房间另一头 → 桌上一条毛巾 → 毛巾底下是尸体 → 他掀开看 → 屏风挡住 → 女人猜到了 → 她问“是女孩还是男孩” → “又是个男孩”。</p>
+<p><strong>注意 still-born 出现的位置：房间另一头、毛巾底下、屏风后面。三重遮挡。</strong> 这不是巧合，是位置即重量——读者得走过去，走到那儿找到的，才算他的。延迟揭示不是隐瞒，是把信息放在读者必须经过的地方。</p>
+<p>还有一层：死亡不演。全章没有一句写母亲怎么死、死婴怎么处理，只有医生掀毛巾这一个动作。这叫幕后处理：<strong>最激烈的事放到画外，只写目击者的反应。</strong> 你写不了的东西别硬演，让一个人去看，读者跟着他的背影就够了。</p>
+<p>最后 <code>“Another boy.”</code> 三个词。这是省略：关键处让人物答得比问的少。她问的是男女，答的是“又是一个男孩”——三个字里有件事：她刚失去第二个儿子，菲利普是剩下的那个。</p>
+<hr></div></details></section><section class="scene" id="scene-5" data-scene="5"><h3 class="scene-title" id="scene-5"><span class="tag">场景 5</span>门厅：医生交代后事</h3><div class="scene-lead"><b>这一场　</b>注意话题怎么从“里面躺着的人”滑到“几点到、谁去接、电报”。整段没有一句抒情，但每一句都在说同一件事。</div><div class="unit" id="p-20"><span class="num">⑳</span><p class="en">The woman did not answer. In a moment the child’s nurse came back. She approached the bed.</p><p class="trans">女人没有作声。过了一会儿，孩子的保姆回来了，走到床边。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>approach</td><td>/əˈprəʊtʃ/</td><td>走近</td></tr></table></div></details></div></div><div class="unit" id="p-21"><span class="num">㉑</span><p class="en">“<span class="gloss" data-tip="/ˈmɑːstə/ · 少爷（对男孩的称呼）">Master</span> Philip never woke up,” she said. There was a <span class="gloss" data-tip="/pɔːz/ · 停顿">pause</span>. Then the doctor felt his patient’s <span class="gloss" data-tip="/pʌls/ · 脉搏">pulse</span> once more.</p><p class="trans">“菲利普少爷一直没醒。”她说。停了一下。然后医生又给病人把了一次脉。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>Master</td><td>/ˈmɑːstə/</td><td>少爷（对男孩的称呼）</td></tr><tr><td>pause</td><td>/pɔːz/</td><td>停顿</td></tr><tr><td>pulse</td><td>/pʌls/</td><td>脉搏</td></tr></table></div></details></div></div><div class="unit" id="p-22"><span class="num">㉒</span><p class="en">“I don’t think there’s anything I can do <span class="gloss" data-tip="眼下、此刻">just now</span>,” he said. “I’ll <span class="gloss" data-tip="再来（出诊）">call again</span> after breakfast.”</p><p class="trans">“我看眼下我也做不了什么了，”他说，“早饭后再来。”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>just now</td><td>—</td><td>眼下、此刻</td></tr><tr><td>call again</td><td>—</td><td>再来（出诊）</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>I don’t think there’s anything I can do just now</code>：否定前移：形式上否定主句 think，意思上否定后面的从句（“我想我什么也做不了”）；anything 后面是省略了 that 的定语从句。</div></div></details></div></div><div class="unit" id="p-23"><span class="num">㉓</span><p class="en">“I’ll show you out, sir,” said the child’s nurse.</p><p class="trans">“我送您出去，先生。”孩子的保姆说。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>show sb out</td><td>—</td><td>送某人出门</td></tr></table></div></details></div></div><div class="unit" id="p-24"><span class="num">㉔</span><p class="en">They walked downstairs <span class="gloss" data-tip="默默地">in silence</span>. In the <span class="gloss" data-tip="/hɔːl/ · 门厅">hall</span> the doctor stopped.</p><p class="trans">两人默默下楼。到了门厅，医生停住脚。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>hall</td><td>/hɔːl/</td><td>门厅</td></tr><tr><td>in silence</td><td>—</td><td>默默地</td></tr></table></div></details></div></div><div class="unit" id="p-25"><span class="num">㉕</span><p class="en">“You’ve sent for <span class="gloss" data-tip="/ˈkeəri/ · 凯里太太（Mrs. 用于已婚女子）">Mrs. Carey</span>’s <span class="gloss" data-tip="丈夫（或妻子）的兄弟；此处指孩子的伯父/叔父">brother-in-law</span>, haven’t you?”</p><p class="trans">“您已经派人去请凯里太太丈夫的兄弟了吧？”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>brother-in-law</td><td>—</td><td>丈夫（或妻子）的兄弟；此处指孩子的伯父/叔父</td></tr><tr><td>send for sb</td><td>—</td><td>派人去请某人</td></tr><tr><td>Mrs. Carey</td><td>/ˈkeəri/</td><td>凯里太太（Mrs. 用于已婚女子）</td></tr></table></div></details></div></div><div class="unit" id="p-26"><span class="num">㉖</span><p class="en">“Yes, sir.”</p><p class="trans">“是的，先生。”</p></div><div class="unit" id="p-27"><span class="num">㉗</span><p class="en">“D’you know at what time he’ll be here?”</p><p class="trans">“知道他几点到吗？”</p></div><div class="unit" id="p-28"><span class="num">㉘</span><p class="en">“No, sir, I’m expecting a <span class="gloss" data-tip="/ˈtelɪɡræm/ · 电报">telegram</span>.”</p><p class="trans">“不知道，先生，我在等电报。”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>telegram</td><td>/ˈtelɪɡræm/</td><td>电报</td></tr><tr><td>D’you</td><td>—</td><td>= Do you（口语缩略）</td></tr></table></div></details></div></div><div class="unit" id="p-29"><span class="num">㉙</span><p class="en">“What about the little boy? <span class="gloss" data-tip="我想（英式委婉说法）">I should think</span> he’d be better <span class="gloss" data-tip="不碍事、避开">out of the way</span>.”</p><p class="trans">“那孩子呢？我看还是让他避开些好。”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>out of the way</td><td>—</td><td>不碍事、避开</td></tr><tr><td>I should think</td><td>—</td><td>我想（英式委婉说法）</td></tr></table></div></details></div></div><div class="unit" id="p-30"><span class="num">㉚</span><p class="en">“Miss Watkin said she’d take him, sir.”</p><p class="trans">“沃特金小姐说她会接他过去，先生。”</p></div><div class="unit" id="p-31"><span class="num">㉛</span><p class="en">“Who’s she?”</p><p class="trans">“她是谁？”</p></div><div class="unit" id="p-32"><span class="num">㉜</span><p class="en">“She’s his <span class="gloss" data-tip="/ˈɡɒdmʌðə/ · 教母">godmother</span>, sir. D’you think Mrs. Carey will get over it, sir?”</p><p class="trans">“他的教母，先生。您看凯里太太能挺过来吗，先生？”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>Miss Watkin</td><td>/ˈwɒtkɪn/</td><td>沃特金小姐（Miss 用于未婚女子）</td></tr><tr><td>godmother</td><td>/ˈɡɒdmʌðə/</td><td>教母</td></tr><tr><td>get over sth</td><td>—</td><td>从……中恢复、挺过来</td></tr></table></div></details></div></div><div class="unit" id="p-33"><span class="num">㉝</span><p class="en">The doctor shook his head.</p><p class="trans">医生摇了摇头。</p></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-20">⑳</a><code>The woman did not answer.</code> 第二次“没有”——她被留在原地，什么都没被告诉。</li><li><a class="ref" href="#p-21">㉑</a>称呼一路变化：the child → Philip → Master Philip。保姆用“少爷”报信，报的却是坏消息里最好的一种：孩子什么都没察觉。</li><li><a class="ref" href="#p-25">㉕</a>—<a class="ref" href="#p-32">㉜</a>整段对话只交换信息：通知谁、几点到、孩子怎么办、教母是谁。</li><li><a class="ref" href="#p-33">㉝</a><code>The doctor shook his head.</code> 七个词收束全章，回答的是“凯里太太能挺过来吗”。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p>最后一场教两件事：话怎么说才像真的，章怎么收才不散。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">The doctor told the nurse that Mrs. Carey would not survive the night. He said he was very sorry, and asked her to take care of the little boy. Then he went downstairs and left the house.</p></blockquote>
+<p>毛病：<code>would not survive the night</code> 是诊断书；<code>he was very sorry</code> 是作者替医生表态；<code>left the house</code> 是个没有重量的动作。</p>
+<p>毛姆让他们谈的是：几点到、电报、孩子怎么办、教母是谁。<strong>没有一句谈“她要死了”，可每一句都在谈这件事。</strong> 这就是潜台词：难过的人聊小事。你写这种场面，让人物谈具体物件或日程，台词别超过十五个词。</p>
+<p>场景调度也在这儿收口：楼上＝私密与死亡，楼下＝事务与闲话，一层楼梯分开两种语言。<strong>给秘密一个位置，让知情的人和不知情的人站在遮挡物的两侧。</strong></p>
+<p>还有个不显眼的：称呼。the child → Philip → Master Philip → Mrs. Carey。同一章里，同一个人被四种叫法定义：孩子、儿子、少爷、病历上的病人。换称呼就是换关系，比加三个形容词省力。</p>
+<p>最后 <code>The doctor shook his head.</code> 七个词。它同时干了三件事：回答了“她能挺过来吗”、下了判决、闭上了嘴。这叫降调收尾——<strong>把最后一句解释删掉，只留动作或物件</strong>，标准是“刚好还能拼出来”。你要是补一句“他知道她活不过今晚”，前面三十三段攒的力，一下泄光。</p></div></details></section></div><aside class="companion" id="companion"><div class="cp" data-scene="1" hidden><div class="cp-head"><span class="tag">场景 1</span><b>破晓：仆人叫醒菲利普</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-1">①</a>是整章唯一还站在屋外的句子：叙述者先看天，之后才钻进孩子的感官。</li><li><code>mechanically</code>（机械地）是全段的钥匙：仆人每天这样拉开窗帘，今天也一样——用例行公事衬这一天的非常。</li><li>对面那栋“灰泥外墙、带门廊”的房子，交代了这是一个体面的中产家庭，但世界不会为这个早晨停一秒。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p>这一场是全书第一页，值得慢慢讲：开头到底在干什么。</p>
+<p>先看一版写坏的。</p>
+<blockquote><p class="en">It was a cold morning in March 1885, and Mrs. Carey was dying. She had been ill for three days, and the doctor had told the family there was no hope. In the house in Onslow Gardens a servant went up to wake her son Philip, who was nine and did not know that his mother was about to die.</p></blockquote>
+<p>没有语法错，五个信息全对：年份、病情、医生的判断、孩子九岁、母亲要死。它坏在哪？<strong>它把整章的底牌一次打完了。</strong> 读者读完第一段，剩下三十三段只是确认。最糟的是最后半句——它把全章要慢慢建立的反讽，一句话说破了。你要的效果是读者替孩子着急；现在孩子还没出场，读者已经知道了，急不起来。</p>
+<p>毛姆怎么做？第一段只给三样东西：天、一个习惯动作、一个睡着的孩子。</p>
+<p><code>The day broke gray and dull.</code> 五个词。注意动词是 broke——天“破”了。他没写 became light，也没写“1885 年 3 月的一个寒冷的早晨”。<strong>先给世界，不给日历。</strong> 世界不带感情，先把它摆好，人再进来，人的感情才像真的。</p>
+<p><code>there was a rawness in the air that suggested snow</code> —— rawness 是湿冷刺骨，像伤口没愈合那种疼。关键是 suggested：只说“像要下雪”，没说“要下雪”。<strong>第一段就给全书定了规矩：能暗示的，绝不说破。</strong> 你在第一段定的调子，后面三十三段都得守；守不住，读者会觉得被骗。</p>
+<p>然后是 <code>A woman servant came into a room in which a child was sleeping and drew the curtains.</code> 一个女仆，一个孩子。都没有名字。为什么？因为此刻还不重要。名字是亲密的开始，得等：第二段才给 “Philip”，到门厅才是 “Master Philip”。这条漏斗是从冷到热、从远到近：世界 → 房子 → 房间 → 孩子 → 名字 → “你妈妈要见你”。</p>
+<p><code>She glanced mechanically at the house opposite, a stucco house with a portico, and went to the child’s bed.</code> mechanically 是这一段的钥匙：她每天早上都这么拉窗帘、都这么看一眼。<strong>例行公事，才衬得出今天不一样。</strong> 对面那栋房子还顺手干了另一件事：给了一个跟剧情毫无关系的细节。它不为情节服务，它为“真”服务——人清早起来真的会看见对面的房子。新手舍不得写这种“没用”的细节，所以场景总像布景板。</p>
+<p>所以开头第一段的任务，从来不是介绍。是<strong>示范读者该怎么看</strong>：用感官不用判断，用习惯不用抒情，用暗示不用说明。门道在第四节展开讲。</p>
+<hr></div></div></div></div><div class="cp" data-scene="2" hidden><div class="cp-head"><span class="tag">场景 2</span><b>楼下的床：母亲抱住孩子</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-2">②</a>—<a class="ref" href="#p-5">⑤</a>是最短的接力：叫醒、抱下楼、说一句“你妈妈要见你”。整章只有这一句解释，还是借仆人的嘴说的。</li><li><a class="ref" href="#p-5">⑤</a><code>He did not ask why he had been awakened.</code> 否定句写顺从：孩子不追问，因为在这个家里，孩子不被解释。</li><li><a class="ref" href="#p-7">⑦</a><code>already</code> 是重心：人还在这边，声音已经到了“那边”。</li><li><code>He was very happy</code> 只有四个词，却和“临终”睡在同一张床上：孩子的快乐是真的，母亲的悲伤也是真的。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p>这一场教三样：让读者站在谁的肩膀上、怎么用布料和温度代替“温馨”、怎么把两个相反的事实摆在一起。</p>
+<p>坏版本先来：</p>
+<blockquote><p class="en">She carried him downstairs to his mother’s room. His mother was very ill and could not move. She held him tightly and kissed him, and he felt safe and warm in her arms, though he did not understand what was happening.</p></blockquote>
+<p>毛病三处：<code>very ill and could not move</code> 是病历，不是画面；<code>felt safe and warm</code> 是结论；<code>though he did not understand</code> 是作者在提醒读者“注意，这里有反讽”。三句都在替读者干活。</p>
+<p>毛姆的做法是先把镜头<strong>钉在孩子的身高上</strong>：他被抱着下楼，看不见母亲的脸，只看见床、手臂、睡衣的料子。这就是限制视角——不是“用孩子的口吻写”，是<strong>先答四个问题：他站哪、多高、看得见什么、听不见什么</strong>。答案决定了他能写什么：他看不见医生站在哪，所以医生“走上前来”，是在他自己睡熟之后才被提到的。</p>
+<p>第二样是感官锚点：<code>white flannel nightgown</code>、<code>warm body</code>、<code>thin, small hands</code>、<code>soft arms</code>。一个“温馨”都没有，可你摸到了。<strong>写温情别用形容词，用布料、温度、重量。</strong> 顺带一句：<code>thin, small hands</code> 这四个词同时是病情——那双手瘦得不像活人的手，孩子不知道，读者知道。</p>
+<p>第三样是并置：<code>Her voice was so weak that it seemed to come already from a great distance.</code> 下一句是 <code>The child did not answer, but smiled comfortably. He was very happy...</code> 中间只有一个句号，没有 but。为什么不加？<strong>因为转折词一出现，作者就替读者把判断下了。</strong> 删掉它，读者自己撞上这个反差，那一沉才是他自己的。写并置记住一条：两个相反的事实挨着，中间什么都别放。</p>
+<hr></div></div></div></div><div class="cp" data-scene="3" hidden><div class="cp-head"><span class="tag">场景 3</span><b>五只脚趾：母亲最后的告别</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-9">⑨</a>的被动语态是关键：不是她不肯放手，是“不被允许”——身体、命运、医生替她做了决定。</li><li><a class="ref" href="#p-9">⑨</a>的三个分句由分号和 and 串起来，节奏被拉慢，像一只手在身上移动；till、and then 既是时间，也是告别。</li><li><a class="ref" href="#p-9">⑨</a><code>She gave a sob.</code> 四个词。前面长句蓄的力，在这里只放出一个音节。</li><li><strong>伏笔</strong>：菲利普天生足内翻（club foot），这只脚是他一生的痛处。第一章以脚收尾，不是偶然。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p>全章最重的一场，也是最能教你“情绪怎么落地”的一场。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">She did not want to let him go. She was afraid she would never see him again, and her heart ached. She kissed him again and again, and then she began to cry.</p></blockquote>
+<p>问题不在词，在<strong>它替读者哭了</strong>。<code>her heart ached</code> 是作者的心疼，<code>again and again</code> 是想让读者也疼。读者最不吃这一套。</p>
+<p>毛姆写的是：手顺着孩子的身体往下，到脚，握住右脚，摸那五只小脚趾，然后慢慢抚过左脚。<code>She gave a sob.</code> 四个词。</p>
+<p>这就是客观对应物：<strong>不写“舍不得”，写手走到哪儿、数了什么。</strong> 情绪词是作者的结论，动作才是读者的证据。而“五只脚趾”这个数字里有三样东西：确认（一只不少）、清点（像在盘货）、告别（最后一次数）。你要是写“她摸了摸他的脚”，这些全没了——<strong>数字里有信息</strong>。</p>
+<p>再往里一层：她的动作是分镜的——身体 → 脚 → 右脚 → 左脚，一句一个动作。这叫动作分镜。为什么有效？读者跟着那只手走完这段路，告别就完成了，不用作者说“这是告别”。你写大动作，把它拆成三四个小动作，按顺序写，不评价。</p>
+<p>最后是短句刹车。前面那句长得要命（<code>and she passed her hand down his body till she came to his feet; she held the right foot in her hand and felt the five small toes; and then slowly passed her hand over the left one</code>），后面接 <code>She gave a sob.</code> 长句蓄的力，全在四个词上放出来。<strong>长句推着走，短句刹车。</strong></p>
+<p>伏笔那句细读里说过，不重复：这只脚是菲利普一生的痛处，第一章就让母亲的手停在那儿，不是偶然。</p>
+<hr></div></div></div></div><div class="cp" data-scene="4" hidden><div class="cp-head"><span class="tag">场景 4</span><b>屏风后：一个死婴，“又是个男孩”</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-17">⑰</a>全章第一次出现“死”的实词（<code>still-born</code>），位置在房间另一头、毛巾底下、屏风后面。</li><li><a class="ref" href="#p-17">⑰</a>屏风是“隐瞒”的物证：她知道，但看不见；读者也一样——我们和她一起猜。</li><li><a class="ref" href="#p-19">⑲</a><code>Another boy.</code> 三个词，信息量极大：她刚失去第二个儿子；菲利普是剩下的那个；她先前问“他以后可怎么办”，问的是那个“剩下的”孩子。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p>这一场教“最狠的东西放在哪儿”。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">Behind the screen lay the body of a stillborn child. The doctor looked at it and felt very sad. Mrs. Carey knew it was there, and she asked whether it was a girl or a boy. “Another boy,” said the nurse.</p></blockquote>
+<p>毛病：第一句就把答案给了，屏风白设；<code>felt very sad</code> 是替医生抒情；<code>knew it was there</code> 把“猜”变成了“知道”，读者不用猜了。</p>
+<p>毛姆的顺序是：护士劝、哭声停（先把注意力从“死”上引开）→ 医生走到房间另一头 → 桌上一条毛巾 → 毛巾底下是尸体 → 他掀开看 → 屏风挡住 → 女人猜到了 → 她问“是女孩还是男孩” → “又是个男孩”。</p>
+<p><strong>注意 still-born 出现的位置：房间另一头、毛巾底下、屏风后面。三重遮挡。</strong> 这不是巧合，是位置即重量——读者得走过去，走到那儿找到的，才算他的。延迟揭示不是隐瞒，是把信息放在读者必须经过的地方。</p>
+<p>还有一层：死亡不演。全章没有一句写母亲怎么死、死婴怎么处理，只有医生掀毛巾这一个动作。这叫幕后处理：<strong>最激烈的事放到画外，只写目击者的反应。</strong> 你写不了的东西别硬演，让一个人去看，读者跟着他的背影就够了。</p>
+<p>最后 <code>“Another boy.”</code> 三个词。这是省略：关键处让人物答得比问的少。她问的是男女，答的是“又是一个男孩”——三个字里有件事：她刚失去第二个儿子，菲利普是剩下的那个。</p>
+<hr></div></div></div></div><div class="cp" data-scene="5" hidden><div class="cp-head"><span class="tag">场景 5</span><b>门厅：医生交代后事</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-20">⑳</a><code>The woman did not answer.</code> 第二次“没有”——她被留在原地，什么都没被告诉。</li><li><a class="ref" href="#p-21">㉑</a>称呼一路变化：the child → Philip → Master Philip。保姆用“少爷”报信，报的却是坏消息里最好的一种：孩子什么都没察觉。</li><li><a class="ref" href="#p-25">㉕</a>—<a class="ref" href="#p-32">㉜</a>整段对话只交换信息：通知谁、几点到、孩子怎么办、教母是谁。</li><li><a class="ref" href="#p-33">㉝</a><code>The doctor shook his head.</code> 七个词收束全章，回答的是“凯里太太能挺过来吗”。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p>最后一场教两件事：话怎么说才像真的，章怎么收才不散。</p>
+<p>坏版本：</p>
+<blockquote><p class="en">The doctor told the nurse that Mrs. Carey would not survive the night. He said he was very sorry, and asked her to take care of the little boy. Then he went downstairs and left the house.</p></blockquote>
+<p>毛病：<code>would not survive the night</code> 是诊断书；<code>he was very sorry</code> 是作者替医生表态；<code>left the house</code> 是个没有重量的动作。</p>
+<p>毛姆让他们谈的是：几点到、电报、孩子怎么办、教母是谁。<strong>没有一句谈“她要死了”，可每一句都在谈这件事。</strong> 这就是潜台词：难过的人聊小事。你写这种场面，让人物谈具体物件或日程，台词别超过十五个词。</p>
+<p>场景调度也在这儿收口：楼上＝私密与死亡，楼下＝事务与闲话，一层楼梯分开两种语言。<strong>给秘密一个位置，让知情的人和不知情的人站在遮挡物的两侧。</strong></p>
+<p>还有个不显眼的：称呼。the child → Philip → Master Philip → Mrs. Carey。同一章里，同一个人被四种叫法定义：孩子、儿子、少爷、病历上的病人。换称呼就是换关系，比加三个形容词省力。</p>
+<p>最后 <code>The doctor shook his head.</code> 七个词。它同时干了三件事：回答了“她能挺过来吗”、下了判决、闭上了嘴。这叫降调收尾——<strong>把最后一句解释删掉，只留动作或物件</strong>，标准是“刚好还能拼出来”。你要是补一句“他知道她活不过今晚”，前面三十三段攒的力，一下泄光。</p></div></div></div></div></aside></div>
+</section>
+<section class="sec" data-kind="lang" id="sec-3">
+<h2 class="sec-title">三、词与句</h2>
+<blockquote><p>按章顺序汇总，方便一次性过一遍、反复复习。</p></blockquote>
+<h3>1. 词汇</h3>
+<table class="wordtable"><tr><th>词</th><th>音标</th><th>文中义</th><th>备注</th></tr><tr><td>rawness</td><td>/ˈrɔːnəs/</td><td>湿冷刺骨</td><td>raw 本义“生的、未愈的”</td></tr><tr><td>stucco</td><td>/ˈstʌkəʊ/</td><td>灰泥（外墙）</td><td>意大利语借词</td></tr><tr><td>portico</td><td>/ˈpɔːtɪkəʊ/</td><td>柱廊门廊</td><td>复数 porticoes</td></tr><tr><td>mechanically</td><td>/mɪˈkænɪkli/</td><td>机械地、习惯性地</td><td>同源 machine</td></tr><tr><td>nestle</td><td>/ˈnesl/</td><td>依偎</td><td>nestle up against sb</td></tr><tr><td>flannel</td><td>/ˈflænl/</td><td>法兰绒</td><td>睡衣常用料</td></tr><tr><td>moan</td><td>/məʊn/</td><td>呻吟</td><td>比 groan 更弱、更委屈</td></tr><tr><td>gravely</td><td>/ˈɡreɪvli/</td><td>严肃地</td><td>与 grave“坟墓”同形</td></tr><tr><td>sob</td><td>/sɒb/</td><td>抽泣</td><td>gave a sob 一声抽泣</td></tr><tr><td>still-born</td><td>/ˌstɪlˈbɔːn/</td><td>死产的</td><td>今多写 stillborn</td></tr><tr><td>exhaustion</td><td>/ɪɡˈzɔːstʃən/</td><td>精疲力竭</td><td>from exhaustion 因力竭</td></tr><tr><td>pulse</td><td>/pʌls/</td><td>脉搏</td><td>feel sb’s pulse 把脉</td></tr><tr><td>godmother</td><td>/ˈɡɒdmʌðə/</td><td>教母</td><td>与 godfather 成对</td></tr><tr><td>broken-heartedly</td><td>/ˌbrəʊkənˈhɑːtɪdli/</td><td>肝肠寸断地</td><td>副词化，很口语</td></tr></table>
+<h4>短语</h4>
+<ul><li><code>monthly nurse</code> 月嫂——产后一个月内上门照护产妇和新生儿的护士（维多利亚晚期英国说法）</li><li><code>out of the way</code> 不碍事、避开；<code>get sb out of the way</code> 把某人支开</li><li><code>get over (sth)</code> 从……中恢复、挺过来。医生问的是 <code>will Mrs. Carey get over it</code></li><li><code>bed-clothes</code> 被褥（今写作 bedclothes）</li></ul>
+<h3>2. 五个句型</h3>
+<ol><li><code>a room in which a child was sleeping</code> —— “介词 + which” 定语从句，比 where 正式，也更“书面”。</li><li><code>Knowing she would not be allowed to keep the child much longer, the woman kissed him again</code> —— 现在分词短语作原因状语，逻辑主语须与主句主语一致；be allowed to do 用被动，把“谁不允许”隐去了。</li><li><code>She was too weak to resist his wish.</code> —— too...to 表示否定结果：“太……以至于不能”。</li><li><code>He was hidden from the bed by a screen.</code> —— hide sb/sth from sb；被动语态让“看不见”成了句子的主语。</li><li><code>I should think he’d be better out of the way.</code> —— should think 是英式委婉的“我想”；<code>’d better</code> = had better + 动词原形（不是 would）。</li></ol>
+<h3>3. 三个容易读错的词</h3>
+<ul><li><strong>presently</strong> 在文中是“不久之后、过了一会儿”，不是“现在”。今义“目前”是后来才有的。</li><li><strong>get over it</strong> 不是“越过它”，是“恢复过来”。</li><li><strong>Master Philip</strong>：Master 用于称呼男孩（“少爷”），今天只剩古旧用法和少数英式礼仪场合。</li></ul>
+</section>
+<section class="sec" data-kind="craft" id="sec-4">
+<h2 class="sec-title">四、毛姆怎么写</h2>
+<blockquote><p>这一章是全书第一页，所以这节的重心放在<strong>开头</strong>。术语总表见 <a href="craft.html">writing-craft.md</a>。</p></blockquote>
+<h3 id="h-11">4.1 开头为什么这么写：把第一段拆到骨头</h3>
+<p>一句一句来。</p>
+<p><code>The day broke gray and dull.</code></p>
+<p>为什么不写“1885 年 3 月，伦敦一个寒冷的早晨”？因为那是介绍，介绍是作者在说话；天“破”了，是世界在发生。<strong>第一句选谁做主语，就定了全书的语气。</strong> 这里的主语是天，不是人。</p>
+<p>再注意动词：broke。天不是“亮了”，是“破了”。一个字带着裂开的声响。你写 became light，读者只会点头；你写 broke，读者会缩一下脖子。</p>
+<p><code>The clouds hung heavily</code></p>
+<p>hung 让云有了重量。人还没出场，作者已经在用身体感觉写世界：重、低、压。<strong>写景不是画景，是让读者的身体先到场。</strong></p>
+<p><code>and there was a rawness in the air that suggested snow</code></p>
+<p>三个信息：冷、湿、要下雪。可只给到“像要下雪”。这一句是全章的模型——<strong>能暗示的，绝不说破</strong>。你回头看，整章都在做同一件事：母亲的死不说，用毛巾和屏风说；告别不说，用五只脚趾说；医生的判决不说，用摇头说。第一段就把方法教给你了，只是没告诉你这是方法。</p>
+<p><code>A woman servant came into a room in which a child was sleeping and drew the curtains.</code></p>
+<p>第一个人才出现，是“一个女仆”和“一个孩子”，都没有名字。为什么？名字意味着关系，关系得慢慢给。<strong>先把人当人看，再当“谁”看。</strong></p>
+<p><code>She glanced mechanically at the house opposite, a stucco house with a portico, and went to the child’s bed.</code></p>
+<p>mechanically 是这句的钥匙：她每天都这么拉窗帘、都这么看一眼。<strong>例行公事，才衬得出今天不一样。</strong> 你要是写“她心里一沉”，那是她的今天；你写“她机械地看了一眼”，那是她的每一天——而今天是每一天里的例外。后者狠得多。</p>
+<p>对面那栋房子跟情节毫无关系。为什么给？因为人在清晨真的会看见对面的房子。<strong>这种“没用”的细节，是可信度的来源。</strong> 新手舍不得写，所以场景总像布景。</p>
+<p><code>“Wake up, Philip,” she said.</code></p>
+<p>名字终于来了，出现在<strong>别人嘴里</strong>，不是叙述者的介绍。这一条最值得记：<strong>人物的名字，最好第一次出现在有人叫他的时候。</strong> 叙述者说“菲利普是个九岁的男孩”，是档案；仆人喊“醒醒，菲利普”，是生活。</p>
+<p><code>She pulled down the bed-clothes, took him in his arms, and carried him downstairs. He was only half awake.</code></p>
+<p>三个动作，一口气，没有形容词。<code>He was only half awake.</code> 这六个字既是状态，也是<strong>免责声明</strong>——孩子半睡，所以后面他什么都没问，读者不会怪他。<strong>好的细节常常同时干两件事：给画面，给理由。</strong></p>
+<p><code>“Your mother wants you,” she said.</code></p>
+<p>全章唯一一句解释，还是借仆人的嘴说的，而且只有四个词。作者一句都没解释：这是哪儿、几点了、母亲怎么了。<strong>开头知道三件事、不知道三件事，就是好比例。</strong> 全知道，读者不用读；全不知道，读者不想读。</p>
+<p>到这里，漏斗走完了：世界 → 房子 → 房间 → 孩子 → 名字 → “你妈妈要见你”。从最冷最远，收到最小最近。<strong>开头的方向永远是收，不是放。</strong></p>
+<h3 id="h-12">4.2 开头写作的六条门道</h3>
+<p><strong>一、第一段不介绍，示范。</strong>读者从第一段学的不是信息，是“这本书打算怎么看我”。你给他天气，他知道要慢慢读；你给他“她快死了”，他知道这是通俗剧。第一段是<strong>样板</strong>，不是说明书。写完第一段问一句：这一段教读者怎么读后面？</p>
+<p><strong>二、先给世界，再给人。</strong>天、云、街、对面的房子，都不带感情；人一进来就带着感情，读者才觉得那感情是真的。反过来，一上来就“她悲痛欲绝”，读者会本能地怀疑：你凭什么替她悲痛？<strong>世界的冷，是人物热度的底色。</strong></p>
+<p><strong>三、用正在进行的习惯开场，别用即将发生的事件。</strong>仆人拉窗帘不是事件，是习惯；正因为是习惯，“今天不一样”才立得住。这就是 in medias res 的真义——不是“从高潮开始”，是<strong>从动作的中间开始</strong>：不解释前因，直接让人在做一件事，读者自己会补前因。</p>
+<p><strong>四、第一段要埋一个“不对”。</strong> rawness suggesting snow（天不对）→ 半夜叫醒孩子（时间不对）→ “你妈妈要见你”（事不对）。三层，一层比一层近。开头不需要爆炸，只需要一个读者想弄明白的偏差。<strong>悬念不是“会不会死”，是“这个早晨哪里不对”。</strong></p>
+<p><strong>五、名字要迟给。</strong> <a class="ref" href="#p-1">①</a> 里是 “a child”，<a class="ref" href="#p-2">②</a> 才是 “Philip”，门厅里才是 “Master Philip”。名字给得越晚，给的那一下越重；而且每升一级称呼，就顺手换了一层关系。</p>
+<p><strong>六、开头定的调子，全书都得守住。</strong>第一章 620 个词，一个 die 都没有。这个“不说破”不只是这一章的技巧，是整本书的叙述伦理——菲利普一辈子都在绕着“死”和“瘸”这两个词走。<strong>开头不是第一段，是全书的第一条规矩。</strong></p>
+<p><strong>最后，这本书的开头为什么只能是这个开头。</strong>换个故事，这个开法可能不成立。它成立，是因为它跟全书说的是同一件事：菲利普是被抱下楼的，不是自己走下去的；他什么都没问，因为没人打算告诉他；他在场，又被排除在外。<strong>第一页就把“枷锁”的样子演了一遍</strong>——一个人被别人的手搬来搬去，连知情权都没有。你后面读到他被叔父安排、被学校安排、被自己的欲望安排，都能回到这个早晨：那时他九岁，被人抱在怀里，什么都不知道。</p>
+<p>所以判断一个开头好不好，还有第三个标准：<strong>它得是这本书的开头，不能是任何一本书的开头。</strong> 换个故事，这段天气、这个仆人、这栋房子还成立吗？还成立，说明你写的只是气氛，不是这一本。</p>
+<p>补一句老实话：毛姆敢这么慢，有个物理原因——这一章只有 620 词。慢是有限度的，你得知道自己有多少空间。写三千字的短篇这么开头，读者早走了。</p>
+<h3 id="h-13">4.3 这一章真正教的三件事</h3>
+<p><strong>第一件：信息的位置就是它的重量。</strong>同一个死婴，写在第一段是耸动，写在毛巾底下是重量。毛姆给它安排了三重遮挡：房间另一头、毛巾、屏风。读者要走过去才看得见，看见的那一下才归他。你以后放重要信息，先问：这条信息放在读者必须路过的地方了吗？还是随手扔在他脚下？</p>
+<p><strong>第二件：情绪要交给动作。</strong>母亲舍不得孩子，毛姆不写“舍不得”，写手摸到脚、数五只脚趾。为什么这比“她心如刀割”强？因为情绪词是结论，动作是证据。读者不信结论，信证据。而且证据得是<strong>这个人、这一刻</strong>才会有的——换了别人，不会去数脚趾。</p>
+<p><strong>第三件：结尾留动作，不留话。</strong> <code>The doctor shook his head.</code> 七个词，回答、判决、沉默，一次完成。你写结尾最容易犯的错，是怕读者没懂，补一句解释。补上那一句，前面全白写。<strong>标准是“刚好还能拼出来”——拼不出来是漏，拼得太容易是啰嗦。</strong></p>
+<h3 id="h-14">4.4 读一段的时候，脑子里在过什么</h3>
+<p>拿<a class="ref" href="#p-17">⑰</a>做示范（屏风那一段）。把读的过程写下来。</p>
+<p><strong>第一句：<code>The monthly nurse tried to quiet her, and presently, from exhaustion, the crying ceased.</code></strong>第一反应是时间：<code>presently</code> 不是“目前”，是“过了一会儿”。这一句干了件很难的事——把一场哭<strong>压缩</strong>成了一句。为什么可以压？因为哭本身没有新信息，哭的<strong>停止</strong>才有：她没力气了。注意 <code>from exhaustion</code>：不是想开了，是没劲了。毛姆连安慰都不给。</p>
+<p><strong>第二句：<code>The doctor walked to a table on the other side of the room, upon which, under a towel, lay the body of a still-born child.</code></strong>这是倒装。正常语序是 the body lay upon the table；他偏把 <code>under a towel</code> 提到前面。为什么？因为<strong>读者要先看见毛巾，再看见尸体</strong>。语序就是视线顺序——他让你先走到毛巾那儿。</p>
+<p><strong>第三句：<code>He lifted the towel and looked.</code></strong>六个词。没有“惊骇”，没有“叹息”。掀开，看。<strong>动作越简单，事情越重。</strong></p>
+<p><strong>第四句：<code>He was hidden from the bed by a screen, but the woman guessed what he was doing.</code></strong>这句值得读两遍。第一遍看信息：屏风挡住了。第二遍看那个 but：挡住的是视线，挡不住的是<strong>猜</strong>。而且写的是“她猜到了”，不是“她知道了”——猜比知道更疼，因为猜的人得自己把画面补完。</p>
+<p><strong>第五句：<code>“Was it a girl or a boy?” she whispered to the nurse.</code></strong>她问的是性别。不是“他死了吗”，不是“为什么”。一个刚失去孩子的女人先问男女——这一句比任何哭喊都难受，因为它说明她还在按“生孩子”的流程想事情。</p>
+<p><strong>第六句：<code>“Another boy.”</code></strong>三个词。读到这儿才会反应过来：她是<strong>第二次</strong>经历这个。“又”这个字不在英文里，在语境里——another。</p>
+<p>读完这一段可以问自己：如果这段交给自己写，会怎么写？常见的初稿大概会写“医生掀开毛巾，看见了那个死去的孩子，心里一阵难过”。坏在哪：多加了“心里一阵难过”，毛姆一个字没加；“死去的孩子”写在了明面上，毛姆让它先藏在毛巾底下。</p>
+<h3 id="h-15">4.5 写坏的版本，和改过来的版本</h3>
+<p>写开头最容易犯的错，场景 1 已经示范过一次。这次换个方式：<strong>同一份材料，用毛姆的办法重写一遍</strong>，你看差别在哪儿。</p>
+<p>坏版本（信息齐全，一处不落）：</p>
+<blockquote><p class="en">It was a cold morning in March 1885, and Mrs. Carey was dying. She had been ill for three days, and the doctor had told the family there was no hope. In the house in Onslow Gardens a servant went up to wake her son Philip, who was nine years old and did not know that his mother was about to die. She carried him down to the bedroom, where his mother lay pale and thin. “Your mother wants to see you,” she said.</p></blockquote>
+<p>好版本（同一个场面，换一种写法）：</p>
+<blockquote><p class="en">The gas lamp in the hall had been turned down so low that the banisters were only a smell of polish and a coldness under the hand. A servant came up with a candle, and the flame bent when she passed the landing window. She had done this every morning for eleven years. At the door of the back bedroom she stopped, and put her hand flat against the wood before she knocked.</p><p class="en">“Philip,” she said. “Philip, wake up.”</p></blockquote>
+<p>改了什么，一条条对上：</p>
+<ul><li><strong>年份、街名、病情、医生的判断，全删。</strong> 这些是档案，不是开头。读者的第一个问题不该是“哪一年”，该是“这房子怎么了”。</li><li><strong>先给世界</strong>：煤气灯、栏杆上的蜡味、烛火在楼梯口弯了一下。三个感官细节，全是冷的。</li><li><strong>给习惯，再给例外</strong>：<code>She had done this every morning for eleven years.</code> 十一年。然后她停住，把手平贴在门上——<strong>这就是那个“不对”</strong>。不是“她知道他要死了”，是“她今天不敢敲门”。</li><li><strong>名字仍然迟给，而且由她叫出来</strong>：<code>“Philip,” she said. “Philip, wake up.”</code> 叫两遍。第二遍比第一遍轻，你自己听。</li><li><strong>一个字没提死</strong>。全段没有一个 die、dead、ill。读者只知道：这家里有个人，天没亮，仆人不敢敲门。</li></ul>
+<p>现在回头看毛姆：他连“不敢敲门”都没写。他只让仆人“机械地看了一眼对面的房子”，然后“走到孩子床边”。<strong>他压得更狠。</strong> 差距不在句子，在谁更敢少写。</p>
+<h3 id="h-16">4.6 写开头时，可以问自己五个问题</h3>
+<ol><li><strong>第一段结束时，读者知道几件事？</strong> 超过三件就删。三件是上限。</li><li><strong>第一段里有没有一个“不对”？</strong> 没有就加一个，哪怕很小：一扇不该关的窗、一双没摆好的鞋。</li><li><strong>第一个给的是世界，还是人物？</strong> 先世界。世界是冷的，人物才热得起来。</li><li><strong>名字什么时候给？</strong> 能晚就晚。第一次出现，最好是在有人叫他的时候。</li><li><strong>这个调子，后面守得住吗？</strong> 守不住就换。开头许的愿，后面得还。</li></ol>
+<h3 id="h-17">4.7 边界：什么时候不能这么开头</h3>
+<ul><li><strong>类型小说、连载、网文</strong>：读者是来消费情节的，三百字内得给冲突。毛姆这种慢，会被划走。</li><li><strong>短篇</strong>：没有三十三段给你铺，开头必须更狠、更集中。</li><li><strong>第一人称回忆</strong>：可以先给“我”的声音和态度，不必先给世界——声音本身就是世界。</li><li><strong>全篇只有一个场面</strong>：压着写会让读者不知道在等什么。这时候“不对”必须早给，而且要给得明显。</li></ul>
+<p>判断标准还是那句：<strong>读者会不会因此错过信息？</strong> 会，就直接说；不会，就压着。</p>
+<h3 id="h-18">4.8 现在就写</h3>
+<p><strong>A（50 词，热身）</strong>　写一个房间的清晨，只许写三样东西，不许出现任何人的心情。三样里必须有一样是“不对劲”的。</p>
+<p><strong>B（150–200 词）</strong>　写一个“家里出事了”的开头。四条硬要求：不许用 die / dead / death / ill / sick；不许交代年份和城市；人物不超过两个，名字能晚就晚；结尾停在一个动作上。</p>
+<p>写完过一遍这八问。<strong>哪一个答“是”，就回去改那一处。</strong></p>
+<ol><li>第一段是不是先“介绍”再给现场？</li><li>第一段结束时，读者知道的是不是超过三件事？</li><li>开头有没有一个“不对”？</li><li>第一个给的是不是人物，而不是世界？</li><li>名字是不是出现得太早、出现在叙述者嘴里？</li><li>有没有一句是替读者下的判断（“她很难过”“这意味着……”）？</li><li>最后一句是解释，还是动作？</li><li>全篇句子是不是一个长度？</li></ol>
+<h3 id="h-19">4.9 六句可以直接搬的句子</h3>
+<ul><li><code>There was a rawness in the air that suggested snow.</code> —— 让空气承载预感。<code>suggested</code> 是钥匙：暗示，不断言。</li><li><code>He did not ask why he had been awakened.</code> —— 否定句写顺从。孩子不追问，因为在这个家里，孩子不被解释。</li><li><code>Knowing she would not be allowed to keep the child much longer, the woman kissed him again.</code> —— 分词句把“知情”和“动作”压进一句；被动语态把“谁不允许”藏起来。</li><li><code>She was too weak to resist his wish.</code> —— too...to：不是不想，是没力气。</li><li><code>upon which, under a towel, lay the body of a still-born child</code> —— 完全倒装。语序就是视线顺序：先毛巾，后尸体。</li><li><code>The doctor shook his head.</code> —— 七个词收一章。回答、判决、沉默，一次完成。</li></ul>
+</section>
+<section class="sec" data-kind="bg" id="sec-5">
+<h2 class="sec-title">五、背景</h2>
+<ul><li><strong>这是毛姆自己的第一章。</strong> 他 1874 年生于巴黎，八岁那年母亲去世（据传记，是在产下一个死婴之后不久）；随后他被送回英国肯特郡的惠特斯特布尔，由叔父亨利·毛姆牧师抚养。临终的母亲、死婴、被抱走的孩子、即将赶来的牧师叔父——小说几乎原样搬用了这段记忆。菲利普的年龄改成九岁，时间定在 1885 年（第二章明写 “It was in eighteen-eighty-five”）。</li><li><strong>临床式的写法。</strong> 毛姆在伦敦圣托马斯医院学医，1897 年取得医师资格。第一章像一份病历：没有一句“她将死去”，只有脉象、冷汗、屏风，和一具被毛巾盖住的尸体。</li><li><strong>monthly nurse</strong> 与 <strong>house call</strong>（医生上门出诊），都是那个年代中产家庭的日常。孩子由保姆（nurse）带大，与父母保持距离——这也解释了为什么菲利普与母亲的最后一面如此之短。</li><li>小说 1915 年由 Heinemann 出版，初版反响平平，一战后才真正畅销，此后多次被改编成电影。</li></ul>
+</section>
+<section class="sec" data-kind="test" id="sec-6">
+<h2 class="sec-title">六、自测</h2>
+<h3>概括</h3>
+<ol><li>用三句话说完这一章：谁、在哪里、发生了什么。</li><li>这一章的转折落在哪一句上？</li></ol>
+<h3>理解</h3>
+<ol start="3"><li>开篇两句给了哪三样信息？为什么用 suggest 而不用 meant？</li><li>从哪些细节能判断母亲将死？至少举三处——注意作者没有用“死”字。</li><li>母亲为什么要摸孩子的脚趾？这个动作在全书里为什么重要？</li><li>“Another boy.” 这三个字透露了什么？</li><li>最后一句为什么用动作而不是语言收尾？</li></ol>
+<h3>讨论</h3>
+<ol><li>孩子的 <code>very happy</code> 让这一章更残忍，还是更真实？</li><li>如果把视角换成医生，这一章会失去什么？</li><li>屏风在文中起什么作用？它象征什么？</li></ol>
+<hr><details class="notes answers"><summary>参考答案<em>先自己答，再对</em></summary><div class="inner"><ol><li>天没亮，九岁的菲利普被女仆抱到母亲床上；母亲摸遍他的脚趾，算作告别；随后他被抱走——毛巾底下躺着一个死产的弟弟。</li><li>“Another boy.”——她刚失去第二个儿子，菲利普是剩下的那个；前面那句“他以后可怎么办”，问的就是他。</li><li>时间（day broke）、颜色（gray）、气氛（dull）。用 suggest 是因为天气只是“暗示”要下雪，正如全章只是“暗示”死亡——作者拒绝把话说满。</li><li>声音“像从很远的地方传来”；医生不回答、只看她；她被“允许”留孩子的时间有限；毛巾下的死婴；医生把脉、“早饭后再来”；结尾的摇头。全章只有一个 still-born 点破了“死”。</li><li>那是告别的仪式，也是母亲对儿子身体的一次“清点”（五只脚趾，一只不少）。菲利普天生足内翻，这只脚是他一生的痛处——第一章就让母亲的手停在那里，是全书“枷锁”主题的第一次落笔。</li><li>她刚刚失去第二个儿子；菲利普是唯一活下来的男孩。</li><li>因为语言会解释、会抒情，而动作只呈现。摇头同时完成了三件事：回答、判决、沉默。</li></ol></div></details>
+</section>
+<section class="sec" data-kind="next" id="sec-7">
+<h2 class="sec-title">七、下一章</h2>
+<p>第二章，一周之后。伦敦 Onslow Gardens，沃特金小姐家。菲利普把靠垫堆成洞穴，扮成躲红番的猎人；保姆 Emma 穿着新做的黑丝绒裙来接他，告诉他“妈妈去了天堂”。注意毛姆怎么写一个九岁孩子<strong>听不懂</strong>死亡——以及“布莱克斯特布尔”那个新世界如何开始。</p>
+</section>
+<section class="sec" data-kind="write" id="sec-write">
+<h2 class="sec-title">八、写作练习</h2>
+<div class="writing">
+  <div class="hint">任务见第四节「现在就写」。写两句也好，内容只存在本机浏览器。</div>
+  <textarea placeholder="在这里写…"></textarea>
+  <div class="row">
+    <span class="count">0 词</span>
+    <span class="status"></span>
+    <span class="spacer"></span>
+    <button class="btn copy" type="button">复制</button>
+    <button class="btn clear" type="button">清空</button>
+  </div>
+</div>
+</section>
+<nav class="chnav"><span class="off">← 上一章</span><a href="ch02.html">第二章 →</a></nav>
+</main>
+<aside class="nav-right" id="navRight">
+  <div class="rn-head"><span>本章目录</span><button class="rn-toggle" id="toggleRight2" type="button" data-close="right" aria-label="收起目录">×</button></div>
+  <nav class="toc"><a class="lv2" href="#sec-1">一、原文</a><a class="lv2" href="#sec-2">二、逐场精读</a><a class="lv3" href="#h-3">概览</a><a class="lv3" href="#scene-1">场景 1｜破晓：仆人叫醒菲利普</a><a class="lv3" href="#scene-2">场景 2｜楼下的床：母亲抱住孩子</a><a class="lv3" href="#scene-3">场景 3｜五只脚趾：母亲最后的告别</a><a class="lv3" href="#scene-4">场景 4｜屏风后：一个死婴，“又是个男孩”</a><a class="lv3" href="#scene-5">场景 5｜门厅：医生交代后事</a><a class="lv2" href="#sec-3">三、词与句</a><a class="lv2" href="#sec-4">四、毛姆怎么写</a><a class="lv3" href="#h-11">4.1 开头为什么这么写：把第一段拆到骨头</a><a class="lv3" href="#h-12">4.2 开头写作的六条门道</a><a class="lv3" href="#h-13">4.3 这一章真正教的三件事</a><a class="lv3" href="#h-14">4.4 读一段的时候，脑子里在过什么</a><a class="lv3" href="#h-15">4.5 写坏的版本，和改过来的版本</a><a class="lv3" href="#h-16">4.6 写开头时，可以问自己五个问题</a><a class="lv3" href="#h-17">4.7 边界：什么时候不能这么开头</a><a class="lv3" href="#h-18">4.8 现在就写</a><a class="lv3" href="#h-19">4.9 六句可以直接搬的句子</a><a class="lv2" href="#sec-5">五、背景</a><a class="lv2" href="#sec-6">六、自测</a><a class="lv2" href="#sec-7">七、下一章</a><a class="lv2" href="#sec-write">八、写作练习</a></nav>
+</aside>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = {"id": "ch1", "href": "ch01.html", "num": "一", "words": [{"w": "rawness", "p": "/ˈrɔːnəs/", "g": "湿冷刺骨"}, {"w": "stucco", "p": "/ˈstʌkəʊ/", "g": "灰泥（外墙）"}, {"w": "portico", "p": "/ˈpɔːtɪkəʊ/", "g": "门廊（有柱）"}, {"w": "Philip", "p": "/ˈfɪlɪp/", "g": "菲利普（男名）"}, {"w": "bed-clothes", "p": "—", "g": "被褥（今多写 bedclothes）"}, {"w": "take sb in one’s arms", "p": "—", "g": "把某人抱在怀里"}, {"w": "nestle", "p": "/ˈnesl/", "g": "依偎"}, {"w": "flannel", "p": "/ˈflænl/", "g": "法兰绒"}, {"w": "nightgown", "p": "/ˈnaɪtɡaʊn/", "g": "长睡衣"}, {"w": "cuddle up", "p": "—", "g": "蜷缩着贴近"}, {"w": "fast asleep", "p": "—", "g": "熟睡（fast 这里是副词）"}, {"w": "forwards", "p": "/ˈfɔːwədz/", "g": "向前（旧式，今多用 forward）"}, {"w": "bed-side", "p": "—", "g": "床边"}, {"w": "moan", "p": "/məʊn/", "g": "呻吟（比 groan 更弱、更委屈）"}, {"w": "gravely", "p": "/ˈɡreɪvli/", "g": "严肃地"}, {"w": "be allowed to do", "p": "—", "g": "被允许做"}, {"w": "toe", "p": "/təʊ/", "g": "脚趾"}, {"w": "sob", "p": "/sɒb/", "g": "抽泣"}, {"w": "resist", "p": "/rɪˈzɪst/", "g": "抗拒"}, {"w": "give sb up", "p": "—", "g": "把某人交出去"}, {"w": "broken-heartedly", "p": "/ˌbrəʊkənˈhɑːtɪdli/", "g": "肝肠寸断地"}, {"w": "monthly nurse", "p": "—", "g": "月嫂（产后一个月内上门照护的护士，与后文 the child’s nurse 保姆不同）"}, {"w": "presently", "p": "/ˈprezntli/", "g": "不久之后（不是“目前”）"}, {"w": "exhaustion", "p": "/ɪɡˈzɔːstʃən/", "g": "精疲力竭"}, {"w": "still-born", "p": "/ˌstɪlˈbɔːn/", "g": "死产的（今多写 stillborn）"}, {"w": "screen", "p": "/skriːn/", "g": "屏风"}, {"w": "whisper", "p": "/ˈwɪspə/", "g": "低声说"}, {"w": "approach", "p": "/əˈprəʊtʃ/", "g": "走近"}, {"w": "Master", "p": "/ˈmɑːstə/", "g": "少爷（对男孩的称呼）"}, {"w": "pause", "p": "/pɔːz/", "g": "停顿"}, {"w": "pulse", "p": "/pʌls/", "g": "脉搏"}, {"w": "just now", "p": "—", "g": "眼下、此刻"}, {"w": "call again", "p": "—", "g": "再来（出诊）"}, {"w": "show sb out", "p": "—", "g": "送某人出门"}, {"w": "hall", "p": "/hɔːl/", "g": "门厅"}, {"w": "in silence", "p": "—", "g": "默默地"}, {"w": "brother-in-law", "p": "—", "g": "丈夫（或妻子）的兄弟；此处指孩子的伯父/叔父"}, {"w": "send for sb", "p": "—", "g": "派人去请某人"}, {"w": "Mrs. Carey", "p": "/ˈkeəri/", "g": "凯里太太（Mrs. 用于已婚女子）"}, {"w": "telegram", "p": "/ˈtelɪɡræm/", "g": "电报"}, {"w": "D’you", "p": "—", "g": "= Do you（口语缩略）"}, {"w": "out of the way", "p": "—", "g": "不碍事、避开"}, {"w": "I should think", "p": "—", "g": "我想（英式委婉说法）"}, {"w": "Miss Watkin", "p": "/ˈwɒtkɪn/", "g": "沃特金小姐（Miss 用于未婚女子）"}, {"w": "godmother", "p": "/ˈɡɒdmʌðə/", "g": "教母"}, {"w": "get over sth", "p": "—", "g": "从……中恢复、挺过来"}]};</script>
+<script>/* ===== Of Human Bondage · 阅读器 ===== */
+(function () {
+  'use strict';
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var CH = window.CHAPTER || {};
+  var KEY = 'ohb:' + (CH.id || 'x');
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  /* ---------------- 设置 ---------------- */
+
+  var DEFAULTS = { trans: 1, words: 1, sents: 1, notes: 1, craft: 1, split: 0, collapse: 0, openanno: 0 };
+  var cfg = Object.assign({}, DEFAULTS, LS.get('ohb:cfg', {}));
+
+  function applyCfg() {
+    document.body.dataset.trans = cfg.trans ? 'on' : 'off';
+    document.body.dataset.words = cfg.words ? 'on' : 'off';
+    document.body.dataset.sents = cfg.sents ? 'on' : 'off';
+    document.body.dataset.notes = cfg.notes ? 'on' : 'off';
+    document.body.dataset.craft = cfg.craft ? 'on' : 'off';
+    document.body.dataset.split = cfg.split ? 'on' : 'off';
+    $$('details.notes:not(.answers), details.craft').forEach(function (d) {
+      d.open = !cfg.collapse;
+    });
+    $$('details.anno').forEach(function (d) {
+      d.open = !!cfg.openanno;
+    });
+    $$('.settings input[data-set]').forEach(function (i) {
+      i.checked = !!cfg[i.dataset.set];
+    });
+  }
+
+  $$('.settings input[data-set]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      cfg[i.dataset.set] = i.checked ? 1 : 0;
+      LS.set('ohb:cfg', cfg);
+      applyCfg();
+      if (i.dataset.set === 'split') syncCompanion(true);
+    });
+  });
+
+  var setBtn = $('#setBtn'), settings = $('#settings');
+  if (setBtn && settings) {
+    setBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      settings.hidden = !settings.hidden;
+      document.body.classList.toggle('settings-open', !settings.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!settings.hidden && !settings.contains(e.target) && e.target !== setBtn) {
+        settings.hidden = true;
+        document.body.classList.remove('settings-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') settings.hidden = true;
+    });
+  }
+
+  /* ---------------- 主题 / 字号 ---------------- */
+
+  var themeBtn = $('.tools .theme');
+  function setTheme(t, remember) {
+    document.documentElement.dataset.theme = t;
+    if (themeBtn) themeBtn.textContent = t === 'dark' ? '☀' : '☾';
+    if (remember) LS.set('ohb:theme', t);
+  }
+  if (themeBtn) themeBtn.addEventListener('click', function () {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+
+  var fs = LS.get('ohb:fs', 1);
+  function applyFs() {
+    fs = Math.min(1.32, Math.max(0.86, fs));
+    document.documentElement.style.setProperty('--fs', String(fs));
+    LS.set('ohb:fs', fs);
+  }
+  $$('[data-fs]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fs += (b.dataset.fs === '+' ? 0.06 : -0.06);
+      applyFs();
+    });
+  });
+
+  /* ---------------- 侧栏 ---------------- */
+
+  var PANELS = { left: 1, right: 1 };
+  try { PANELS = Object.assign(PANELS, LS.get('ohb:panels', {})); } catch (e) {}
+
+  function applyPanels(persist) {
+    document.body.classList.toggle('no-left', !PANELS.left);
+    document.body.classList.toggle('no-right', !PANELS.right);
+    if (persist !== false && window.innerWidth >= 1080) LS.set('ohb:panels', PANELS);
+  }
+
+  var hasLeft = !!$('#navLeft'), hasRight = !!$('#navRight');
+  var forcedMobile = window.innerWidth < 1080;
+  if (forcedMobile) { PANELS.left = 0; PANELS.right = 0; }
+  if (!hasLeft) PANELS.left = 0;
+  if (!hasRight) PANELS.right = 0;
+  applyPanels(false);
+
+  var tl = $('#toggleLeft'), tr = $('#toggleRight'), tr2 = $('#toggleRight2');
+  if (tr && !hasRight) tr.style.display = 'none';
+  $$('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.dataset.close === 'left') PANELS.left = 0; else PANELS.right = 0;
+      applyPanels();
+    });
+  });
+
+  var scrim = $('#scrim');
+  if (scrim) scrim.addEventListener('click', function () {
+    PANELS.left = 0; PANELS.right = 0; applyPanels();
+    var st = $('#settings');
+    if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+  });
+  if (tl) tl.addEventListener('click', function () { PANELS.left = PANELS.left ? 0 : 1; applyPanels(); });
+  if (tr) tr.addEventListener('click', function () { PANELS.right = PANELS.right ? 0 : 1; applyPanels(); });
+  if (tr2) tr2.addEventListener('click', function () { PANELS.right = 0; applyPanels(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+      var st = $('#settings');
+      if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+    }
+    if (e.key === 'e' || e.key === 'E') $$('details').forEach(function (d) { d.open = true; });
+    if (e.key === 'q' || e.key === 'Q') $$('details').forEach(function (d) { d.open = false; });
+  });
+
+  // 移动端：点目录后收起右栏
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-right a, .nav-left a');
+    if (!a) return;
+    if (window.innerWidth < 1080) {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+    }
+  });
+
+  /* ---------------- 阅读进度 ---------------- */
+
+  var readbar = $('#readbar');
+  function paintProgress() {
+    if (!readbar) return;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    readbar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+
+  /* ---------------- 目录高亮 ---------------- */
+
+  var tocLinks = $$('.toc a');
+  var targets = tocLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+      var current = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { current = targets[i].id; break; }
+      }
+      if (current) {
+        tocLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+    }, { rootMargin: '-64px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { io.observe(t); });
+  }
+
+  /* ---------------- 段号跳转 ---------------- */
+
+  function flash(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#p-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(id);
+    history.replaceState(null, '', '#' + id);
+  });
+  if (location.hash && /^#p-/.test(location.hash)) setTimeout(function () { flash(location.hash.slice(1)); }, 300);
+
+  /* ---------------- J / K 逐段 ---------------- */
+
+  var units = $$('.unit');
+  function currentUnit() {
+    var best = 0, bestD = 1e9;
+    units.forEach(function (u, i) {
+      var d = Math.abs(u.getBoundingClientRect().top - 120);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+  function gotoUnit(i) {
+    if (!units.length) return;
+    i = Math.max(0, Math.min(units.length - 1, i));
+    units.forEach(function (u) { u.classList.remove('focus'); });
+    units[i].classList.add('focus');
+    units[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'j' || e.key === 'J') { gotoUnit(currentUnit() + 1); }
+    if (e.key === 'k' || e.key === 'K') { gotoUnit(currentUnit() - 1); }
+  });
+
+  /* ---------------- 朗读 ---------------- */
+
+  if ('speechSynthesis' in window) {
+    $$('.reader p, .en').forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'speak';
+      btn.type = 'button';
+      btn.title = '朗读这一段';
+      btn.textContent = '▶';
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+        var u = new SpeechSynthesisUtterance(p.innerText.replace('▶', ''));
+        u.lang = 'en-GB';
+        u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+      p.appendChild(btn);
+    });
+  }
+
+  /* ---------------- 分屏讲解 ---------------- */
+
+  var scenes = $$('.scene');
+  var panes = $$('.companion .cp');
+  var currentScene = null;
+
+  function syncCompanion(force) {
+    if (!scenes.length || !panes.length) return;
+    if (document.body.dataset.split !== 'on') return;
+    var active = null;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top <= 200) active = scenes[i].dataset.scene;
+    }
+    if (!active) active = scenes[0].dataset.scene;
+    if (active !== currentScene || force) {
+      currentScene = active;
+      panes.forEach(function (p) { p.hidden = p.dataset.scene !== active; });
+    }
+  }
+
+  /* ---------------- 打卡 ---------------- */
+
+  var checks = $$('.check input');
+  var bar = $('.bar i');
+  var barText = $('.bar-label span:last-child');
+
+  function loadChecks() {
+    var saved = LS.get(KEY, {});
+    checks.forEach(function (c) { c.checked = !!saved[c.dataset.k]; });
+    paintChecks();
+  }
+  function paintChecks() {
+    var done = checks.filter(function (c) { return c.checked; }).length;
+    var pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (barText) barText.textContent = done + ' / ' + checks.length;
+  }
+  checks.forEach(function (c) {
+    c.addEventListener('change', function () {
+      var saved = LS.get(KEY, {});
+      saved[c.dataset.k] = c.checked;
+      LS.set(KEY, saved);
+      paintChecks();
+    });
+  });
+
+  /* ---------------- 写作区 ---------------- */
+
+  var ta = $('.writing textarea');
+  if (ta) {
+    var countEl = $('.writing .count');
+    var statusEl = $('.writing .status');
+
+    function count(text) {
+      var en = (text.match(/[A-Za-z][A-Za-z'’\-]*/g) || []).length;
+      var zh = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return en + zh;
+    }
+    ta.value = LS.get(KEY + ':writing', '');
+    var t;
+    function upd() {
+      if (countEl) countEl.textContent = count(ta.value) + ' 词';
+      clearTimeout(t);
+      t = setTimeout(function () {
+        LS.set(KEY + ':writing', ta.value);
+        if (statusEl) { statusEl.textContent = '已保存'; setTimeout(function () { statusEl.textContent = ''; }, 1500); }
+      }, 600);
+    }
+    ta.addEventListener('input', upd);
+    upd();
+
+    var copyBtn = $('.writing .copy');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      ta.select(); document.execCommand('copy');
+      if (statusEl) statusEl.textContent = '已复制';
+    });
+    var clearBtn = $('.writing .clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      if (!confirm('清空这段练习？')) return;
+      ta.value = ''; upd();
+    });
+  }
+
+  /* ---------------- 生词本 ---------------- */
+
+  var WB_KEY = 'ohb:words';
+
+  function wbAll() { return LS.get(WB_KEY, []); }
+  function wbKey(ch, pid, w) { return ch + '|' + pid + '|' + w; }
+
+  function paintWbCount() {
+    var n = wbAll().length;
+    var c = $('#wbCount');
+    if (c) c.textContent = n;
+  }
+
+  function markSaved() {
+    var set = {};
+    wbAll().forEach(function (x) { set[wbKey(x.ch, x.pid, x.w)] = 1; });
+    $$('.gloss').forEach(function (g) {
+      var unit = g.closest('.unit');
+      var pid = unit ? unit.id : '';
+      g.classList.toggle('saved', !!set[wbKey(CH.id, pid, g.textContent)]);
+    });
+  }
+
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 1500);
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('.gloss');
+    if (!g) return;
+    var unit = g.closest('.unit');
+    var pid = unit ? unit.id : '';
+    var w = g.textContent;
+    var tip = g.dataset.tip || '';
+    var list = wbAll();
+    var k = wbKey(CH.id, pid, w);
+    var idx = list.findIndex(function (x) { return wbKey(x.ch, x.pid, x.w) === k; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      LS.set(WB_KEY, list);
+      g.classList.remove('saved');
+      toast('已移出生词本');
+    } else {
+      list.push({ w: w, tip: tip, ch: CH.id, href: CH.href, pid: pid, n: (CH.num || '') });
+      LS.set(WB_KEY, list);
+      g.classList.add('saved');
+      toast('已加入生词本');
+    }
+    paintWbCount();
+  });
+
+  var wbBtn = $('#wbBtn');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () {
+      var list = wbAll();
+      var html = '<h3>生词本</h3><p class="hint">在原文里点虚线词即可收进来；再点一次移出。</p>';
+      if (!list.length) {
+        html += '<div class="wb-empty">还是空的。读到不认识的词，点一下它。</div>';
+      } else {
+        html += '<div class="wb-list">';
+        list.slice().sort(function (a, b) {
+          return (a.n || '').localeCompare(b.n || '', 'zh-Hans-CN', { numeric: true });
+        }).forEach(function (x) {
+          var file = x.href || String(x.ch || '').replace(/^ch(\d)$/, 'ch0$1') + '.html';
+          var href = x.pid ? (file + '#' + x.pid) : file;
+          html += '<a class="wb-item" href="' + href + '"><b>' + esc(x.w) + '</b><span>' +
+                  esc(x.tip) + '</span><em>' + esc(x.n || '') + '</em></a>';
+        });
+        html += '</div>';
+      }
+      html += '<div class="quiz-foot" style="margin-top:14px"><button class="btn" id="closeWb" type="button">关闭</button></div>';
+      openSheet(html);
+      var c = $('#closeWb');
+      if (c) c.addEventListener('click', closeSheet);
+    });
+  }
+
+  /* ---------------- 词汇小测 ---------------- */
+
+  function cleanGloss(g) {
+    var t = String(g || '').replace(/^[=＝]\s*/, '');
+    t = t.split('（')[0].trim();
+    return t.replace(/[；;]\s*$/, '');
+  }
+
+  var words = (CH.words || []).map(function (w) {
+    return { w: w.w, g: cleanGloss(w.g) };
+  }).filter(function (w) { return w.g && w.g.length >= 2 && /[\u4e00-\u9fff]/.test(w.g); });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function buildQuiz() {
+    if (words.length < 5) return;
+    var picked = shuffle(words.slice()).slice(0, Math.min(8, words.length));
+    var html = '<h3>词义小测</h3><p class="hint">从本章词表里抽 8 个，选一个正确释义。</p>';
+    picked.forEach(function (w) {
+      var others = shuffle(words.filter(function (x) { return x.g !== w.g; })).slice(0, 3).map(function (x) { return x.g; });
+      var opts = shuffle(others.concat([w.g]));
+      html += '<div class="q" data-answer="' + esc(w.g) + '"><div class="w">' + esc(w.w) + '</div><div class="opts">';
+      opts.forEach(function (o) { html += '<button class="opt" type="button">' + esc(o) + '</button>'; });
+      html += '</div><div class="fb"></div></div>';
+    });
+    html += '<div class="quiz-foot"><span class="score"></span><button class="btn" id="closeQuiz" type="button">关闭</button></div>';
+    openSheet(html);
+
+    var total = picked.length, right = 0, answered = 0;
+    $$('.sheet .q').forEach(function (q) {
+      var ans = q.dataset.answer;
+      $$('.opt', q).forEach(function (o) {
+        if (o.textContent === ans) o.dataset.correct = '1';
+        o.addEventListener('click', function () {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          answered++;
+          if (o.dataset.correct === '1') { right++; o.classList.add('right'); $('.fb', q).textContent = '对。'; }
+          else {
+            o.classList.add('wrong');
+            $('.opt[data-correct="1"]', q).classList.add('right');
+            $('.fb', q).textContent = '正确释义：' + ans;
+          }
+          var sc = $('.score');
+          if (sc) sc.textContent = answered + ' / ' + total + ' · 答对 ' + right;
+        });
+      });
+    });
+    var c = $('#closeQuiz');
+    if (c) c.addEventListener('click', closeSheet);
+  }
+
+  /* ---------------- 弹层 ---------------- */
+
+  function openSheet(html) {
+    var modal = $('#sheetModal');
+    if (!modal) return;
+    $('.sheet', modal).innerHTML = html;
+    modal.classList.add('open');
+  }
+  function closeSheet() {
+    var modal = $('#sheetModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  var sheetModal = document.createElement('div');
+  sheetModal.className = 'modal';
+  sheetModal.id = 'sheetModal';
+  sheetModal.innerHTML = '<div class="sheet"></div>';
+  document.body.appendChild(sheetModal);
+  sheetModal.addEventListener('click', function (e) { if (e.target === sheetModal) closeSheet(); });
+
+  ['#quizBtn', '#quizBtn2'].forEach(function (sel) {
+    var b = $(sel);
+    if (b) b.addEventListener('click', buildQuiz);
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------------- 搜索（技法页） ---------------- */
+
+  var search = $('.search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      $$('table.gen tr').forEach(function (tr) {
+        if (tr.querySelector('th')) return;
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+      $$('.doc-main h2, .doc-main h3, .doc-main p').forEach(function (el) {
+        el.style.display = (!q || el.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------------- 首页进度 ---------------- */
+
+  var cells = $$('.cell[data-ch]');
+  cells.forEach(function (c) {
+    var saved = LS.get('ohb:ch' + c.dataset.ch, {});
+    var n = Object.keys(saved).filter(function (k) { return saved[k]; }).length;
+    if (n >= 5) c.classList.add('done');
+  });
+
+  /* ---------------- 初始化 ---------------- */
+
+  setTheme(LS.get('ohb:theme', 'light'), false);
+  applyFs();
+  applyCfg();
+  loadChecks();
+  paintWbCount();
+  markSaved();
+
+  if (document.body.dataset.split === 'on') syncCompanion(true);
+
+  var raf = null;
+  window.addEventListener('scroll', function () {
+    paintProgress();
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      syncCompanion(false);
+    });
+  }, { passive: true });
+  paintProgress();
+})();
+</script>
+</body>
+</html>

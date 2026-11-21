@@ -1,0 +1,1561 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>第八章 · Of Human Bondage</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>/* ===== Of Human Bondage · 阅读器 ===== */
+
+:root {
+  --paper: #faf7f0;
+  --paper-2: #f3eee2;
+  --card: #fffdf8;
+  --ink: #211e19;
+  --ink-soft: #46403a;
+  --muted: #7d7365;
+  --line: #e6ddcd;
+  --line-soft: #f0eade;
+  --accent: #a33b2e;
+  --accent-2: #c9a35d;
+  --accent-soft: #f6e9e3;
+  --green: #3f5d4e;
+  --shadow: 0 1px 2px rgba(33, 30, 25, .05), 0 16px 40px -24px rgba(33, 30, 25, .35);
+  --en: "Iowan Old Style", Charter, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --zh: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --zhb: var(--zh);
+  --title: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 1;
+  --side: 286px;
+}
+
+
+[data-theme="dark"] {
+  --paper: #14120e;
+  --paper-2: #1a1712;
+  --card: #1d1a14;
+  --ink: #ebe4d6;
+  --ink-soft: #cfc6b5;
+  --muted: #9b9080;
+  --line: #2f2a22;
+  --line-soft: #262118;
+  --accent: #d9725d;
+  --accent-2: #c9a35d;
+  --accent-soft: #2c201c;
+  --green: #83ab95;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 44px -24px rgba(0, 0, 0, .85);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--zh);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  height: 58px; padding: 0 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.crumb { font-size: 12.5px; color: var(--muted); letter-spacing: .03em; white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 600; }
+
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: transparent; pointer-events: none;
+}
+.readbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .1s linear; }
+
+.tools { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.icon-btn {
+  height: 32px; min-width: 32px; padding: 0 9px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font: 500 12px/1 var(--zh); cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--muted); color: var(--ink); }
+.set-btn { font-family: var(--en); font-size: 13px; letter-spacing: .02em; }
+
+.menu-btn {
+  display: none; width: 32px; height: 32px; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font-size: 15px; cursor: pointer; flex: none;
+}
+
+/* ---------- 设置面板 ---------- */
+
+.settings {
+  position: fixed; z-index: 50; top: 66px; right: 18px; width: 268px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 16px 12px;
+}
+.settings[hidden] { display: none; }
+.set-title { font: 600 11px/1 var(--zh); letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+.set-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13.5px; }
+.sw em { font-style: normal; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.sw input {
+  appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line);
+  position: relative; cursor: pointer; flex: none; transition: background .18s ease; margin-left: auto; order: 2;
+}
+.sw input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--card); transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.sw input:checked { background: var(--accent); }
+.sw input:checked::after { transform: translateX(14px); }
+
+.set-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.set-row span { margin-right: auto; }
+.set-row button {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  border-radius: 7px; padding: 5px 10px; font: 500 12px/1 var(--zh); cursor: pointer;
+}
+.set-row button:hover { border-color: var(--muted); }
+.set-note { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+/* ---------- 布局：左导航 / 正文 / 右目录 ---------- */
+
+:root { --lw: 264px; --rw: 236px; }
+body.no-left { --lw: 0px; }
+body.no-right { --rw: 0px; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--lw) minmax(0, 1fr) var(--rw);
+  align-items: start;
+}
+body.no-left .nav-left, body.no-right .nav-right { display: none; }
+
+.nav-left { grid-column: 1; }
+main { grid-column: 2; }
+.nav-right { grid-column: 3; }
+
+.nav-left {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 20px 14px 34px;
+  border-right: 1px solid var(--line); scrollbar-width: thin;
+}
+.nav-right {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 18px 14px 34px 16px;
+  border-left: 1px solid var(--line); scrollbar-width: thin;
+}
+
+.brand { font: 600 10px/1 var(--zh); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.site-name { font: 600 calc(17px * var(--fs))/1.4 var(--title); margin: 7px 0 14px; }
+
+.gl-links { display: grid; gap: 2px; margin-bottom: 14px; }
+.gl-links a {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 9px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-soft); font-size: 13px;
+}
+.gl-links a:hover { background: var(--paper-2); color: var(--ink); }
+.gl-links a.cur { background: var(--accent-soft); color: var(--accent); }
+.gl-links span { color: var(--muted); font-size: 10.5px; }
+
+.ch-tools { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0 0 16px; }
+.ch-tools .btn.small { padding: 6px 10px; font-size: 12px; }
+.ch-tools #quizBtn2 { width: auto; justify-content: center; }
+
+.side-label { font: 600 10px/1 var(--zh); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ch-label { margin-top: 4px; }
+
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.ch-list a, .ch-list span {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 8px; border-radius: 6px; text-decoration: none;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.ch-list .n { font: 500 10.5px/1.6 var(--mono); color: var(--muted); width: 20px; flex: none; }
+.ch-list a:hover { background: var(--paper-2); color: var(--ink); }
+.ch-list a.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ch-list a.cur .n { color: var(--accent); }
+.ch-list .off { color: var(--muted); opacity: .45; }
+
+
+.rn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 10.5px/1 var(--zh); letter-spacing: .12em; color: var(--muted);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
+}
+.rn-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; }
+.rn-toggle:hover { color: var(--accent); }
+
+.toc { font-size: 12.6px; line-height: 1.45; }
+.toc a {
+  display: block; padding: 5px 8px; margin: 1px 0; border-radius: 6px;
+  color: var(--muted); text-decoration: none; border-left: 2px solid transparent;
+}
+.toc a:hover { background: var(--paper-2); color: var(--ink); }
+.toc a.lv2 { font-weight: 600; margin-top: 9px; color: var(--ink-soft); font-size: 12.8px; }
+.toc a.lv3 { padding-left: 14px; font-size: 12px; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 9px 15px; border-radius: 8px; font: 500 13px/1 var(--zh); cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.small { padding: 7px 12px; font-size: 12.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.btn.small b { color: var(--accent); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.keys { font-size: 11.5px; color: var(--muted); line-height: 2.1; }
+kbd {
+  font: 500 10px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 2px 4px; background: var(--card); color: var(--ink-soft); margin-right: 2px;
+}
+
+/* ---------- 正文 ---------- */
+
+body[data-split="on"] main { max-width: 1040px; }
+main { width: 100%; max-width: 860px; margin: 0 auto; padding: 32px 40px 120px; container-type: inline-size; }
+.doc-head, .writing, .chnav { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.sec { max-width: 700px; margin: 0 auto 46px; }
+body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+h1.doc-title { font: 600 calc(31px * var(--fs))/1.32 var(--title); margin: 0 0 6px; letter-spacing: -.01em; }
+.doc-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 22px; letter-spacing: .02em; }
+.doc-sub strong { color: var(--ink-soft); font-weight: 500; }
+
+h2.sec-title {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh);
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; letter-spacing: .01em;
+}
+h2.sec-title::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+
+h3 {
+  font: 600 calc(17px * var(--fs))/1.5 var(--zh);
+  margin: 40px 0 10px; scroll-margin-top: 80px; letter-spacing: .01em;
+}
+h3.scene-title { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 48px; }
+h3.scene-title .tag {
+  font: 600 10px/1 var(--zh); letter-spacing: .1em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 4px 7px; border-radius: 4px;
+}
+
+h4 { font: 600 calc(14px * var(--fs))/1.6 var(--zh); margin: 24px 0 6px; color: var(--ink); }
+
+p { margin: 0 0 15px; }
+
+code {
+  font-family: var(--en); font-size: .94em; font-style: normal; color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 0 3px; border-radius: 3px;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+
+.prose-body { font-family: var(--zhb); font-size: calc(15.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft); }
+
+/* 提示条 */
+
+.callout {
+  border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line);
+  padding: 16px 20px; font-size: 13.5px; line-height: 1.9; color: var(--ink-soft); margin: 0 0 22px;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* 首段信息条 */
+
+.spec { display: block; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.spec div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); font-size: 12.8px; }
+.spec div:last-child { border-bottom: 0; }
+.spec dt { flex: 0 0 54px; font: 600 11px/1.9 var(--zh); letter-spacing: .08em; color: var(--muted); margin: 0; }
+.spec dd { flex: 1; margin: 0; color: var(--ink-soft); line-height: 1.75; }
+
+/* ---------- 阅读：原文 ---------- */
+
+.reader { font-family: var(--en); font-size: calc(18px * var(--fs)); line-height: 2; }
+.reader p { margin: 0 0 1.3em; position: relative; }
+
+/* ---------- 场景 ---------- */
+
+.scene { scroll-margin-top: 80px; }
+
+.scene-lead {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--ink-soft); background: var(--paper-2);
+  border-left: 3px solid var(--accent-2); padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 12px 0 22px;
+}
+.scene-lead b { color: var(--ink); font-weight: 600; }
+
+.unit {
+  position: relative; padding: 10px 0 20px; border-bottom: 1px dashed var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.unit:last-of-type { border-bottom: 0; }
+.unit .num {
+  position: absolute; left: -34px; top: 14px;
+  font: 600 11.5px/1 var(--mono); color: var(--muted); width: 24px; text-align: right; opacity: .75;
+}
+.unit.focus { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; }
+.unit.flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+.en { position: relative; font-family: var(--en); font-size: calc(17.5px * var(--fs)); line-height: 1.95; margin: 0 0 10px; }
+
+.trans {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--muted); margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--line-soft);
+}
+
+.speak {
+  position: absolute; left: -32px; top: .5em;
+  width: 20px; height: 20px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--card);
+  color: var(--muted); font-size: 7px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity .16s ease, color .16s ease, border-color .16s ease;
+}
+.en:hover > .speak, .reader p:hover > .speak, .speak:focus { opacity: 1; }
+.speak:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- 词 / 句 ---------- */
+
+.chipbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+
+details.anno { display: inline-block; border: 1px solid var(--line); border-radius: 7px; background: var(--card); }
+details.anno > summary {
+  list-style: none; cursor: pointer; padding: 4px 10px; font: 500 11.5px/1.7 var(--zh); color: var(--muted);
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+details.anno > summary::-webkit-details-marker { display: none; }
+details.anno > summary::before { content: "▸"; font-size: 8px; transition: transform .2s ease; }
+details.anno[open] > summary::before { transform: rotate(90deg); }
+details.anno[open] > summary { color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+details.anno .anno-body { padding: 8px 10px; overflow-x: auto; }
+details.anno[open] { flex: 1 1 100%; }
+
+.wordtable { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.wordtable th {
+  text-align: left; font: 600 10px/1 var(--zh); letter-spacing: .08em; color: var(--muted);
+  padding: 3px 7px 7px; border-bottom: 1px solid var(--line);
+}
+.wordtable td { padding: 6px 7px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.wordtable tr:last-child td { border-bottom: 0; }
+.wordtable td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.wordtable td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wordtable td:nth-child(3) { color: var(--ink-soft); line-height: 1.6; }
+
+.sent {
+  border-left: 3px solid var(--accent-2); padding: 5px 0 5px 12px; margin: 8px 0;
+  font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+}
+.sent code {
+  font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--ink);
+  background: none; padding: 0;
+}
+
+/* ---------- 细读 / 写法 ---------- */
+
+details.notes, details.craft {
+  margin: 18px 0 6px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); overflow: hidden;
+}
+details.notes > summary, details.craft > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 11px 15px; display: flex; align-items: center; gap: 8px;
+  font: 600 12.5px/1 var(--zh); color: var(--ink);
+}
+details.notes > summary::-webkit-details-marker, details.craft > summary::-webkit-details-marker { display: none; }
+details.notes > summary::before, details.craft > summary::before {
+  content: "▸"; font-size: 8px; color: var(--accent); transition: transform .2s ease;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+details.notes > summary em, details.craft > summary em {
+  font-style: normal; font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: auto;
+}
+details .inner {
+  padding: 2px 18px 16px; border-top: 1px solid var(--line-soft);
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft);
+}
+details .inner > :first-child { margin-top: 12px; }
+details .inner strong { color: var(--ink); }
+details .inner ol, details .inner ul { padding-left: 20px; }
+details .inner li { margin-bottom: 7px; }
+details .inner blockquote { font-size: .95em; }
+
+/* ---------- 行内词注 ---------- */
+
+.gloss {
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 50%, transparent);
+  cursor: pointer; position: relative; transition: background .15s ease;
+}
+.gloss:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
+.gloss.saved { border-bottom-style: solid; border-bottom-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.gloss::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: 138%; transform: translateX(-50%) translateY(4px);
+  background: var(--ink); color: var(--paper);
+  font: 400 11.5px/1.5 var(--zh); padding: 6px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: all .16s ease; z-index: 30;
+  box-shadow: var(--shadow);
+}
+.gloss:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 分屏讲解 ---------- */
+
+.companion { display: none; }
+
+@container (min-width: 780px) {
+  body[data-split="on"] .scenes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; align-items: start;
+  }
+  body[data-split="on"] .companion {
+    display: block; position: sticky; top: 74px;
+    max-height: calc(100vh - 96px); overflow-y: auto;
+    border-left: 1px solid var(--line);
+    padding: 2px 4px 20px 24px;
+    scrollbar-width: thin;
+  }
+  body[data-split="on"] details.notes:not(.answers),
+  body[data-split="on"] details.craft { display: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+}
+body[data-split="on"] details.notes,
+body[data-split="on"] details.craft { display: none; }
+
+.cp { padding: 16px 18px 20px; }
+.cp-head {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft); margin-bottom: 12px;
+  font: 600 13px/1.4 var(--zh);
+}
+.cp-head .tag {
+  font: 600 9.5px/1 var(--zh); letter-spacing: .08em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 3px 6px; border-radius: 4px; flex: none;
+}
+.cp-sec { margin-bottom: 18px; }
+.cp-sec h4 {
+  margin: 0 0 6px; font: 600 11px/1 var(--zh); letter-spacing: .12em;
+  color: var(--accent); text-transform: uppercase;
+}
+.cp-inner { font-family: var(--zhb); font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); }
+.cp-inner p { margin: 0 0 10px; }
+.cp-inner strong { color: var(--ink); }
+.cp-inner ul, .cp-inner ol { padding-left: 18px; margin: 0 0 10px; }
+.cp-inner li { margin-bottom: 6px; }
+.cp-inner blockquote { font-size: 13px; margin: 0 0 10px; }
+
+body[data-notes="off"] .cp-sec[data-kind="notes"] { display: none; }
+body[data-craft="off"] .cp-sec[data-kind="craft"] { display: none; }
+
+/* ---------- 表格 ---------- */
+
+.tbl-wrap { overflow-x: auto; margin: 16px 0 20px; }
+table.gen {
+  width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+table.gen th {
+  text-align: left; padding: 9px 13px; background: var(--paper-2);
+  font: 600 11.5px/1.5 var(--zh); color: var(--ink); border-bottom: 1px solid var(--line);
+}
+table.gen td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); color: var(--ink-soft); vertical-align: top; }
+table.gen tr:last-child td { border-bottom: 0; }
+table.gen tr:hover td { background: var(--paper-2); }
+
+a.ref { text-decoration: none; color: var(--accent); font-weight: 600; padding: 0 1px; border-radius: 3px; }
+a.ref:hover { background: var(--accent-soft); }
+
+hr { border: 0; border-top: 1px solid var(--line-soft); margin: 30px 0; }
+.sec[data-kind="scenes"] hr, .sec[data-kind="craft"] hr { display: none; }
+
+/* ---------- 显示开关 ---------- */
+
+body[data-trans="off"] .trans { display: none; }
+body[data-words="off"] .anno[data-kind="w"] { display: none; }
+body[data-sents="off"] .anno[data-kind="s"] { display: none; }
+body[data-words="off"][data-sents="off"] .chipbar { display: none; }
+body[data-notes="off"] details.notes:not(.answers) { display: none; }
+body[data-craft="off"] details.craft { display: none; }
+
+
+/* ---------- 小测 / 生词本 ---------- */
+
+
+.fab:hover { filter: brightness(1.06); }
+
+.modal { position: fixed; inset: 0; z-index: 60; display: none; background: rgba(18, 15, 11, .48); backdrop-filter: blur(3px); }
+.modal.open { display: grid; place-items: center; padding: 18px; }
+.sheet {
+  width: min(540px, 100%); max-height: 84vh; overflow-y: auto; background: var(--card);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 22px 24px; color: var(--ink);
+}
+.sheet h3 { margin: 0 0 4px; font-size: 17px; }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.q { margin-bottom: 16px; }
+.q .w { font: 600 15px/1.5 var(--mono); color: var(--accent); }
+.q .opts { display: grid; gap: 6px; margin-top: 8px; }
+.q .opt {
+  text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper); color: var(--ink-soft); font: 400 13px/1.6 var(--zh); cursor: pointer;
+}
+.q .opt:hover { border-color: var(--muted); }
+.q .opt.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+.q .opt.wrong { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.q .fb { font-size: 12px; color: var(--muted); margin-top: 5px; min-height: 16px; }
+.quiz-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.quiz-foot .score { font-size: 12.5px; color: var(--muted); margin-right: auto; }
+
+.wb-list { display: grid; gap: 6px; }
+.wb-item {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft);
+}
+.wb-item:hover { border-color: var(--accent); }
+.wb-item b { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.wb-item span { font-size: 12px; color: var(--muted); }
+.wb-item em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); }
+.wb-empty { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--paper); font: 500 12.5px/1 var(--zh);
+  padding: 9px 14px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: all .22s ease; z-index: 70;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 写作区 ---------- */
+
+.writing {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-top: 30px;
+}
+.writing h3 { margin: 0 0 4px; font-size: 15px; }
+.writing .hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.writing textarea {
+  width: 100%; min-height: 180px; resize: vertical; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--paper);
+  color: var(--ink); font: 400 14.5px/1.9 var(--zhb); outline: none;
+}
+.writing textarea:focus { border-color: var(--accent); }
+.writing .row { display: flex; align-items: center; gap: 10px; margin-top: 9px; font-size: 12px; color: var(--muted); }
+.writing .row .spacer { margin-left: auto; }
+
+/* ---------- 首页 ---------- */
+
+.home { max-width: none; margin: 0; padding: 26px 0 60px; }
+.home h1 { font: 600 calc(38px * var(--fs))/1.28 var(--title); margin: 0 0 10px; letter-spacing: -.01em; }
+.home .lead { font-size: 14.5px; color: var(--muted); margin-bottom: 30px; line-height: 1.9; }
+.stats { display: flex; gap: 40px; margin: 0 0 40px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat b { display: block; font: 600 26px/1.2 var(--title); color: var(--accent); }
+.stat span { font-size: 11.5px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 9px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  font: 500 12.5px/1 var(--mono); text-decoration: none; transition: all .16s ease;
+}
+a.cell { color: var(--ink); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--card)); }
+a.cell:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.cell.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cell.todo { opacity: .5; }
+
+.home .links { display: flex; gap: 12px; margin-top: 36px; }
+.home .links a {
+  flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px;
+  text-decoration: none; color: var(--ink); background: var(--card); transition: all .16s ease;
+}
+.home .links a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.home .links b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.home .links span { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- 技法页 ---------- */
+
+.doc-main { max-width: none; margin: 0; padding: 6px 0 40px; }
+.doc-main h2 {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh); margin: 42px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line);
+}
+.doc-main h3 { margin-top: 30px; }
+.search {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--card); color: var(--ink); font: 400 13.5px/1.4 var(--zh); outline: none; margin-bottom: 6px;
+}
+.search:focus { border-color: var(--accent); }
+
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1179px) {
+  body[data-split="on"] .layout { padding-right: 0; }
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side {
+    position: fixed; left: 0; top: 58px; bottom: 0; width: 284px; z-index: 35;
+    transform: translateX(-102%); transition: transform .24s ease;
+    background: var(--paper); box-shadow: var(--shadow);
+  }
+  aside.side.open { transform: none; }
+  .menu-btn { display: grid; }
+  main { padding: 26px 20px 110px; }
+  .unit .num { position: static; display: block; width: auto; text-align: left; margin-bottom: 4px; }
+  .en { font-size: calc(17px * var(--fs)); }
+  .speak { display: none; }
+  h1.doc-title { font-size: calc(24px * var(--fs)); }
+  .crumb { display: none; }
+  .settings { width: min(300px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 560px) {
+  .home { padding: 38px 18px 80px; }
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .tbl-wrap { margin-left: -4px; margin-right: -4px; }
+}
+
+@media print {
+  .top, aside.side, .fab, .writing, .modal, .settings, .companion, .toast { display: none !important; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  details .inner { display: block; }
+}
+
+/* 非章节页隐藏与章节无关的开关 */
+body:not([data-page="chapter"]) .settings [data-only="chapter"] { display: none; }
+
+/* 章末翻页 */
+.chnav {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 46px auto 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.chnav a { text-decoration: none; color: var(--accent); }
+.chnav span.off { color: var(--muted); opacity: .5; }
+
+/* 侧栏导航 */
+.side-nav { display: flex; gap: 8px; margin: 10px 0 12px; font-size: 12.5px; }
+.side-nav a, .side-nav .off {
+  flex: 1; text-align: center; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink-soft);
+}
+.side-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.side-nav .off { border-style: dashed; color: var(--muted); opacity: .5; }
+
+.quick-links { display: grid; gap: 2px; font-size: 12.5px; }
+.quick-links a { color: var(--ink-soft); text-decoration: none; padding: 5px 8px; border-radius: 6px; }
+.quick-links a:hover { background: var(--paper-2); color: var(--accent); }
+
+.sec[data-kind="write"] .writing { margin-top: 0; }
+
+
+/* ---------- 头部：篇幅 / 问题 ---------- */
+
+.doc-meta { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; margin: 2px 0 18px; }
+
+.questions {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--card); border-radius: 0 12px 12px 0;
+  padding: 18px 22px 14px; margin: 0 0 26px;
+}
+.questions blockquote { border: 0; padding: 0; margin: 0; }
+.questions p { font-family: var(--zhb); font-size: calc(15px * var(--fs)); line-height: 1.95; margin: 0 0 8px; color: var(--ink); }
+.questions p:first-child { font: 600 12px/1 var(--zh); letter-spacing: .06em; color: var(--accent); margin-bottom: 12px; }
+.questions p:last-child { margin-bottom: 0; }
+
+details.qa { border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 14px 0 6px; }
+details.qa > summary {
+  list-style: none; cursor: pointer; padding: 10px 16px;
+  font: 600 12.5px/1.6 var(--zh); color: var(--accent);
+}
+details.qa > summary::-webkit-details-marker { display: none; }
+details.qa > summary::before { content: "▸"; font-size: 9px; margin-right: 6px; display: inline-block; transition: transform .2s ease; }
+details.qa[open] > summary::before { transform: rotate(90deg); }
+details.qa .inner { padding: 4px 18px 14px; border-top: 1px solid var(--line-soft); font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9; color: var(--ink-soft); }
+details.qa .inner ul { padding-left: 18px; margin: 8px 0 0; }
+details.qa .inner li { margin-bottom: 6px; }
+
+/* ---------- 移动端：两侧变抽屉 ---------- */
+
+@media (max-width: 1080px) {
+  .app { display: block; }
+  .nav-left, .nav-right {
+    position: fixed; top: 58px; bottom: 0; z-index: 45;
+    width: min(300px, 86vw); height: auto; background: var(--paper); box-shadow: var(--shadow);
+    display: none;
+  }
+  .nav-left { left: 0; border-right: 1px solid var(--line); }
+  .nav-right { right: 0; border-left: 1px solid var(--line); }
+  body:not(.no-left) .nav-left { display: block; }
+  body:not(.no-right) .nav-right { display: block; }
+  main { padding: 24px 18px 100px; }
+  .ch-list { max-height: calc(100vh - 330px); overflow-y: auto; }
+}
+
+/* ---------- 移动端：抽屉、遮罩、表格 ---------- */
+
+.scrim { display: none; }
+
+/* 词注提示：触屏没有 hover，直接关掉，避免长提示撑宽页面 */
+@media (hover: none), (max-width: 700px) {
+  .gloss::after { display: none; }
+}
+
+@media (max-width: 1080px) {
+  .scrim {
+    display: none; position: fixed; inset: 58px 0 0; z-index: 40;
+    background: rgba(18, 15, 11, .32);
+    -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+  }
+  body:not(.no-left) .scrim, body:not(.no-right) .scrim { display: block; }
+
+  .nav-left, .nav-right { max-height: calc(100vh - 58px); overflow-y: auto; }
+  .ch-list { max-height: none; }
+
+  main { padding: 22px 16px 96px; }
+  .doc-main { padding: 6px 0 40px; }
+
+  /* 表格：宁可横向滚动，也不挤成一条或截断 */
+  .tbl-wrap { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table.gen { min-width: 560px; }
+  .anno-body { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .anno-body .wordtable { min-width: 470px; }
+  .cp-inner table { min-width: 470px; }
+
+  .questions { padding: 14px 16px 10px; }
+  .writing { padding: 16px; }
+  .settings { right: 10px; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉打开时锁住背景滚动 */
+  body:not(.no-left), body:not(.no-right) { overflow: hidden; }
+}
+
+/* ---------- 移动端：工具栏置底 / 全屏抽屉 / 设置底部弹层 ---------- */
+
+.panel-bar { display: none; }
+
+@media (max-width: 1080px) {
+  /* 顶栏变底栏 */
+  .top {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 14px env(safe-area-inset-bottom);
+    border-bottom: 0; border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -10px 24px -16px rgba(0,0,0,.18);
+    justify-content: space-between;
+  }
+  .top .crumb { display: none; }
+  .top .tools { margin-left: 0; gap: 10px; }
+  .icon-btn { height: 38px; min-width: 42px; font-size: 14px; }
+  .readbar { top: -1px; bottom: auto; }
+
+  /* 正文给底栏留出空间 */
+  main { padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .writing { margin-bottom: 8px; }
+
+  /* 侧栏：全屏弹层 */
+  .nav-left, .nav-right {
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    width: 100%; height: auto; max-height: none; border: 0; border-radius: 0;
+    z-index: 55; padding-bottom: 24px;
+  }
+  .scrim { inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0; z-index: 50; }
+
+  .panel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px 18px; margin: -20px -14px 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    font: 600 12px/1 var(--zh); letter-spacing: .1em; color: var(--muted);
+  }
+  .panel-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
+  }
+  .nav-left, .nav-right { padding-left: 18px; padding-right: 18px; }
+  .nav-left .panel-bar { margin-left: -18px; margin-right: -18px; }
+  .nav-right .rn-head {
+    position: sticky; top: 0; z-index: 2; background: var(--paper);
+    margin: -18px -18px 10px; padding: 14px 18px 10px;
+  }
+
+  /* 设置：底部弹层 */
+  .settings {
+    position: fixed; left: 8px; right: 8px; bottom: calc(64px + env(safe-area-inset-bottom));
+    top: auto; width: auto; max-height: calc(100vh - 140px); overflow-y: auto;
+    border-radius: 16px; padding: 16px 18px 14px;
+    z-index: 60;
+  }
+  .settings .sw { padding: 9px 0; }
+  .set-row button { padding: 7px 14px; }
+
+  /* 弹层与提示避开底栏 */
+  .modal { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .sheet { max-height: calc(100vh - 150px); }
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 1080px) {
+  /* 全屏抽屉：让顶部条与内容对齐 */
+  .nav-left, .nav-right { padding-top: 0; }
+  .nav-left .panel-bar { margin: 0 -18px 14px; }
+  .nav-right .rn-head { margin: 0 -18px 10px; }
+
+  /* 设置弹层的遮罩 */
+  body.settings-open .scrim { display: block; z-index: 55; }
+  .settings { z-index: 60; }
+  body.settings-open { overflow: hidden; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉底部渐隐，避免最后一行贴着工具栏 */
+  .nav-left, .nav-right {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    padding-bottom: 28px;
+  }
+}
+</style>
+</head>
+<body class="chapter" data-page="chapter">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb"><b>人性的枷锁</b> · 第八章</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+<aside class="nav-left" id="navLeft">
+  <div class="panel-bar"><span>导航</span><button class="panel-close" type="button" data-close="left" aria-label="关闭">×</button></div>
+  <div class="brand">Of Human Bondage</div>
+  <div class="site-name">人性的枷锁 · 精读</div>
+  <nav class="gl-links">
+    <a class="" href="index.html">总览<span>122 章</span></a>
+    <a class="" href="reading.html">阅读方法手册<span>初读</span></a>
+    <a class="" href="craft.html">写作技法手册<span>21 条</span></a>
+  </nav>
+  <div class="ch-tools"><button class="btn small" id="wbBtn" type="button">生词本 <b id="wbCount">0</b></button><button class="btn small" id="quizBtn2" type="button">小测</button></div>
+  <div class="side-label ch-label">章节</div>
+  <ol class="ch-list"><li><a href="ch01.html"><span class="n">01</span>第 1 章</a></li><li><a href="ch02.html"><span class="n">02</span>第 2 章</a></li><li><a href="ch03.html"><span class="n">03</span>第 3 章</a></li><li><a href="ch04.html"><span class="n">04</span>第 4 章</a></li><li><a href="ch05.html"><span class="n">05</span>第 5 章</a></li><li><a href="review-01-05.html"><span class="n"></span>复习 · 1–5</a></li><li><a href="ch06.html"><span class="n">06</span>第 6 章</a></li><li><a href="ch07.html"><span class="n">07</span>第 7 章</a></li><li><a class="cur" href="ch08.html"><span class="n">08</span>第 8 章</a></li><li><a href="ch09.html"><span class="n">09</span>第 9 章</a></li><li><a href="ch10.html"><span class="n">10</span>第 10 章</a></li><li><span class="off"><span class="n">11</span>第 11 章</span></li><li><span class="off"><span class="n">12</span>第 12 章</span></li><li><span class="off"><span class="n">13</span>第 13 章</span></li><li><span class="off"><span class="n">14</span>第 14 章</span></li><li><span class="off"><span class="n">15</span>第 15 章</span></li><li><span class="off"><span class="n">16</span>第 16 章</span></li><li><span class="off"><span class="n">17</span>第 17 章</span></li><li><span class="off"><span class="n">18</span>第 18 章</span></li><li><span class="off"><span class="n">19</span>第 19 章</span></li><li><span class="off"><span class="n">20</span>第 20 章</span></li><li><span class="off"><span class="n">21</span>第 21 章</span></li><li><span class="off"><span class="n">22</span>第 22 章</span></li><li><span class="off"><span class="n">23</span>第 23 章</span></li><li><span class="off"><span class="n">24</span>第 24 章</span></li><li><span class="off"><span class="n">25</span>第 25 章</span></li><li><span class="off"><span class="n">26</span>第 26 章</span></li><li><span class="off"><span class="n">27</span>第 27 章</span></li><li><span class="off"><span class="n">28</span>第 28 章</span></li><li><span class="off"><span class="n">29</span>第 29 章</span></li><li><span class="off"><span class="n">30</span>第 30 章</span></li><li><span class="off"><span class="n">31</span>第 31 章</span></li><li><span class="off"><span class="n">32</span>第 32 章</span></li><li><span class="off"><span class="n">33</span>第 33 章</span></li><li><span class="off"><span class="n">34</span>第 34 章</span></li><li><span class="off"><span class="n">35</span>第 35 章</span></li><li><span class="off"><span class="n">36</span>第 36 章</span></li><li><span class="off"><span class="n">37</span>第 37 章</span></li><li><span class="off"><span class="n">38</span>第 38 章</span></li><li><span class="off"><span class="n">39</span>第 39 章</span></li><li><span class="off"><span class="n">40</span>第 40 章</span></li><li><span class="off"><span class="n">41</span>第 41 章</span></li><li><span class="off"><span class="n">42</span>第 42 章</span></li><li><span class="off"><span class="n">43</span>第 43 章</span></li><li><span class="off"><span class="n">44</span>第 44 章</span></li><li><span class="off"><span class="n">45</span>第 45 章</span></li><li><span class="off"><span class="n">46</span>第 46 章</span></li><li><span class="off"><span class="n">47</span>第 47 章</span></li><li><span class="off"><span class="n">48</span>第 48 章</span></li><li><span class="off"><span class="n">49</span>第 49 章</span></li><li><span class="off"><span class="n">50</span>第 50 章</span></li><li><span class="off"><span class="n">51</span>第 51 章</span></li><li><span class="off"><span class="n">52</span>第 52 章</span></li><li><span class="off"><span class="n">53</span>第 53 章</span></li><li><span class="off"><span class="n">54</span>第 54 章</span></li><li><span class="off"><span class="n">55</span>第 55 章</span></li><li><span class="off"><span class="n">56</span>第 56 章</span></li><li><span class="off"><span class="n">57</span>第 57 章</span></li><li><span class="off"><span class="n">58</span>第 58 章</span></li><li><span class="off"><span class="n">59</span>第 59 章</span></li><li><span class="off"><span class="n">60</span>第 60 章</span></li><li><span class="off"><span class="n">61</span>第 61 章</span></li><li><span class="off"><span class="n">62</span>第 62 章</span></li><li><span class="off"><span class="n">63</span>第 63 章</span></li><li><span class="off"><span class="n">64</span>第 64 章</span></li><li><span class="off"><span class="n">65</span>第 65 章</span></li><li><span class="off"><span class="n">66</span>第 66 章</span></li><li><span class="off"><span class="n">67</span>第 67 章</span></li><li><span class="off"><span class="n">68</span>第 68 章</span></li><li><span class="off"><span class="n">69</span>第 69 章</span></li><li><span class="off"><span class="n">70</span>第 70 章</span></li><li><span class="off"><span class="n">71</span>第 71 章</span></li><li><span class="off"><span class="n">72</span>第 72 章</span></li><li><span class="off"><span class="n">73</span>第 73 章</span></li><li><span class="off"><span class="n">74</span>第 74 章</span></li><li><span class="off"><span class="n">75</span>第 75 章</span></li><li><span class="off"><span class="n">76</span>第 76 章</span></li><li><span class="off"><span class="n">77</span>第 77 章</span></li><li><span class="off"><span class="n">78</span>第 78 章</span></li><li><span class="off"><span class="n">79</span>第 79 章</span></li><li><span class="off"><span class="n">80</span>第 80 章</span></li><li><span class="off"><span class="n">81</span>第 81 章</span></li><li><span class="off"><span class="n">82</span>第 82 章</span></li><li><span class="off"><span class="n">83</span>第 83 章</span></li><li><span class="off"><span class="n">84</span>第 84 章</span></li><li><span class="off"><span class="n">85</span>第 85 章</span></li><li><span class="off"><span class="n">86</span>第 86 章</span></li><li><span class="off"><span class="n">87</span>第 87 章</span></li><li><span class="off"><span class="n">88</span>第 88 章</span></li><li><span class="off"><span class="n">89</span>第 89 章</span></li><li><span class="off"><span class="n">90</span>第 90 章</span></li><li><span class="off"><span class="n">91</span>第 91 章</span></li><li><span class="off"><span class="n">92</span>第 92 章</span></li><li><span class="off"><span class="n">93</span>第 93 章</span></li><li><span class="off"><span class="n">94</span>第 94 章</span></li><li><span class="off"><span class="n">95</span>第 95 章</span></li><li><span class="off"><span class="n">96</span>第 96 章</span></li><li><span class="off"><span class="n">97</span>第 97 章</span></li><li><span class="off"><span class="n">98</span>第 98 章</span></li><li><span class="off"><span class="n">99</span>第 99 章</span></li><li><span class="off"><span class="n">100</span>第 100 章</span></li><li><span class="off"><span class="n">101</span>第 101 章</span></li><li><span class="off"><span class="n">102</span>第 102 章</span></li><li><span class="off"><span class="n">103</span>第 103 章</span></li><li><span class="off"><span class="n">104</span>第 104 章</span></li><li><span class="off"><span class="n">105</span>第 105 章</span></li><li><span class="off"><span class="n">106</span>第 106 章</span></li><li><span class="off"><span class="n">107</span>第 107 章</span></li><li><span class="off"><span class="n">108</span>第 108 章</span></li><li><span class="off"><span class="n">109</span>第 109 章</span></li><li><span class="off"><span class="n">110</span>第 110 章</span></li><li><span class="off"><span class="n">111</span>第 111 章</span></li><li><span class="off"><span class="n">112</span>第 112 章</span></li><li><span class="off"><span class="n">113</span>第 113 章</span></li><li><span class="off"><span class="n">114</span>第 114 章</span></li><li><span class="off"><span class="n">115</span>第 115 章</span></li><li><span class="off"><span class="n">116</span>第 116 章</span></li><li><span class="off"><span class="n">117</span>第 117 章</span></li><li><span class="off"><span class="n">118</span>第 118 章</span></li><li><span class="off"><span class="n">119</span>第 119 章</span></li><li><span class="off"><span class="n">120</span>第 120 章</span></li><li><span class="off"><span class="n">121</span>第 121 章</span></li><li><span class="off"><span class="n">122</span>第 122 章</span></li></ol>
+</aside>
+<main>
+<header class="doc-head">
+<h1 class="doc-title">《人性的枷锁》第八章 · 精读与写作</h1>
+<div class="doc-sub"><strong>Of Human Bondage</strong> · W. Somerset Maugham · 1915</div>
+<p class="doc-meta">1763 词 · 35 个自然段 · 约 12 分钟</p>
+<div class="questions"><blockquote><p><strong>读之前：两个问题</strong></p><p><strong>1.</strong> 故事现在进展到哪了？有什么主要矛盾？</p><p><strong>2.</strong> 上一章写了什么？故事接下来可能怎么发展？</p><p>用 5W2H 的思路读剧情，重点看情节怎么推进、人物怎么变。</p></blockquote></div>
+</header><section class="sec" data-kind="read" id="sec-1">
+<h2 class="sec-title">一、原文</h2>
+<p>读完之后，只想一个问题：<strong>这一章里，谁先低头？</strong></p>
+<div class="reader"><p class="en">Philip had led always the solitary life of an only child, and his loneliness at the vicarage was no greater than it had been when his mother lived. He made friends with Mary Ann. She was a chubby little person of thirty-five, the daughter of a fisherman, and had come to the vicarage at eighteen; it was her first place and she had no intention of leaving it; but she held a possible marriage as a rod over the timid heads of her master and mistress. Her father and mother lived in a little house off Harbour Street, and she went to see them on her evenings out. Her stories of the sea touched Philip’s imagination, and the narrow alleys round the harbour grew rich with the romance which his young fancy lent them. One evening he asked whether he might go home with her; but his aunt was afraid that he might catch something, and his uncle said that evil communications corrupted good manners. He disliked the fisher folk, who were rough, uncouth, and went to chapel. But Philip was more comfortable in the kitchen than in the dining-room, and, whenever he could, he took his toys and played there. His aunt was not sorry. She did not like disorder, and though she recognised that boys must be expected to be untidy she preferred that he should make a mess in the kitchen. If he fidgeted his uncle was apt to grow restless and say it was high time he went to school. Mrs. Carey thought Philip very young for this, and her heart went out to the motherless child; but her attempts to gain his affection were awkward, and the boy, feeling shy, received her demonstrations with so much sullenness that she was mortified. Sometimes she heard his shrill voice raised in laughter in the kitchen, but when she went in, he grew suddenly silent, and he flushed darkly when Mary Ann explained the joke. Mrs. Carey could not see anything amusing in what she heard, and she smiled with constraint.</p><p class="en">“He seems happier with Mary Ann than with us, William,” she said, when she returned to her sewing.</p><p class="en">“One can see he’s been very badly brought up. He wants licking into shape.”</p><p class="en">On the second Sunday after Philip arrived an unlucky incident occurred. Mr. Carey had retired as usual after dinner for a little snooze in the drawing-room, but he was in an irritable mood and could not sleep. Josiah Graves that morning had objected strongly to some candlesticks with which the Vicar had adorned the altar. He had bought them second-hand in Tercanbury, and he thought they looked very well. But Josiah Graves said they were popish. This was a taunt that always aroused the Vicar. He had been at Oxford during the movement which ended in the secession from the Established Church of Edward Manning, and he felt a certain sympathy for the Church of Rome. He would willingly have made the service more ornate than had been usual in the low-church parish of Blackstable, and in his secret soul he yearned for processions and lighted candles. He drew the line at incense. He hated the word protestant. He called himself a Catholic. He was accustomed to say that Papists required an epithet, they were Roman Catholic; but the Church of England was Catholic in the best, the fullest, and the noblest sense of the term. He was pleased to think that his shaven face gave him the look of a priest, and in his youth he had possessed an ascetic air which added to the impression. He often related that on one of his holidays in Boulogne, one of those holidays upon which his wife for economy’s sake did not accompany him, when he was sitting in a church, the cure had come up to him and invited him to preach a sermon. He dismissed his curates when they married, having decided views on the celibacy of the unbeneficed clergy. But when at an election the Liberals had written on his garden fence in large blue letters: This way to Rome, he had been very angry, and threatened to prosecute the leaders of the Liberal party in Blackstable. He made up his mind now that nothing Josiah Graves said would induce him to remove the candlesticks from the altar, and he muttered Bismarck to himself once or twice irritably.</p><p class="en">Suddenly he heard an unexpected noise. He pulled the handkerchief off his face, got up from the sofa on which he was lying, and went into the dining-room. Philip was seated on the table with all his bricks around him. He had built a monstrous castle, and some defect in the foundation had just brought the structure down in noisy ruin.</p><p class="en">“What are you doing with those bricks, Philip? You know you’re not allowed to play games on Sunday.”</p><p class="en">Philip stared at him for a moment with frightened eyes, and, as his habit was, flushed deeply.</p><p class="en">“I always used to play at home,” he answered.</p><p class="en">“I’m sure your dear mamma never allowed you to do such a wicked thing as that.”</p><p class="en">Philip did not know it was wicked; but if it was, he did not wish it to be supposed that his mother had consented to it. He hung his head and did not answer.</p><p class="en">“Don’t you know it’s very, very wicked to play on Sunday? What d’you suppose it’s called the day of rest for? You’re going to church tonight, and how can you face your Maker when you’ve been breaking one of His laws in the afternoon?”</p><p class="en">Mr. Carey told him to put the bricks away at once, and stood over him while Philip did so.</p><p class="en">“You’re a very naughty boy,” he repeated. “Think of the grief you’re causing your poor mother in heaven.”</p><p class="en">Philip felt inclined to cry, but he had an instinctive disinclination to letting other people see his tears, and he clenched his teeth to prevent the sobs from escaping. Mr. Carey sat down in his arm-chair and began to turn over the pages of a book. Philip stood at the window. The vicarage was set back from the highroad to Tercanbury, and from the dining-room one saw a semicircular strip of lawn and then as far as the horizon green fields. Sheep were grazing in them. The sky was forlorn and gray. Philip felt infinitely unhappy.</p><p class="en">Presently Mary Ann came in to lay the tea, and Aunt Louisa descended the stairs.</p><p class="en">“Have you had a nice little nap, William?” she asked.</p><p class="en">“No,” he answered. “Philip made so much noise that I couldn’t sleep a wink.”</p><p class="en">This was not quite accurate, for he had been kept awake by his own thoughts; and Philip, listening sullenly, reflected that he had only made a noise once, and there was no reason why his uncle should not have slept before or after. When Mrs. Carey asked for an explanation the Vicar narrated the facts.</p><p class="en">“He hasn’t even said he was sorry,” he finished.</p><p class="en">“Oh, Philip, I’m sure you’re sorry,” said Mrs. Carey, anxious that the child should not seem wickeder to his uncle than need be.</p><p class="en">Philip did not reply. He went on munching his bread and butter. He did not know what power it was in him that prevented him from making any expression of regret. He felt his ears tingling, he was a little inclined to cry, but no word would issue from his lips.</p><p class="en">“You needn’t make it worse by sulking,” said Mr. Carey.</p><p class="en">Tea was finished in silence. Mrs. Carey looked at Philip surreptitiously now and then, but the Vicar elaborately ignored him. When Philip saw his uncle go upstairs to get ready for church he went into the hall and got his hat and coat, but when the Vicar came downstairs and saw him, he said:</p><p class="en">“I don’t wish you to go to church tonight, Philip. I don’t think you’re in a proper frame of mind to enter the House of God.”</p><p class="en">Philip did not say a word. He felt it was a deep humiliation that was placed upon him, and his cheeks reddened. He stood silently watching his uncle put on his broad hat and his voluminous cloak. Mrs. Carey as usual went to the door to see him off. Then she turned to Philip.</p><p class="en">“Never mind, Philip, you won’t be a naughty boy next Sunday, will you, and then your uncle will take you to church with him in the evening.”</p><p class="en">She took off his hat and coat, and led him into the dining-room.</p><p class="en">“Shall you and I read the service together, Philip, and we’ll sing the hymns at the harmonium. Would you like that?”</p><p class="en">Philip shook his head decidedly. Mrs. Carey was taken aback. If he would not read the evening service with her she did not know what to do with him.</p><p class="en">“Then what would you like to do until your uncle comes back?” she asked helplessly.</p><p class="en">Philip broke his silence at last.</p><p class="en">“I want to be left alone,” he said.</p><p class="en">“Philip, how can you say anything so unkind? Don’t you know that your uncle and I only want your good? Don’t you love me at all?”</p><p class="en">“I hate you. I wish you was dead.”</p><p class="en">Mrs. Carey gasped. He said the words so savagely that it gave her quite a start. She had nothing to say. She sat down in her husband’s chair; and as she thought of her desire to love the friendless, crippled boy and her eager wish that he should love her—she was a barren woman and, even though it was clearly God’s will that she should be childless, she could scarcely bear to look at little children sometimes, her heart ached so—the tears rose to her eyes and one by one, slowly, rolled down her cheeks. Philip watched her in amazement. She took out her handkerchief, and now she cried without restraint. Suddenly Philip realised that she was crying because of what he had said, and he was sorry. He went up to her silently and kissed her. It was the first kiss he had ever given her without being asked. And the poor lady, so small in her black satin, shrivelled up and sallow, with her funny corkscrew curls, took the little boy on her lap and put her arms around him and wept as though her heart would break. But her tears were partly tears of happiness, for she felt that the strangeness between them was gone. She loved him now with a new love because he had made her suffer.</p></div>
+<ol><li>本章写了什么？用 5W2H 说一遍：谁、做了什么、何时、何地、为什么、怎么发生、代价是什么。</li><li>剧情有什么进展？人物关系有什么变化？</li><li>本章中印象最深的是什么？</li><li>本章有几个场景？作者是怎么推进剧情的？</li><li>菲利普为什么始终不肯说“对不起”？</li><li>叔父不准他去教堂，是惩罚，还是羞辱？</li><li>姨妈最后为什么哭？她的眼泪里有几层意思？</li></ol>
+</section>
+<section class="sec" data-kind="scenes" id="sec-2">
+<h2 class="sec-title">二、逐场精读</h2>
+<h3 id="h-3">概览</h3>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>场</th><th>场景</th><th>段号</th><th>这一场发生什么</th></tr></thead><tbody><tr><td>1</td><td>厨房与客厅：孩子跟谁亲</td><td><a class="ref" href="#p-1">①</a>—<a class="ref" href="#p-3">③</a></td><td>菲利普和玛丽·安亲近；姨妈笨拙；叔父说“欠收拾”</td></tr><tr><td>2</td><td>饭桌：积木塌了</td><td><a class="ref" href="#p-4">④</a>—<a class="ref" href="#p-10">⑩</a></td><td>叔父为烛台生闷气；积木塌；不许玩；孩子不认错</td></tr><tr><td>3</td><td>窗边：忍着不哭</td><td><a class="ref" href="#p-11">⑪</a>—<a class="ref" href="#p-14">⑭</a></td><td>叔父讲“很 wicked”；菲利普站在窗前，忍着眼泪</td></tr><tr><td>4</td><td>茶桌：冷战</td><td><a class="ref" href="#p-15">⑮</a>—<a class="ref" href="#p-23">㉓</a></td><td>叔父告状；“他连对不起都没说”；一桌人沉默</td></tr><tr><td>5</td><td>门厅与客厅：我恨你</td><td><a class="ref" href="#p-24">㉔</a>—<a class="ref" href="#p-35">㉟</a></td><td>不准去教堂；“我恨你，我希望你死”；姨妈哭；他亲她</td></tr></tbody></table></div><div class="scenes-grid"><div class="scenes-main"><section class="scene" id="scene-1" data-scene="1"><h3 class="scene-title" id="scene-1"><span class="tag">场景 1</span>厨房与客厅：孩子跟谁亲</h3><div class="scene-lead"><b>这一场　</b>一个孩子用脚投票，谁让他舒服，他就跟谁。</div><div class="unit" id="p-1"><span class="num">①</span><p class="en">Philip had led always the solitary life of an only child, and his loneliness at the vicarage was no greater than it had been when his mother lived. He made friends with Mary Ann. She was a <span class="gloss" data-tip="/ˈtʃʌbi/ · 胖乎乎的">chubby</span> little person of thirty-five, the daughter of a fisherman, and had come to the vicarage at eighteen; it was her first place and she had no intention of leaving it; but she held a possible marriage as a rod over the timid heads of her master and mistress. Her father and mother lived in a little house off Harbour Street, and she went to see them on her evenings out. Her stories of the sea touched Philip’s imagination, and the narrow alleys round the harbour grew rich with the romance which his young fancy lent them. One evening he asked whether he might go home with her; but his aunt was afraid that he might catch something, and his uncle said that evil communications corrupted good manners. He disliked the fisher folk, who were rough, <span class="gloss" data-tip="/ʌnˈkuːθ/ · 粗野的、没教养的">uncouth</span>, and went to chapel. But Philip was more comfortable in the kitchen than in the dining-room, and, whenever he could, he took his toys and played there. His aunt was not sorry. She did not like disorder, and though she recognised that boys must be expected to be untidy she preferred that he should make a mess in the kitchen. If he fidgeted his uncle was apt to grow restless and say it was high time he went to school. Mrs. Carey thought Philip very young for this, and her heart went out to the motherless child; but her attempts to gain his affection were awkward, and the boy, feeling shy, received her demonstrations with so much <span class="gloss" data-tip="/ˈsʌlənnəs/ · 闷闷不乐、赌气">sullenness</span> that she was <span class="gloss" data-tip="/ˈmɔːtɪfaɪd/ · 觉得丢脸的、受辱的">mortified</span>. Sometimes she heard his shrill voice raised in laughter in the kitchen, but when she went in, he grew suddenly silent, and he flushed darkly when Mary Ann explained the joke. Mrs. Carey could not see anything amusing in what she heard, and she smiled with constraint.</p><p class="trans">菲利普一向过着独生子的孤单日子，到了牧师宅，孤独并不比母亲在世时更重。他跟玛丽·安成了朋友。她是个胖乎乎的小个子，三十五岁，渔夫的女儿，十八岁到牧师宅帮工；这是她头一份差事，她也不打算走；可她拿“可能嫁人”这件事，像个棒子似的悬在胆小男女主人头上。她父母住在港口街的一间小屋里，她放假晚上回去看他们。她讲的海上故事打动了菲利普的想象，港口周围那些窄巷子，因为他年轻的心思，变得又富又浪漫。有一天晚上，他问能不能跟她回家；姨妈怕他染上什么，叔父说“恶友败坏善行”。他讨厌这些渔夫：粗鲁、没教养、还去小礼拜堂。可菲利普在厨房里比在餐厅自在；只要有机会，他就把玩具拿到厨房去玩。姨妈并不难过。她不喜欢乱，虽然承认男孩总归要弄乱，她宁愿他在厨房里乱。他一动，叔父就容易烦躁，说早该送他上学了。凯里太太觉得菲利普还太小；她心疼这个没娘的孩子；可她想讨他喜欢，办法都笨拙，孩子又害羞，对她的亲热总是闷闷地受着，弄得她很没脸。有时她在厨房外听见他尖着嗓子笑，一进去，他忽然不响了，玛丽·安一解释，他的脸就红得发黑。凯里太太听不出有什么好笑，只好勉强笑一笑。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 4</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>chubby</td><td>/ˈtʃʌbi/</td><td>胖乎乎的</td></tr><tr><td>uncouth</td><td>/ʌnˈkuːθ/</td><td>粗野的、没教养的</td></tr><tr><td>mortified</td><td>/ˈmɔːtɪfaɪd/</td><td>觉得丢脸的、受辱的</td></tr><tr><td>sullenness</td><td>/ˈsʌlənnəs/</td><td>闷闷不乐、赌气</td></tr></table></div></details></div></div><div class="unit" id="p-2"><span class="num">②</span><p class="en">“He seems happier with Mary Ann than with us, William,” she said, when she returned to her sewing.</p><p class="trans">“他跟玛丽·安在一起，好像比跟我们在一起高兴，威廉。”她回到针线活上，说。</p></div><div class="unit" id="p-3"><span class="num">③</span><p class="en">“One can see he’s been very badly brought up. He wants licking into shape.”</p><p class="trans">“谁都看得出，这孩子没教好。欠收拾。”</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 1</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>lick into shape</td><td>—</td><td>收拾、调教（不是“舔”）</td></tr></table></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-1">①</a>“孤独并不比母亲在世时更重”——这句话很狠：母亲在时，他其实也孤独。</li><li><a class="ref" href="#p-1">①</a>厨房与餐厅：一个暖，一个冷；孩子用脚选。</li><li><a class="ref" href="#p-1">①</a>姨妈想亲他，他“闷闷地受着”；她想爱，可不会爱。</li><li><a class="ref" href="#p-3">③</a>“欠收拾”——叔父把教育当成修理。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用对照写两个人（two rooms）</strong>——厨房和餐厅，玛丽·安和姨妈。为什么管用：不评价谁好谁坏，只写孩子在哪儿自在；读者自己会站队。怎么用：写两个人争一个孩子，写孩子往哪间屋跑。</p></div></details></section><section class="scene" id="scene-2" data-scene="2"><h3 class="scene-title" id="scene-2"><span class="tag">场景 2</span>饭桌：积木塌了</h3><div class="scene-lead"><b>这一场　</b>积木塌之前，叔父已经憋了一肚子火。</div><div class="unit" id="p-4"><span class="num">④</span><p class="en">On the second Sunday after Philip arrived an unlucky incident occurred. Mr. Carey had retired as usual after dinner for a little snooze in the drawing-room, but he was in an irritable mood and could not sleep. Josiah Graves that morning had objected strongly to some candlesticks with which the Vicar had adorned the altar. He had bought them second-hand in Tercanbury, and he thought they looked very well. But Josiah Graves said they were popish. This was a taunt that always aroused the Vicar. He had been at Oxford during the movement which ended in the secession from the Established Church of Edward Manning, and he felt a certain sympathy for the Church of Rome. He would willingly have made the service more ornate than had been usual in the low-church parish of Blackstable, and in his secret soul he yearned for processions and lighted candles. He drew the line at incense. He hated the word protestant. He called himself a Catholic. He was accustomed to say that Papists required an epithet, they were Roman Catholic; but the Church of England was Catholic in the best, the fullest, and the noblest sense of the term. He was pleased to think that his shaven face gave him the look of a priest, and in his youth he had possessed an ascetic air which added to the impression. He often related that on one of his holidays in Boulogne, one of those holidays upon which his wife for economy’s sake did not accompany him, when he was sitting in a church, the cure had come up to him and invited him to preach a sermon. He dismissed his curates when they married, having decided views on the celibacy of the unbeneficed clergy. But when at an election the Liberals had written on his garden fence in large blue letters: This way to Rome, he had been very angry, and threatened to prosecute the leaders of the Liberal party in Blackstable. He made up his mind now that nothing Josiah Graves said would induce him to remove the candlesticks from the altar, and he muttered Bismarck to himself once or twice irritably.</p><p class="trans">菲利普到后的第二个星期日，出了一件倒霉事。凯里先生照例饭后到客厅小睡，可这天他心烦，睡不着。早上乔赛亚·格雷夫斯强烈反对牧师装饰祭坛用的那对烛台。烛台是他在特坎伯里二手买来的，他觉得很好看。可格雷夫斯说它们“有教皇味儿”。这句话总能把牧师点着。他当年在牛津，正赶上那场以爱德华·曼宁脱离国教告终的运动，对罗马教会有点同情。他倒愿意把礼拜办得比布莱克斯特布尔这个低教会教区通常的样子更华丽些；私下里，他向往列队游行和点蜡烛。焚香他就不干了。他讨厌“protestant”这个词。他自称 Catholic。他常说，Papist 才需要加个限定词，叫 Roman Catholic；而英国国教，是在最好、最完整、最高贵意义上的 Catholic。他很得意自己刮干净的脸像个教士；年轻时还有种苦修者的神气，更添了这个印象。他常讲，有一回在布洛涅度假——那种为了省钱、妻子不去的度假——他坐在教堂里，本堂神父走过来，请他讲一次道。他手下的助理牧师一结婚，他就辞掉，因为他对没有俸禄的教士该不该独身有定见。可有一次选举，自由党人在他花园篱笆上用蓝漆大字写：此路通往罗马。他气坏了，威胁要告布莱克斯特布尔的自由党头头。这会儿他打定主意：格雷夫斯说什么，也别想让他把烛台从祭坛上拿下来；他烦躁地咕哝了两声“俾斯麦”。</p></div><div class="unit" id="p-5"><span class="num">⑤</span><p class="en">Suddenly he heard an unexpected noise. He pulled the handkerchief off his face, got up from the sofa on which he was lying, and went into the dining-room. Philip was seated on the table with all his bricks around him. He had built a monstrous castle, and some defect in the foundation had just brought the structure down in noisy ruin.</p><p class="trans">忽然，他听见一个没想到的响声。他把脸上的手帕拉下来，从沙发上起身，走进餐厅。菲利普坐在桌子上，四周全是积木。他搭了一座奇形怪状的城堡，地基有点毛病，这会儿哗啦一声塌了。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 5</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>popish</td><td>/ˈpəʊpɪʃ/</td><td>教皇的、天主教的（贬义）</td></tr><tr><td>candlestick</td><td>/ˈkændlstɪk/</td><td>烛台</td></tr><tr><td>secession</td><td>/sɪˈseʃn/</td><td>脱离（教会）</td></tr><tr><td>celibacy</td><td>/ˈselɪbəsi/</td><td>独身</td></tr><tr><td>unbeneficed</td><td>/ˌʌnˈbenɪfɪst/</td><td>没有俸禄的</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>He had been at Oxford during the movement which ended in the secession from the Established Church of Edward Manning</code>：which 从句修饰 movement；<code>secession from...of...</code> 两个介词短语套着，先说脱离什么，再说谁脱离。</div></div></details></div></div><div class="unit" id="p-6"><span class="num">⑥</span><p class="en">“What are you doing with those bricks, Philip? You know you’re not allowed to play games on Sunday.”</p><p class="trans">“菲利普，你拿这些积木干什么？你不知道星期天不许玩游戏吗？”</p></div><div class="unit" id="p-7"><span class="num">⑦</span><p class="en">Philip stared at him for a moment with frightened eyes, and, as his habit was, flushed deeply.</p><p class="trans">菲利普瞪着他，眼里带着怕，照他的老毛病，脸一下子红透了。</p></div><div class="unit" id="p-8"><span class="num">⑧</span><p class="en">“I always used to play at home,” he answered.</p><p class="trans">“我在家的时候，一直玩的。”</p></div><div class="unit" id="p-9"><span class="num">⑨</span><p class="en">“I’m sure your dear mamma never allowed you to do such a wicked thing as that.”</p><p class="trans">“我敢说你亲爱的妈妈绝不会允许你干这种坏事。”</p></div><div class="unit" id="p-10"><span class="num">⑩</span><p class="en">Philip did not know it was wicked; but if it was, he did not wish it to be supposed that his mother had consented to it. He hung his head and did not answer.</p><p class="trans">菲利普不知道这有什么坏；可要是坏，他也不愿意让人以为母亲同意过。他低下头，不回答。</p></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-4">④</a>烛台、教皇味儿、曼宁、独身——一大段背景，全是为了解释他为什么这会儿火大。</li><li><a class="ref" href="#p-5">⑤</a>积木塌的声音，正好撞上他的火气；孩子什么都不知道。</li><li><a class="ref" href="#p-9">⑨</a>“你亲爱的妈妈绝不会允许”——把孩子死去的母亲搬来压他，这是最省力也最伤人的一招。</li><li><a class="ref" href="#p-10">⑩</a>他不辩，也不认；沉默从这里开始。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>先给原因，再给发火（the fuse）</strong>——先用一段写烛台之争，再让积木塌。为什么管用：读者知道这把火早就烧着了，孩子只是撞上；怒气有了来路，就不是作者安排的。怎么用：一场冲突之前，先写一件跟孩子无关的窝火事。</p>
+<p><strong>用死去的母亲压人（the dead parent）</strong>——叔父说“你妈妈绝不会允许”。为什么管用：这句话同时羞辱了孩子和母亲，孩子还没法反驳。怎么用：让一个大人用死者来立规矩，读者会自己恨他。</p></div></details></section><section class="scene" id="scene-3" data-scene="3"><h3 class="scene-title" id="scene-3"><span class="tag">场景 3</span>窗边：忍着不哭</h3><div class="scene-lead"><b>这一场　</b>他不哭，也不认错；窗外的羊在吃草。</div><div class="unit" id="p-11"><span class="num">⑪</span><p class="en">“Don’t you know it’s very, very wicked to play on Sunday? What d’you suppose it’s called the day of rest for? You’re going to church tonight, and how can you face your Maker when you’ve been breaking one of His laws in the afternoon?”</p><p class="trans">“你知不知道星期天玩游戏是很坏很坏的？你以为这日子为什么叫安息日？你晚上还要去教堂，下午刚犯了主的戒，你怎么去见主？”</p></div><div class="unit" id="p-12"><span class="num">⑫</span><p class="en">Mr. Carey told him to put the bricks away at once, and stood over him while Philip did so.</p><p class="trans">凯里先生叫他立刻把积木收起来，站在旁边看着他收。</p></div><div class="unit" id="p-13"><span class="num">⑬</span><p class="en">“You’re a very naughty boy,” he repeated. “Think of the grief you’re causing your poor mother in heaven.”</p><p class="trans">“你是个很坏的孩子，”他又说了一遍，“想想你让你可怜的妈妈在天上多伤心。”</p></div><div class="unit" id="p-14"><span class="num">⑭</span><p class="en">Philip felt inclined to cry, but he had an instinctive disinclination to letting other people see his tears, and he clenched his teeth to prevent the sobs from escaping. Mr. Carey sat down in his arm-chair and began to turn over the pages of a book. Philip stood at the window. The vicarage was set back from the highroad to Tercanbury, and from the dining-room one saw a semicircular strip of lawn and then as far as the horizon green fields. Sheep were grazing in them. The sky was <span class="gloss" data-tip="/fəˈlɔːn/ · 凄凉、孤零零的">forlorn</span> and gray. Philip felt infinitely unhappy.</p><p class="trans">菲利普想哭，可他有一种本能，不愿意让别人看见自己掉眼泪；他咬紧牙，不让哭声跑出来。凯里先生坐进扶手椅，翻起书来。菲利普站在窗前。牧师宅离通往特坎伯里的公路有一段距离，从餐厅望出去，先是一条半圆的草坪，然后是直到天边的绿田。田里有羊在吃草。天阴沉沉的，叫人难受。菲利普觉得说不出的难过。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>forlorn</td><td>/fəˈlɔːn/</td><td>凄凉、孤零零的</td></tr><tr><td>clench</td><td>/klentʃ/</td><td>咬紧、攥紧</td></tr></table></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-11">⑪</a>“你怎么去见主”——把规矩抬到救赎的高度。</li><li><a class="ref" href="#p-14">⑭</a>“他有一种本能，不愿意让别人看见自己掉眼泪”——这是全章最重要的一句：他已经在学会把眼泪藏起来。</li><li><a class="ref" href="#p-14">⑭</a>羊在吃草，天灰——外面越平静，里面越翻腾。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用风景接情绪（the window）</strong>——不写“他很伤心”，写窗外的羊、灰天、“说不出的难过”。为什么管用：情绪需要一个容器，风景是最好的容器；读者会把自己的难过放进去。怎么用：人物崩不住的时候，让他站到窗前，写三样看得见的东西。</p></div></details></section><section class="scene" id="scene-4" data-scene="4"><h3 class="scene-title" id="scene-4"><span class="tag">场景 4</span>茶桌：冷战</h3><div class="scene-lead"><b>这一场　</b>一桌人吃饭，没有一个人说话。</div><div class="unit" id="p-15"><span class="num">⑮</span><p class="en">Presently Mary Ann came in to lay the tea, and Aunt Louisa descended the stairs.</p><p class="trans">过了一会儿，玛丽·安进来摆茶，路易莎婶母下楼来。</p></div><div class="unit" id="p-16"><span class="num">⑯</span><p class="en">“Have you had a nice little nap, William?” she asked.</p><p class="trans">“你睡得好吗，威廉？”她问。</p></div><div class="unit" id="p-17"><span class="num">⑰</span><p class="en">“No,” he answered. “Philip made so much noise that I couldn’t sleep a wink.”</p><p class="trans">“不好，”他答，“菲利普吵得要命，我一点也没睡着。”</p></div><div class="unit" id="p-18"><span class="num">⑱</span><p class="en">This was not quite accurate, for he had been kept awake by his own thoughts; and Philip, listening sullenly, reflected that he had only made a noise once, and there was no reason why his uncle should not have slept before or after. When Mrs. Carey asked for an explanation the Vicar narrated the facts.</p><p class="trans">这话不太确实，他是被自己的心事搅得睡不着；菲利普闷闷地听着，心想自己只弄响了一次，叔父之前之后都没理由睡不着。凯里太太问是怎么回事，牧师就把经过讲了一遍。</p></div><div class="unit" id="p-19"><span class="num">⑲</span><p class="en">“He hasn’t even said he was sorry,” he finished.</p><p class="trans">“他连一句对不起都没说。”他最后说。</p></div><div class="unit" id="p-20"><span class="num">⑳</span><p class="en">“Oh, Philip, I’m sure you’re sorry,” said Mrs. Carey, anxious that the child should not seem wickeder to his uncle than need be.</p><p class="trans">“哦，菲利普，我肯定你是后悔的。”凯里太太说，她急着让孩子在叔父眼里别那么坏。</p></div><div class="unit" id="p-21"><span class="num">㉑</span><p class="en">Philip did not reply. He went on munching his bread and butter. He did not know what power it was in him that prevented him from making any expression of regret. He felt his ears tingling, he was a little inclined to cry, but no word would issue from his lips.</p><p class="trans">菲利普不回答。他继续嚼他的面包黄油。他说不清心里是什么力量，让他不肯说一句软话。他觉得耳朵发烫，有点想哭，可嘴里一个字也出不来。</p></div><div class="unit" id="p-22"><span class="num">㉒</span><p class="en">“You needn’t make it worse by sulking,” said Mr. Carey.</p><p class="trans">“你别再赌气，把事情弄得更糟。”凯里先生说。</p></div><div class="unit" id="p-23"><span class="num">㉓</span><p class="en">Tea was finished in silence. Mrs. Carey looked at Philip <span class="gloss" data-tip="/ˌsʌrəpˈtɪʃəsli/ · 偷偷地">surreptitiously</span> now and then, but the Vicar elaborately ignored him. When Philip saw his uncle go upstairs to get ready for church he went into the hall and got his hat and coat, but when the Vicar came downstairs and saw him, he said:</p><p class="trans">茶在沉默里喝完。凯里太太时不时偷偷看菲利普一眼，牧师则故意不理他。菲利普见叔父上楼换衣服去教堂，就到门厅拿帽子和大衣；可牧师下楼看见他，说——</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 2</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>surreptitiously</td><td>/ˌsʌrəpˈtɪʃəsli/</td><td>偷偷地</td></tr><tr><td>sulk</td><td>/sʌlk/</td><td>赌气、生闷气</td></tr></table></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-17">⑰</a>“他吵得要命”——叔父把自己的失眠算在孩子头上。</li><li><a class="ref" href="#p-18">⑱</a>菲利普在心里算账：只响了一次，之前之后都能睡。孩子不傻，只是不说。</li><li><a class="ref" href="#p-21">㉑</a>“耳朵发烫，有点想哭，可一个字也出不来”——沉默不是没话说，是说不出。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用饭桌写冷战（silent tea）</strong>——一桌人，谁也不说话，只有“偷偷看一眼”和“故意不理”。为什么管用：家庭矛盾最真的样子，就是同一张桌子上各吃各的。怎么用：写一场冷战，让所有人都在场，让谁都不先开口。</p></div></details></section><section class="scene" id="scene-5" data-scene="5"><h3 class="scene-title" id="scene-5"><span class="tag">场景 5</span>门厅与客厅：我恨你</h3><div class="scene-lead"><b>这一场　</b>一句狠话，把两个人同时打碎，又粘起来。</div><div class="unit" id="p-24"><span class="num">㉔</span><p class="en">“I don’t wish you to go to church tonight, Philip. I don’t think you’re in a proper frame of mind to enter the House of God.”</p><p class="trans">“菲利普，我今晚不希望你上教堂。我觉得你心里不配进主的殿。”</p></div><div class="unit" id="p-25"><span class="num">㉕</span><p class="en">Philip did not say a word. He felt it was a deep humiliation that was placed upon him, and his cheeks reddened. He stood silently watching his uncle put on his broad hat and his voluminous cloak. Mrs. Carey as usual went to the door to see him off. Then she turned to Philip.</p><p class="trans">菲利普一个字也没说。他觉得这是加在他身上的奇耻大辱，脸涨红了。他一声不响看着叔父戴上宽檐帽、披上大斗篷。凯里太太照例送到门口。然后她转向菲利普。</p></div><div class="unit" id="p-26"><span class="num">㉖</span><p class="en">“Never mind, Philip, you won’t be a naughty boy next Sunday, will you, and then your uncle will take you to church with him in the evening.”</p><p class="trans">“没关系，菲利普，下星期你不做坏孩子了，好不好？到时候叔父就会带你晚上去教堂了。”</p></div><div class="unit" id="p-27"><span class="num">㉗</span><p class="en">She took off his hat and coat, and led him into the dining-room.</p><p class="trans">她替他脱下帽子和大衣，领他进餐厅。</p></div><div class="unit" id="p-28"><span class="num">㉘</span><p class="en">“Shall you and I read the service together, Philip, and we’ll sing the hymns at the harmonium. Would you like that?”</p><p class="trans">“菲利普，你跟我一起念晚祷，我们在簧风琴上唱赞美诗，好不好？你喜欢吗？”</p></div><div class="unit" id="p-29"><span class="num">㉙</span><p class="en">Philip shook his head decidedly. Mrs. Carey was taken aback. If he would not read the evening service with her she did not know what to do with him.</p><p class="trans">菲利普坚决地摇头。凯里太太愣住了。他要是不肯跟她念晚祷，她不知道拿他怎么办。</p></div><div class="unit" id="p-30"><span class="num">㉚</span><p class="en">“Then what would you like to do until your uncle comes back?” she asked helplessly.</p><p class="trans">“那你想到叔叔回来之前做点什么？”她没主意地问。</p></div><div class="unit" id="p-31"><span class="num">㉛</span><p class="en">Philip broke his silence at last.</p><p class="trans">菲利普终于开口了。</p></div><div class="unit" id="p-32"><span class="num">㉜</span><p class="en">“I want to be left alone,” he said.</p><p class="trans">“我想一个人待着。”</p></div><div class="unit" id="p-33"><span class="num">㉝</span><p class="en">“Philip, how can you say anything so unkind? Don’t you know that your uncle and I only want your good? Don’t you love me at all?”</p><p class="trans">“菲利普，你怎么能说这么不近人情的话？你不知道叔父和我都是为你好吗？你一点也不爱我吗？”</p></div><div class="unit" id="p-34"><span class="num">㉞</span><p class="en">“I hate you. I wish you was dead.”</p><p class="trans">“我恨你。我希望你死。”</p></div><div class="unit" id="p-35"><span class="num">㉟</span><p class="en">Mrs. Carey gasped. He said the words so savagely that it gave her quite a start. She had nothing to say. She sat down in her husband’s chair; and as she thought of her desire to love the friendless, crippled boy and her eager wish that he should love her—she was a barren woman and, even though it was clearly God’s will that she should be childless, she could scarcely bear to look at little children sometimes, her heart ached so—the tears rose to her eyes and one by one, slowly, rolled down her cheeks. Philip watched her in amazement. She took out her handkerchief, and now she cried without restraint. Suddenly Philip realised that she was crying because of what he had said, and he was sorry. He went up to her silently and kissed her. It was the first kiss he had ever given her without being asked. And the poor lady, so small in her black satin, shrivelled up and <span class="gloss" data-tip="/ˈsæləʊ/ · 蜡黄的">sallow</span>, with her funny corkscrew curls, took the little boy on her lap and put her arms around him and wept as though her heart would break. But her tears were partly tears of happiness, for she felt that the strangeness between them was gone. She loved him now with a new love because he had made her suffer.</p><p class="trans">凯里太太倒抽一口气。他说得那么狠，把她吓了一跳。她没话可说，在丈夫的椅子上坐下；想到自己想爱这个没爹没娘、腿又有残疾的孩子，想到自己多盼他爱她——她是个不会生育的女人，虽然明明这是上帝的意思，她有时还是几乎不敢看小孩子，心疼得厉害——眼泪就上来了，一滴一滴，慢慢地滚下脸颊。菲利普惊讶地看着她。她掏出手帕，索性哭出了声。忽然，菲利普明白她是因为他说的话才哭的，他后悔了。他不出声地走过去，亲了她一下。这是他第一次不用人叫就去亲她。这位可怜的太太，穿着黑缎子，人那么小，干瘪、黄脸，顶着一头古怪的螺旋卷发，把小男孩抱到膝上，搂住他，哭得心都要碎了。可她的眼泪里有一半是高兴，她觉得他们之间的生分没有了。她现在用一种新的爱来爱他，因为他让她受了苦。</p><div class="chipbar"><details class="anno" data-kind="w"><summary>词 · 3</summary><div class="anno-body"><table class="wordtable"><tr><th>词</th><th>音标</th><th>释义</th></tr><tr><td>humiliation</td><td>/hjuːˌmɪliˈeɪʃn/</td><td>羞辱</td></tr><tr><td>frame of mind</td><td>—</td><td>心境、情绪状态</td></tr><tr><td>sallow</td><td>/ˈsæləʊ/</td><td>蜡黄的</td></tr></table></div></details><details class="anno" data-kind="s"><summary>句 · 1</summary><div class="anno-body"><div class="sent"><code>She loved him now with a new love because he had made her suffer.</code>：with a new love 是方式状语；because 从句点出因果——爱因为受苦而更新。这一句是全章的落点。</div></div></details></div></div><details class="notes" open><summary>细读<em>文意与手法</em></summary><div class="inner"><ul><li><a class="ref" href="#p-24">㉔</a>不准去教堂：不是不让他去，是不许他出现在主面前——惩罚变成了身份上的羞辱。</li><li><a class="ref" href="#p-32">㉜</a>“我想一个人待着”——他第一次说出自己想要什么。</li><li><a class="ref" href="#p-34">㉞</a>“我希望你死”——孩子把最狠的话扔出去，因为他自己已经被伤到极点。</li><li><a class="ref" href="#p-35">㉟</a>她哭，一半为自己，一半为“他终于亲近我”；毛姆不让她纯粹可怜，也不让她纯粹高兴。</li><li><a class="ref" href="#p-35">㉟</a>“因为他让她受了苦”——爱和伤害在这句话里分不开。</li></ul></div></details><details class="craft" open><summary>写法<em>这一场教什么</em></summary><div class="inner"><p><strong>用一句狠话写转折（the cruel line）</strong>——孩子说“我恨你，我希望你死”。为什么管用：这不是反派台词，是一个被逼到墙角的孩子能拿出的唯一武器；说出口，关系才有机会换一种方式重建。怎么用：让最弱的人说最狠的话，然后写听的人怎么接。</p>
+<p><strong>让眼泪有两层（mixed tears）</strong>——她哭，一半伤心，一半高兴。为什么管用：单一情绪的哭是煽情，两层情绪的哭才是人。怎么用：写一个人哭，给他两个理由。</p></div></details></section></div><aside class="companion" id="companion"><div class="cp" data-scene="1" hidden><div class="cp-head"><span class="tag">场景 1</span><b>厨房与客厅：孩子跟谁亲</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-1">①</a>“孤独并不比母亲在世时更重”——这句话很狠：母亲在时，他其实也孤独。</li><li><a class="ref" href="#p-1">①</a>厨房与餐厅：一个暖，一个冷；孩子用脚选。</li><li><a class="ref" href="#p-1">①</a>姨妈想亲他，他“闷闷地受着”；她想爱，可不会爱。</li><li><a class="ref" href="#p-3">③</a>“欠收拾”——叔父把教育当成修理。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用对照写两个人（two rooms）</strong>——厨房和餐厅，玛丽·安和姨妈。为什么管用：不评价谁好谁坏，只写孩子在哪儿自在；读者自己会站队。怎么用：写两个人争一个孩子，写孩子往哪间屋跑。</p></div></div></div></div><div class="cp" data-scene="2" hidden><div class="cp-head"><span class="tag">场景 2</span><b>饭桌：积木塌了</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-4">④</a>烛台、教皇味儿、曼宁、独身——一大段背景，全是为了解释他为什么这会儿火大。</li><li><a class="ref" href="#p-5">⑤</a>积木塌的声音，正好撞上他的火气；孩子什么都不知道。</li><li><a class="ref" href="#p-9">⑨</a>“你亲爱的妈妈绝不会允许”——把孩子死去的母亲搬来压他，这是最省力也最伤人的一招。</li><li><a class="ref" href="#p-10">⑩</a>他不辩，也不认；沉默从这里开始。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>先给原因，再给发火（the fuse）</strong>——先用一段写烛台之争，再让积木塌。为什么管用：读者知道这把火早就烧着了，孩子只是撞上；怒气有了来路，就不是作者安排的。怎么用：一场冲突之前，先写一件跟孩子无关的窝火事。</p>
+<p><strong>用死去的母亲压人（the dead parent）</strong>——叔父说“你妈妈绝不会允许”。为什么管用：这句话同时羞辱了孩子和母亲，孩子还没法反驳。怎么用：让一个大人用死者来立规矩，读者会自己恨他。</p></div></div></div></div><div class="cp" data-scene="3" hidden><div class="cp-head"><span class="tag">场景 3</span><b>窗边：忍着不哭</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-11">⑪</a>“你怎么去见主”——把规矩抬到救赎的高度。</li><li><a class="ref" href="#p-14">⑭</a>“他有一种本能，不愿意让别人看见自己掉眼泪”——这是全章最重要的一句：他已经在学会把眼泪藏起来。</li><li><a class="ref" href="#p-14">⑭</a>羊在吃草，天灰——外面越平静，里面越翻腾。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用风景接情绪（the window）</strong>——不写“他很伤心”，写窗外的羊、灰天、“说不出的难过”。为什么管用：情绪需要一个容器，风景是最好的容器；读者会把自己的难过放进去。怎么用：人物崩不住的时候，让他站到窗前，写三样看得见的东西。</p></div></div></div></div><div class="cp" data-scene="4" hidden><div class="cp-head"><span class="tag">场景 4</span><b>茶桌：冷战</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-17">⑰</a>“他吵得要命”——叔父把自己的失眠算在孩子头上。</li><li><a class="ref" href="#p-18">⑱</a>菲利普在心里算账：只响了一次，之前之后都能睡。孩子不傻，只是不说。</li><li><a class="ref" href="#p-21">㉑</a>“耳朵发烫，有点想哭，可一个字也出不来”——沉默不是没话说，是说不出。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用饭桌写冷战（silent tea）</strong>——一桌人，谁也不说话，只有“偷偷看一眼”和“故意不理”。为什么管用：家庭矛盾最真的样子，就是同一张桌子上各吃各的。怎么用：写一场冷战，让所有人都在场，让谁都不先开口。</p></div></div></div></div><div class="cp" data-scene="5" hidden><div class="cp-head"><span class="tag">场景 5</span><b>门厅与客厅：我恨你</b></div><div class="cp-body"><div class="cp-sec" data-kind="notes"><h4>细读</h4><div class="cp-inner"><ul><li><a class="ref" href="#p-24">㉔</a>不准去教堂：不是不让他去，是不许他出现在主面前——惩罚变成了身份上的羞辱。</li><li><a class="ref" href="#p-32">㉜</a>“我想一个人待着”——他第一次说出自己想要什么。</li><li><a class="ref" href="#p-34">㉞</a>“我希望你死”——孩子把最狠的话扔出去，因为他自己已经被伤到极点。</li><li><a class="ref" href="#p-35">㉟</a>她哭，一半为自己，一半为“他终于亲近我”；毛姆不让她纯粹可怜，也不让她纯粹高兴。</li><li><a class="ref" href="#p-35">㉟</a>“因为他让她受了苦”——爱和伤害在这句话里分不开。</li></ul></div></div><div class="cp-sec" data-kind="craft"><h4>写法</h4><div class="cp-inner"><p><strong>用一句狠话写转折（the cruel line）</strong>——孩子说“我恨你，我希望你死”。为什么管用：这不是反派台词，是一个被逼到墙角的孩子能拿出的唯一武器；说出口，关系才有机会换一种方式重建。怎么用：让最弱的人说最狠的话，然后写听的人怎么接。</p>
+<p><strong>让眼泪有两层（mixed tears）</strong>——她哭，一半伤心，一半高兴。为什么管用：单一情绪的哭是煽情，两层情绪的哭才是人。怎么用：写一个人哭，给他两个理由。</p></div></div></div></div></aside></div>
+</section>
+<section class="sec" data-kind="lang" id="sec-3">
+<h2 class="sec-title">三、词与句</h2>
+<h3>1. 词汇</h3>
+<table class="wordtable"><tr><th>词</th><th>音标</th><th>文中义</th><th>备注</th></tr><tr><td>chubby</td><td>/ˈtʃʌbi/</td><td>胖乎乎的</td><td>常形容小孩、脸</td></tr><tr><td>uncouth</td><td>/ʌnˈkuːθ/</td><td>粗野的</td><td>叔父眼里的渔夫</td></tr><tr><td>mortified</td><td>/ˈmɔːtɪfaɪd/</td><td>觉得丢脸的</td><td>mortify＝使难堪</td></tr><tr><td>popish</td><td>/ˈpəʊpɪʃ/</td><td>教皇味的</td><td>贬义，指“太天主教”</td></tr><tr><td>candlestick</td><td>/ˈkændlstɪk/</td><td>烛台</td><td>争吵的由头</td></tr><tr><td>secession</td><td>/sɪˈseʃn/</td><td>脱离</td><td>曼宁脱离国教</td></tr><tr><td>celibacy</td><td>/ˈselɪbəsi/</td><td>独身</td><td>教士独身</td></tr><tr><td>unbeneficed</td><td>/ˌʌnˈbenɪfɪst/</td><td>无俸禄的</td><td>benefice＝教产、圣职</td></tr><tr><td>surreptitiously</td><td>/ˌsʌrəpˈtɪʃəsli/</td><td>偷偷地</td><td>姨妈偷看菲利普</td></tr><tr><td>sulk</td><td>/sʌlk/</td><td>赌气</td><td>叔父说他 sulking</td></tr><tr><td>humiliation</td><td>/hjuːˌmɪliˈeɪʃn/</td><td>羞辱</td><td>不准去教堂</td></tr><tr><td>forlorn</td><td>/fəˈlɔːn/</td><td>凄凉的</td><td>天、心情</td></tr></table>
+<h3>2. 三个句型</h3>
+<ol><li><code>He wants licking into shape.</code> —— want + 动名词，表示“需要被……”；这里不是“想要舔”。</li><li><code>It was a deep humiliation that was placed upon him.</code> —— 被动句；place a humiliation upon sb＝把羞辱加在某人身上。</li><li><code>She loved him now with a new love because he had made her suffer.</code> —— with 短语表方式；because 从句把“爱”与“受苦”扣在一起。</li></ol>
+<h3>3. 三个容易读错的地方</h3>
+<ul><li><strong>lick into shape</strong> 是“调教、收拾”，不是字面的“舔”。</li><li><strong>popish</strong> 带贬义，是国教徒骂“太像天主教”的话，不是中性描述。</li><li><strong>beneficed</strong> 指“有教产俸禄的”；unbeneficed clergy 就是没固定收入的助理牧师。</li></ul>
+</section>
+<section class="sec" data-kind="craft" id="sec-4">
+<h2 class="sec-title">四、毛姆怎么写</h2>
+<h3 id="h-11">4.1 读一段的时候，脑子里在过什么</h3>
+<p>拿<a class="ref" href="#p-35">㉟</a>（姨妈哭）做示范。</p>
+<p><strong>第一句：<code>Mrs. Carey gasped.</code></strong>三个词，一个动作。先给反应，再给原因。</p>
+<p><strong>第二句：<code>He said the words so savagely that it gave her quite a start.</code></strong> so...that 结构，把“狠”落到“吓一跳”上。作者不评价这句话多伤人，让姨妈的身体替他评价。</p>
+<p><strong>第三句：<code>She had nothing to say.</code></strong>沉默。她被击中了，来不及还嘴。</p>
+<p><strong>第四句：<code>She sat down in her husband’s chair;</code></strong>一个动作：坐进丈夫的椅子。她在这个家里没有自己的位置。</p>
+<p><strong>第五句：<code>and as she thought of her desire to love the friendless, crippled boy and her eager wish that he should love her—she was a barren woman and, even though it was clearly God’s will that she should be childless, she could scarcely bear to look at little children sometimes, her heart ached so—the tears rose to her eyes</code></strong>破折号里是她的身世：不会生育、想爱、想被爱。眼泪不是“委屈”，是“我这么想爱你，你却叫我死”。</p>
+<p><strong>第六句：<code>Philip watched her in amazement.</code></strong>镜头切回孩子。他不懂。</p>
+<p><strong>第七句：<code>Suddenly Philip realised that she was crying because of what he had said, and he was sorry.</code></strong>他懂了。全章的转折就在这一句。</p>
+<p><strong>第八句：<code>He went up to her silently and kissed her. It was the first kiss he had ever given her without being asked.</code></strong>不写“他爱她”，写“第一次不用人叫就去亲”。</p>
+<p><strong>第九句：<code>And the poor lady... took the little boy on her lap and put her arms around him and wept as though her heart would break.</code></strong>她抱住他。动作完成和解。</p>
+<p><strong>第十句：<code>But her tears were partly tears of happiness... She loved him now with a new love because he had made her suffer.</code></strong>最后一句把“爱”与“伤害”绑在一起——这是全书反复出现的主题。</p>
+<p>读这一段，可以问自己：如果交给自己写，会怎么写？常见的初稿大概是：菲利普说了很伤人的话，姨妈很伤心，哭了起来。菲利普很内疚，走过去安慰她，两人和好了。坏在哪：把“内疚”“和好”都说成了结论；破折号里那段身世（不会生育）被省掉，眼泪就轻了。</p>
+<h3 id="h-12">4.2 这一章真正教的三件事</h3>
+<p><strong>第一件：孩子的沉默是有力量的。</strong>他不认错，也不辩解；越沉默，大人越没辙。写反抗，不一定要写顶嘴。</p>
+<p><strong>第二件：最狠的话，往往出自最弱的人。</strong>“我希望你死”不是恶毒，是走投无路。写这句话之前，要先把他的退路一条条堵死。</p>
+<p><strong>第三件：和解要靠一个动作，不靠一段道理。</strong>一个吻，一个抱，比“我原谅你”有力。</p>
+<h3 id="h-13">4.3 写坏的版本，和改过来的版本</h3>
+<p>同一个场面：孩子被冤枉，憋着不认错，最后把气撒在唯一对他好的人身上。</p>
+<p>先看一版写坏的：</p>
+<blockquote><p class="en">Philip was very angry because his uncle had been unfair to him. He wanted to explain that he had only made a noise once, but he could not speak. When his aunt tried to comfort him, he shouted that he hated her. His aunt began to cry. Philip felt guilty and said sorry. They hugged each other.</p></blockquote>
+<p>坏在哪：<code>felt guilty</code>、<code>said sorry</code> 都是结论；<code>very angry</code> 是标签；最关键的“他为什么说不出话”被跳过了。</p>
+<p>改过来：</p>
+<blockquote><p class="en">Philip did not reply. He went on munching his bread and butter. He felt his ears tingling, he was a little inclined to cry, but no word would issue from his lips.</p><p class="en">...</p><p class="en">"I want to be left alone," he said.</p><p class="en">"Philip, how can you say anything so unkind? Don't you know that your uncle and I only want your good? Don't you love me at all?"</p><p class="en">"I hate you. I wish you was dead."</p><p class="en">Mrs. Carey gasped. ... She sat down in her husband's chair; and as she thought of her desire to love the friendless, crippled boy and her eager wish that he should love her ... the tears rose to her eyes.</p></blockquote>
+<p>改了什么：把“愤怒”换成耳朵发烫、说不出话；把“她开始哭”换成她坐进丈夫的椅子、想起自己不会生育；把“他说对不起”换成一个不用人叫的吻。</p>
+<h3 id="h-14">4.4 坐下写一场戏的时候，实际在想什么</h3>
+<p>这场戏先有的是<strong>“他咬紧牙不让哭声跑出来”</strong>这个动作。有了它，才问：他为什么不哭？因为他不肯在伤他的人面前示弱。那他什么时候崩？在唯一对他好的人面前。</p>
+<p>每次都可以问五个问题：</p>
+<ul><li>这场戏里，谁最不该受伤害？</li><li>他手里有什么可以伤人的东西？一句话，还是一个动作？</li><li>伤害说出口之后，谁先动？</li><li>和解要不要说话？</li><li>最后一句能不能只写一个动作？</li></ul>
+<h3 id="h-15">4.5 这些招什么时候会害你</h3>
+<p><strong>一、狠话要用在刀刃上。</strong> 全章只有这一句“我希望你死”；如果孩子一路都在骂人，这一句就不值钱了。</p>
+<p><strong>二、眼泪不能白流。</strong> 姨妈哭，是因为她自己的身世被戳到；如果她只是“被孩子气哭”，这段就薄了。</p>
+<p><strong>三、和解别太快。</strong> 一个吻之前，要有整个下午的沉默、一顿没人说话的茶、一次被剥夺的教堂。铺垫不够，吻就轻。</p>
+</section>
+<section class="sec" data-kind="bg" id="sec-5">
+<h2 class="sec-title">五、背景</h2>
+<ul><li><strong>主日的规矩。</strong> 十九世纪乡村，星期日不许玩游戏、不许做工；孩子犯规，是“得罪神”的大事。</li><li><strong>低教会与高教会。</strong> 布莱克斯特布尔是低教会教区，仪式简朴；牧师私下向往蜡烛、游行，所以一对二手烛台就能点着他。</li><li><strong>曼宁与牛津运动。</strong> 十九世纪牛津运动后，部分国教人士转投罗马（如亨利·曼宁），在国教徒里留下很深的敏感。</li><li><strong>独身与俸禄。</strong> 当时助理牧师（curate）收入低，结婚往往更拮据；牧师辞退已婚助理，是他的一条“原则”。</li><li><strong>不会生育的姨妈。</strong> 在当时的观念里，无子是“上帝的意思”，也是女人的隐痛；这一章把它翻出来，才让她的眼泪有分量。</li></ul>
+</section>
+<section class="sec" data-kind="test" id="sec-6">
+<h2 class="sec-title">六、自测</h2>
+<h3>概括</h3>
+<ol><li>用三句话说完这一章：谁、在哪里、发生了什么。</li><li>这一章的转折落在哪一句上？</li></ol>
+<h3>理解</h3>
+<ol start="3"><li>叔父为什么先为烛台生气，再为积木发火？</li><li>菲利普为什么不肯说“对不起”？</li><li>姨妈为什么哭？她的眼泪为什么“一半是高兴”？</li><li>结尾的吻，为什么说“是他第一次不用人叫就去亲她”？</li></ol>
+<h3>讨论</h3>
+<ol><li>叔父是恶人，还是一个不会当父亲的人？</li><li>“我希望你死”这句话，孩子说出口，能被原谅吗？</li><li>这一章里，谁更孤独：菲利普，还是姨妈？</li></ol>
+<hr><details class="notes answers"><summary>参考答案<em>先自己答，再对</em></summary><div class="inner"><ol><li>菲利普在牧师宅的第二个星期日，在饭桌上搭积木被叔父撞见；叔父罚他不许去教堂，他不肯认错；姨妈劝他，他说“我恨你，我希望你死”，姨妈哭了，他第一次主动亲她。</li><li>“She loved him now with a new love because he had made her suffer.”——爱因为伤害而换了质地。</li><li>烛台的事让他憋了一肚子火（格雷夫斯说“教皇味儿”），积木塌的声音正好撞上；孩子只是撞在枪口上。</li><li>他觉得自己没错（在家一直这么玩），也不愿承认母亲允许过“坏事”；更深一层，他不肯在伤他的人面前低头。</li><li>她想到自己想爱这个没爹没娘的孩子、想被他爱，又想到自己不会生育；眼泪一半是委屈，一半是“他终于亲近我了”。</li><li>以前的亲昵都是大人要求、他被动接受；这一次是他自己走过去——关系第一次从他这边发起。</li></ol></div></details>
+</section>
+<section class="sec" data-kind="next" id="sec-7">
+<h2 class="sec-title">七、下一章</h2>
+<p>第九章，又一个星期日。叔父让他背一段祷文，背不出就没有鸡蛋尖。他背不下来，趴在桌上哭；姨妈在窗外看见，去求叔父，又找来一本圣地画册。画册把他带进了另一个世界，也把他带进了书里。</p>
+</section>
+<section class="sec" data-kind="write" id="sec-write">
+<h2 class="sec-title">八、写作练习</h2>
+<div class="writing">
+  <div class="hint">内容只存在本机浏览器。</div>
+  <textarea placeholder="在这里写…"></textarea>
+  <div class="row">
+    <span class="count">0 词</span>
+    <span class="status"></span>
+    <span class="spacer"></span>
+    <button class="btn copy" type="button">复制</button>
+    <button class="btn clear" type="button">清空</button>
+  </div>
+</div>
+</section>
+<nav class="chnav"><a href="ch07.html">← 第七章</a><a href="ch09.html">第九章 →</a></nav>
+</main>
+<aside class="nav-right" id="navRight">
+  <div class="rn-head"><span>本章目录</span><button class="rn-toggle" id="toggleRight2" type="button" data-close="right" aria-label="收起目录">×</button></div>
+  <nav class="toc"><a class="lv2" href="#sec-1">一、原文</a><a class="lv2" href="#sec-2">二、逐场精读</a><a class="lv3" href="#h-3">概览</a><a class="lv3" href="#scene-1">场景 1｜厨房与客厅：孩子跟谁亲</a><a class="lv3" href="#scene-2">场景 2｜饭桌：积木塌了</a><a class="lv3" href="#scene-3">场景 3｜窗边：忍着不哭</a><a class="lv3" href="#scene-4">场景 4｜茶桌：冷战</a><a class="lv3" href="#scene-5">场景 5｜门厅与客厅：我恨你</a><a class="lv2" href="#sec-3">三、词与句</a><a class="lv2" href="#sec-4">四、毛姆怎么写</a><a class="lv3" href="#h-11">4.1 读一段的时候，脑子里在过什么</a><a class="lv3" href="#h-12">4.2 这一章真正教的三件事</a><a class="lv3" href="#h-13">4.3 写坏的版本，和改过来的版本</a><a class="lv3" href="#h-14">4.4 坐下写一场戏的时候，实际在想什么</a><a class="lv3" href="#h-15">4.5 这些招什么时候会害你</a><a class="lv2" href="#sec-5">五、背景</a><a class="lv2" href="#sec-6">六、自测</a><a class="lv2" href="#sec-7">七、下一章</a><a class="lv2" href="#sec-write">八、写作练习</a></nav>
+</aside>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = {"id": "ch8", "href": "ch08.html", "num": "八", "words": [{"w": "chubby", "p": "/ˈtʃʌbi/", "g": "胖乎乎的"}, {"w": "uncouth", "p": "/ʌnˈkuːθ/", "g": "粗野的、没教养的"}, {"w": "mortified", "p": "/ˈmɔːtɪfaɪd/", "g": "觉得丢脸的、受辱的"}, {"w": "sullenness", "p": "/ˈsʌlənnəs/", "g": "闷闷不乐、赌气"}, {"w": "lick into shape", "p": "—", "g": "收拾、调教（不是“舔”）"}, {"w": "popish", "p": "/ˈpəʊpɪʃ/", "g": "教皇的、天主教的（贬义）"}, {"w": "candlestick", "p": "/ˈkændlstɪk/", "g": "烛台"}, {"w": "secession", "p": "/sɪˈseʃn/", "g": "脱离（教会）"}, {"w": "celibacy", "p": "/ˈselɪbəsi/", "g": "独身"}, {"w": "unbeneficed", "p": "/ˌʌnˈbenɪfɪst/", "g": "没有俸禄的"}, {"w": "forlorn", "p": "/fəˈlɔːn/", "g": "凄凉、孤零零的"}, {"w": "clench", "p": "/klentʃ/", "g": "咬紧、攥紧"}, {"w": "surreptitiously", "p": "/ˌsʌrəpˈtɪʃəsli/", "g": "偷偷地"}, {"w": "sulk", "p": "/sʌlk/", "g": "赌气、生闷气"}, {"w": "humiliation", "p": "/hjuːˌmɪliˈeɪʃn/", "g": "羞辱"}, {"w": "frame of mind", "p": "—", "g": "心境、情绪状态"}, {"w": "sallow", "p": "/ˈsæləʊ/", "g": "蜡黄的"}]};</script>
+<script>/* ===== Of Human Bondage · 阅读器 ===== */
+(function () {
+  'use strict';
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var CH = window.CHAPTER || {};
+  var KEY = 'ohb:' + (CH.id || 'x');
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  /* ---------------- 设置 ---------------- */
+
+  var DEFAULTS = { trans: 1, words: 1, sents: 1, notes: 1, craft: 1, split: 0, collapse: 0, openanno: 0 };
+  var cfg = Object.assign({}, DEFAULTS, LS.get('ohb:cfg', {}));
+
+  function applyCfg() {
+    document.body.dataset.trans = cfg.trans ? 'on' : 'off';
+    document.body.dataset.words = cfg.words ? 'on' : 'off';
+    document.body.dataset.sents = cfg.sents ? 'on' : 'off';
+    document.body.dataset.notes = cfg.notes ? 'on' : 'off';
+    document.body.dataset.craft = cfg.craft ? 'on' : 'off';
+    document.body.dataset.split = cfg.split ? 'on' : 'off';
+    $$('details.notes:not(.answers), details.craft').forEach(function (d) {
+      d.open = !cfg.collapse;
+    });
+    $$('details.anno').forEach(function (d) {
+      d.open = !!cfg.openanno;
+    });
+    $$('.settings input[data-set]').forEach(function (i) {
+      i.checked = !!cfg[i.dataset.set];
+    });
+  }
+
+  $$('.settings input[data-set]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      cfg[i.dataset.set] = i.checked ? 1 : 0;
+      LS.set('ohb:cfg', cfg);
+      applyCfg();
+      if (i.dataset.set === 'split') syncCompanion(true);
+    });
+  });
+
+  var setBtn = $('#setBtn'), settings = $('#settings');
+  if (setBtn && settings) {
+    setBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      settings.hidden = !settings.hidden;
+      document.body.classList.toggle('settings-open', !settings.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!settings.hidden && !settings.contains(e.target) && e.target !== setBtn) {
+        settings.hidden = true;
+        document.body.classList.remove('settings-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') settings.hidden = true;
+    });
+  }
+
+  /* ---------------- 主题 / 字号 ---------------- */
+
+  var themeBtn = $('.tools .theme');
+  function setTheme(t, remember) {
+    document.documentElement.dataset.theme = t;
+    if (themeBtn) themeBtn.textContent = t === 'dark' ? '☀' : '☾';
+    if (remember) LS.set('ohb:theme', t);
+  }
+  if (themeBtn) themeBtn.addEventListener('click', function () {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+
+  var fs = LS.get('ohb:fs', 1);
+  function applyFs() {
+    fs = Math.min(1.32, Math.max(0.86, fs));
+    document.documentElement.style.setProperty('--fs', String(fs));
+    LS.set('ohb:fs', fs);
+  }
+  $$('[data-fs]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fs += (b.dataset.fs === '+' ? 0.06 : -0.06);
+      applyFs();
+    });
+  });
+
+  /* ---------------- 侧栏 ---------------- */
+
+  var PANELS = { left: 1, right: 1 };
+  try { PANELS = Object.assign(PANELS, LS.get('ohb:panels', {})); } catch (e) {}
+
+  function applyPanels(persist) {
+    document.body.classList.toggle('no-left', !PANELS.left);
+    document.body.classList.toggle('no-right', !PANELS.right);
+    if (persist !== false && window.innerWidth >= 1080) LS.set('ohb:panels', PANELS);
+  }
+
+  var hasLeft = !!$('#navLeft'), hasRight = !!$('#navRight');
+  var forcedMobile = window.innerWidth < 1080;
+  if (forcedMobile) { PANELS.left = 0; PANELS.right = 0; }
+  if (!hasLeft) PANELS.left = 0;
+  if (!hasRight) PANELS.right = 0;
+  applyPanels(false);
+
+  var tl = $('#toggleLeft'), tr = $('#toggleRight'), tr2 = $('#toggleRight2');
+  if (tr && !hasRight) tr.style.display = 'none';
+  $$('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.dataset.close === 'left') PANELS.left = 0; else PANELS.right = 0;
+      applyPanels();
+    });
+  });
+
+  var scrim = $('#scrim');
+  if (scrim) scrim.addEventListener('click', function () {
+    PANELS.left = 0; PANELS.right = 0; applyPanels();
+    var st = $('#settings');
+    if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+  });
+  if (tl) tl.addEventListener('click', function () { PANELS.left = PANELS.left ? 0 : 1; applyPanels(); });
+  if (tr) tr.addEventListener('click', function () { PANELS.right = PANELS.right ? 0 : 1; applyPanels(); });
+  if (tr2) tr2.addEventListener('click', function () { PANELS.right = 0; applyPanels(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+      var st = $('#settings');
+      if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+    }
+    if (e.key === 'e' || e.key === 'E') $$('details').forEach(function (d) { d.open = true; });
+    if (e.key === 'q' || e.key === 'Q') $$('details').forEach(function (d) { d.open = false; });
+  });
+
+  // 移动端：点目录后收起右栏
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-right a, .nav-left a');
+    if (!a) return;
+    if (window.innerWidth < 1080) {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+    }
+  });
+
+  /* ---------------- 阅读进度 ---------------- */
+
+  var readbar = $('#readbar');
+  function paintProgress() {
+    if (!readbar) return;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    readbar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+
+  /* ---------------- 目录高亮 ---------------- */
+
+  var tocLinks = $$('.toc a');
+  var targets = tocLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+      var current = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { current = targets[i].id; break; }
+      }
+      if (current) {
+        tocLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+    }, { rootMargin: '-64px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { io.observe(t); });
+  }
+
+  /* ---------------- 段号跳转 ---------------- */
+
+  function flash(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#p-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(id);
+    history.replaceState(null, '', '#' + id);
+  });
+  if (location.hash && /^#p-/.test(location.hash)) setTimeout(function () { flash(location.hash.slice(1)); }, 300);
+
+  /* ---------------- J / K 逐段 ---------------- */
+
+  var units = $$('.unit');
+  function currentUnit() {
+    var best = 0, bestD = 1e9;
+    units.forEach(function (u, i) {
+      var d = Math.abs(u.getBoundingClientRect().top - 120);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+  function gotoUnit(i) {
+    if (!units.length) return;
+    i = Math.max(0, Math.min(units.length - 1, i));
+    units.forEach(function (u) { u.classList.remove('focus'); });
+    units[i].classList.add('focus');
+    units[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'j' || e.key === 'J') { gotoUnit(currentUnit() + 1); }
+    if (e.key === 'k' || e.key === 'K') { gotoUnit(currentUnit() - 1); }
+  });
+
+  /* ---------------- 朗读 ---------------- */
+
+  if ('speechSynthesis' in window) {
+    $$('.reader p, .en').forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'speak';
+      btn.type = 'button';
+      btn.title = '朗读这一段';
+      btn.textContent = '▶';
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+        var u = new SpeechSynthesisUtterance(p.innerText.replace('▶', ''));
+        u.lang = 'en-GB';
+        u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+      p.appendChild(btn);
+    });
+  }
+
+  /* ---------------- 分屏讲解 ---------------- */
+
+  var scenes = $$('.scene');
+  var panes = $$('.companion .cp');
+  var currentScene = null;
+
+  function syncCompanion(force) {
+    if (!scenes.length || !panes.length) return;
+    if (document.body.dataset.split !== 'on') return;
+    var active = null;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top <= 200) active = scenes[i].dataset.scene;
+    }
+    if (!active) active = scenes[0].dataset.scene;
+    if (active !== currentScene || force) {
+      currentScene = active;
+      panes.forEach(function (p) { p.hidden = p.dataset.scene !== active; });
+    }
+  }
+
+  /* ---------------- 打卡 ---------------- */
+
+  var checks = $$('.check input');
+  var bar = $('.bar i');
+  var barText = $('.bar-label span:last-child');
+
+  function loadChecks() {
+    var saved = LS.get(KEY, {});
+    checks.forEach(function (c) { c.checked = !!saved[c.dataset.k]; });
+    paintChecks();
+  }
+  function paintChecks() {
+    var done = checks.filter(function (c) { return c.checked; }).length;
+    var pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (barText) barText.textContent = done + ' / ' + checks.length;
+  }
+  checks.forEach(function (c) {
+    c.addEventListener('change', function () {
+      var saved = LS.get(KEY, {});
+      saved[c.dataset.k] = c.checked;
+      LS.set(KEY, saved);
+      paintChecks();
+    });
+  });
+
+  /* ---------------- 写作区 ---------------- */
+
+  var ta = $('.writing textarea');
+  if (ta) {
+    var countEl = $('.writing .count');
+    var statusEl = $('.writing .status');
+
+    function count(text) {
+      var en = (text.match(/[A-Za-z][A-Za-z'’\-]*/g) || []).length;
+      var zh = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return en + zh;
+    }
+    ta.value = LS.get(KEY + ':writing', '');
+    var t;
+    function upd() {
+      if (countEl) countEl.textContent = count(ta.value) + ' 词';
+      clearTimeout(t);
+      t = setTimeout(function () {
+        LS.set(KEY + ':writing', ta.value);
+        if (statusEl) { statusEl.textContent = '已保存'; setTimeout(function () { statusEl.textContent = ''; }, 1500); }
+      }, 600);
+    }
+    ta.addEventListener('input', upd);
+    upd();
+
+    var copyBtn = $('.writing .copy');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      ta.select(); document.execCommand('copy');
+      if (statusEl) statusEl.textContent = '已复制';
+    });
+    var clearBtn = $('.writing .clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      if (!confirm('清空这段练习？')) return;
+      ta.value = ''; upd();
+    });
+  }
+
+  /* ---------------- 生词本 ---------------- */
+
+  var WB_KEY = 'ohb:words';
+
+  function wbAll() { return LS.get(WB_KEY, []); }
+  function wbKey(ch, pid, w) { return ch + '|' + pid + '|' + w; }
+
+  function paintWbCount() {
+    var n = wbAll().length;
+    var c = $('#wbCount');
+    if (c) c.textContent = n;
+  }
+
+  function markSaved() {
+    var set = {};
+    wbAll().forEach(function (x) { set[wbKey(x.ch, x.pid, x.w)] = 1; });
+    $$('.gloss').forEach(function (g) {
+      var unit = g.closest('.unit');
+      var pid = unit ? unit.id : '';
+      g.classList.toggle('saved', !!set[wbKey(CH.id, pid, g.textContent)]);
+    });
+  }
+
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 1500);
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('.gloss');
+    if (!g) return;
+    var unit = g.closest('.unit');
+    var pid = unit ? unit.id : '';
+    var w = g.textContent;
+    var tip = g.dataset.tip || '';
+    var list = wbAll();
+    var k = wbKey(CH.id, pid, w);
+    var idx = list.findIndex(function (x) { return wbKey(x.ch, x.pid, x.w) === k; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      LS.set(WB_KEY, list);
+      g.classList.remove('saved');
+      toast('已移出生词本');
+    } else {
+      list.push({ w: w, tip: tip, ch: CH.id, href: CH.href, pid: pid, n: (CH.num || '') });
+      LS.set(WB_KEY, list);
+      g.classList.add('saved');
+      toast('已加入生词本');
+    }
+    paintWbCount();
+  });
+
+  var wbBtn = $('#wbBtn');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () {
+      var list = wbAll();
+      var html = '<h3>生词本</h3><p class="hint">在原文里点虚线词即可收进来；再点一次移出。</p>';
+      if (!list.length) {
+        html += '<div class="wb-empty">还是空的。读到不认识的词，点一下它。</div>';
+      } else {
+        html += '<div class="wb-list">';
+        list.slice().sort(function (a, b) {
+          return (a.n || '').localeCompare(b.n || '', 'zh-Hans-CN', { numeric: true });
+        }).forEach(function (x) {
+          var file = x.href || String(x.ch || '').replace(/^ch(\d)$/, 'ch0$1') + '.html';
+          var href = x.pid ? (file + '#' + x.pid) : file;
+          html += '<a class="wb-item" href="' + href + '"><b>' + esc(x.w) + '</b><span>' +
+                  esc(x.tip) + '</span><em>' + esc(x.n || '') + '</em></a>';
+        });
+        html += '</div>';
+      }
+      html += '<div class="quiz-foot" style="margin-top:14px"><button class="btn" id="closeWb" type="button">关闭</button></div>';
+      openSheet(html);
+      var c = $('#closeWb');
+      if (c) c.addEventListener('click', closeSheet);
+    });
+  }
+
+  /* ---------------- 词汇小测 ---------------- */
+
+  function cleanGloss(g) {
+    var t = String(g || '').replace(/^[=＝]\s*/, '');
+    t = t.split('（')[0].trim();
+    return t.replace(/[；;]\s*$/, '');
+  }
+
+  var words = (CH.words || []).map(function (w) {
+    return { w: w.w, g: cleanGloss(w.g) };
+  }).filter(function (w) { return w.g && w.g.length >= 2 && /[\u4e00-\u9fff]/.test(w.g); });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function buildQuiz() {
+    if (words.length < 5) return;
+    var picked = shuffle(words.slice()).slice(0, Math.min(8, words.length));
+    var html = '<h3>词义小测</h3><p class="hint">从本章词表里抽 8 个，选一个正确释义。</p>';
+    picked.forEach(function (w) {
+      var others = shuffle(words.filter(function (x) { return x.g !== w.g; })).slice(0, 3).map(function (x) { return x.g; });
+      var opts = shuffle(others.concat([w.g]));
+      html += '<div class="q" data-answer="' + esc(w.g) + '"><div class="w">' + esc(w.w) + '</div><div class="opts">';
+      opts.forEach(function (o) { html += '<button class="opt" type="button">' + esc(o) + '</button>'; });
+      html += '</div><div class="fb"></div></div>';
+    });
+    html += '<div class="quiz-foot"><span class="score"></span><button class="btn" id="closeQuiz" type="button">关闭</button></div>';
+    openSheet(html);
+
+    var total = picked.length, right = 0, answered = 0;
+    $$('.sheet .q').forEach(function (q) {
+      var ans = q.dataset.answer;
+      $$('.opt', q).forEach(function (o) {
+        if (o.textContent === ans) o.dataset.correct = '1';
+        o.addEventListener('click', function () {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          answered++;
+          if (o.dataset.correct === '1') { right++; o.classList.add('right'); $('.fb', q).textContent = '对。'; }
+          else {
+            o.classList.add('wrong');
+            $('.opt[data-correct="1"]', q).classList.add('right');
+            $('.fb', q).textContent = '正确释义：' + ans;
+          }
+          var sc = $('.score');
+          if (sc) sc.textContent = answered + ' / ' + total + ' · 答对 ' + right;
+        });
+      });
+    });
+    var c = $('#closeQuiz');
+    if (c) c.addEventListener('click', closeSheet);
+  }
+
+  /* ---------------- 弹层 ---------------- */
+
+  function openSheet(html) {
+    var modal = $('#sheetModal');
+    if (!modal) return;
+    $('.sheet', modal).innerHTML = html;
+    modal.classList.add('open');
+  }
+  function closeSheet() {
+    var modal = $('#sheetModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  var sheetModal = document.createElement('div');
+  sheetModal.className = 'modal';
+  sheetModal.id = 'sheetModal';
+  sheetModal.innerHTML = '<div class="sheet"></div>';
+  document.body.appendChild(sheetModal);
+  sheetModal.addEventListener('click', function (e) { if (e.target === sheetModal) closeSheet(); });
+
+  ['#quizBtn', '#quizBtn2'].forEach(function (sel) {
+    var b = $(sel);
+    if (b) b.addEventListener('click', buildQuiz);
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------------- 搜索（技法页） ---------------- */
+
+  var search = $('.search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      $$('table.gen tr').forEach(function (tr) {
+        if (tr.querySelector('th')) return;
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+      $$('.doc-main h2, .doc-main h3, .doc-main p').forEach(function (el) {
+        el.style.display = (!q || el.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------------- 首页进度 ---------------- */
+
+  var cells = $$('.cell[data-ch]');
+  cells.forEach(function (c) {
+    var saved = LS.get('ohb:ch' + c.dataset.ch, {});
+    var n = Object.keys(saved).filter(function (k) { return saved[k]; }).length;
+    if (n >= 5) c.classList.add('done');
+  });
+
+  /* ---------------- 初始化 ---------------- */
+
+  setTheme(LS.get('ohb:theme', 'light'), false);
+  applyFs();
+  applyCfg();
+  loadChecks();
+  paintWbCount();
+  markSaved();
+
+  if (document.body.dataset.split === 'on') syncCompanion(true);
+
+  var raf = null;
+  window.addEventListener('scroll', function () {
+    paintProgress();
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      syncCompanion(false);
+    });
+  }, { passive: true });
+  paintProgress();
+})();
+</script>
+</body>
+</html>

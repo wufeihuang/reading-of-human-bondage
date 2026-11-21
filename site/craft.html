@@ -1,0 +1,1514 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>写作技法手册 · Of Human Bondage</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>/* ===== Of Human Bondage · 阅读器 ===== */
+
+:root {
+  --paper: #faf7f0;
+  --paper-2: #f3eee2;
+  --card: #fffdf8;
+  --ink: #211e19;
+  --ink-soft: #46403a;
+  --muted: #7d7365;
+  --line: #e6ddcd;
+  --line-soft: #f0eade;
+  --accent: #a33b2e;
+  --accent-2: #c9a35d;
+  --accent-soft: #f6e9e3;
+  --green: #3f5d4e;
+  --shadow: 0 1px 2px rgba(33, 30, 25, .05), 0 16px 40px -24px rgba(33, 30, 25, .35);
+  --en: "Iowan Old Style", Charter, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --zh: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", "SimSun", serif;
+  --zhb: var(--zh);
+  --title: "Songti SC", STSong, "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs: 1;
+  --side: 286px;
+}
+
+
+[data-theme="dark"] {
+  --paper: #14120e;
+  --paper-2: #1a1712;
+  --card: #1d1a14;
+  --ink: #ebe4d6;
+  --ink-soft: #cfc6b5;
+  --muted: #9b9080;
+  --line: #2f2a22;
+  --line-soft: #262118;
+  --accent: #d9725d;
+  --accent-2: #c9a35d;
+  --accent-soft: #2c201c;
+  --green: #83ab95;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 18px 44px -24px rgba(0, 0, 0, .85);
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--zh);
+  font-size: calc(16px * var(--fs));
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- 顶栏 ---------- */
+
+.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; gap: 12px;
+  height: 58px; padding: 0 18px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.crumb { font-size: 12.5px; color: var(--muted); letter-spacing: .03em; white-space: nowrap; }
+.crumb b { color: var(--ink); font-weight: 600; }
+
+.readbar {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: transparent; pointer-events: none;
+}
+.readbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .1s linear; }
+
+.tools { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+
+.icon-btn {
+  height: 32px; min-width: 32px; padding: 0 9px;
+  display: inline-grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font: 500 12px/1 var(--zh); cursor: pointer;
+  transition: border-color .16s ease, color .16s ease;
+}
+.icon-btn:hover { border-color: var(--muted); color: var(--ink); }
+.set-btn { font-family: var(--en); font-size: 13px; letter-spacing: .02em; }
+
+.menu-btn {
+  display: none; width: 32px; height: 32px; place-items: center;
+  border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+  color: var(--ink-soft); font-size: 15px; cursor: pointer; flex: none;
+}
+
+/* ---------- 设置面板 ---------- */
+
+.settings {
+  position: fixed; z-index: 50; top: 66px; right: 18px; width: 268px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: var(--shadow); padding: 14px 16px 12px;
+}
+.settings[hidden] { display: none; }
+.set-title { font: 600 11px/1 var(--zh); letter-spacing: .12em; color: var(--muted); margin-bottom: 10px; }
+.set-sep { height: 1px; background: var(--line-soft); margin: 10px 0; }
+
+.sw { display: flex; align-items: center; gap: 10px; padding: 7px 0; cursor: pointer; font-size: 13.5px; }
+.sw em { font-style: normal; color: var(--muted); font-size: 11.5px; margin-left: 6px; }
+.sw input {
+  appearance: none; width: 32px; height: 18px; border-radius: 999px; background: var(--line);
+  position: relative; cursor: pointer; flex: none; transition: background .18s ease; margin-left: auto; order: 2;
+}
+.sw input::after {
+  content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--card); transition: transform .18s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.sw input:checked { background: var(--accent); }
+.sw input:checked::after { transform: translateX(14px); }
+
+.set-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.set-row span { margin-right: auto; }
+.set-row button {
+  border: 1px solid var(--line); background: var(--paper); color: var(--ink-soft);
+  border-radius: 7px; padding: 5px 10px; font: 500 12px/1 var(--zh); cursor: pointer;
+}
+.set-row button:hover { border-color: var(--muted); }
+.set-note { margin-top: 8px; font-size: 11px; color: var(--muted); }
+
+/* ---------- 布局：左导航 / 正文 / 右目录 ---------- */
+
+:root { --lw: 264px; --rw: 236px; }
+body.no-left { --lw: 0px; }
+body.no-right { --rw: 0px; }
+
+.app {
+  display: grid;
+  grid-template-columns: var(--lw) minmax(0, 1fr) var(--rw);
+  align-items: start;
+}
+body.no-left .nav-left, body.no-right .nav-right { display: none; }
+
+.nav-left { grid-column: 1; }
+main { grid-column: 2; }
+.nav-right { grid-column: 3; }
+
+.nav-left {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 20px 14px 34px;
+  border-right: 1px solid var(--line); scrollbar-width: thin;
+}
+.nav-right {
+  position: sticky; top: 58px; height: calc(100vh - 58px);
+  overflow-y: auto; padding: 18px 14px 34px 16px;
+  border-left: 1px solid var(--line); scrollbar-width: thin;
+}
+
+.brand { font: 600 10px/1 var(--zh); letter-spacing: .18em; text-transform: uppercase; color: var(--accent); }
+.site-name { font: 600 calc(17px * var(--fs))/1.4 var(--title); margin: 7px 0 14px; }
+
+.gl-links { display: grid; gap: 2px; margin-bottom: 14px; }
+.gl-links a {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 7px 9px; border-radius: 6px; text-decoration: none;
+  color: var(--ink-soft); font-size: 13px;
+}
+.gl-links a:hover { background: var(--paper-2); color: var(--ink); }
+.gl-links a.cur { background: var(--accent-soft); color: var(--accent); }
+.gl-links span { color: var(--muted); font-size: 10.5px; }
+
+.ch-tools { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin: 0 0 16px; }
+.ch-tools .btn.small { padding: 6px 10px; font-size: 12px; }
+.ch-tools #quizBtn2 { width: auto; justify-content: center; }
+
+.side-label { font: 600 10px/1 var(--zh); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.ch-label { margin-top: 4px; }
+
+.ch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+.ch-list a, .ch-list span {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 8px; border-radius: 6px; text-decoration: none;
+  font-size: 12.5px; color: var(--ink-soft);
+}
+.ch-list .n { font: 500 10.5px/1.6 var(--mono); color: var(--muted); width: 20px; flex: none; }
+.ch-list a:hover { background: var(--paper-2); color: var(--ink); }
+.ch-list a.cur { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.ch-list a.cur .n { color: var(--accent); }
+.ch-list .off { color: var(--muted); opacity: .45; }
+
+
+.rn-head {
+  display: flex; align-items: center; justify-content: space-between;
+  font: 600 10.5px/1 var(--zh); letter-spacing: .12em; color: var(--muted);
+  margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line-soft);
+}
+.rn-toggle { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 4px; }
+.rn-toggle:hover { color: var(--accent); }
+
+.toc { font-size: 12.6px; line-height: 1.45; }
+.toc a {
+  display: block; padding: 5px 8px; margin: 1px 0; border-radius: 6px;
+  color: var(--muted); text-decoration: none; border-left: 2px solid transparent;
+}
+.toc a:hover { background: var(--paper-2); color: var(--ink); }
+.toc a.lv2 { font-weight: 600; margin-top: 9px; color: var(--ink-soft); font-size: 12.8px; }
+.toc a.lv3 { padding-left: 14px; font-size: 12px; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); }
+
+.btn {
+  border: 1px solid var(--line); background: var(--card); color: var(--ink);
+  padding: 9px 15px; border-radius: 8px; font: 500 13px/1 var(--zh); cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn:hover { border-color: var(--muted); }
+.btn.small { padding: 7px 12px; font-size: 12.5px; width: 100%; display: flex; justify-content: space-between; align-items: center; }
+.btn.small b { color: var(--accent); font-weight: 700; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.keys { font-size: 11.5px; color: var(--muted); line-height: 2.1; }
+kbd {
+  font: 500 10px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px;
+  border-radius: 4px; padding: 2px 4px; background: var(--card); color: var(--ink-soft); margin-right: 2px;
+}
+
+/* ---------- 正文 ---------- */
+
+body[data-split="on"] main { max-width: 1040px; }
+main { width: 100%; max-width: 860px; margin: 0 auto; padding: 32px 40px 120px; container-type: inline-size; }
+.doc-head, .writing, .chnav { max-width: 700px; margin-left: auto; margin-right: auto; }
+
+.sec { max-width: 700px; margin: 0 auto 46px; }
+body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+  max-width: 700px; margin-left: auto; margin-right: auto;
+}
+
+h1.doc-title { font: 600 calc(31px * var(--fs))/1.32 var(--title); margin: 0 0 6px; letter-spacing: -.01em; }
+.doc-sub { color: var(--muted); font-size: 12.5px; margin-bottom: 22px; letter-spacing: .02em; }
+.doc-sub strong { color: var(--ink-soft); font-weight: 500; }
+
+h2.sec-title {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh);
+  margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; letter-spacing: .01em;
+}
+h2.sec-title::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex: none; }
+
+h3 {
+  font: 600 calc(17px * var(--fs))/1.5 var(--zh);
+  margin: 40px 0 10px; scroll-margin-top: 80px; letter-spacing: .01em;
+}
+h3.scene-title { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 48px; }
+h3.scene-title .tag {
+  font: 600 10px/1 var(--zh); letter-spacing: .1em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+  padding: 4px 7px; border-radius: 4px;
+}
+
+h4 { font: 600 calc(14px * var(--fs))/1.6 var(--zh); margin: 24px 0 6px; color: var(--ink); }
+
+p { margin: 0 0 15px; }
+
+code {
+  font-family: var(--en); font-size: .94em; font-style: normal; color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+  padding: 0 3px; border-radius: 3px;
+}
+a { color: var(--accent); text-underline-offset: 3px; }
+
+.prose-body { font-family: var(--zhb); font-size: calc(15.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft); }
+
+/* 提示条 */
+
+.callout {
+  border-radius: 12px; background: var(--paper-2); border: 1px solid var(--line);
+  padding: 16px 20px; font-size: 13.5px; line-height: 1.9; color: var(--ink-soft); margin: 0 0 22px;
+}
+.callout p { margin-bottom: 8px; }
+.callout p:last-child { margin-bottom: 0; }
+.callout strong { color: var(--ink); }
+
+/* 首段信息条 */
+
+.spec { display: block; margin: 0 0 22px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); }
+.spec div { display: flex; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); font-size: 12.8px; }
+.spec div:last-child { border-bottom: 0; }
+.spec dt { flex: 0 0 54px; font: 600 11px/1.9 var(--zh); letter-spacing: .08em; color: var(--muted); margin: 0; }
+.spec dd { flex: 1; margin: 0; color: var(--ink-soft); line-height: 1.75; }
+
+/* ---------- 阅读：原文 ---------- */
+
+.reader { font-family: var(--en); font-size: calc(18px * var(--fs)); line-height: 2; }
+.reader p { margin: 0 0 1.3em; position: relative; }
+
+/* ---------- 场景 ---------- */
+
+.scene { scroll-margin-top: 80px; }
+
+.scene-lead {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--ink-soft); background: var(--paper-2);
+  border-left: 3px solid var(--accent-2); padding: 12px 16px; border-radius: 0 8px 8px 0;
+  margin: 12px 0 22px;
+}
+.scene-lead b { color: var(--ink); font-weight: 600; }
+
+.unit {
+  position: relative; padding: 10px 0 20px; border-bottom: 1px dashed var(--line-soft);
+  scroll-margin-top: 76px;
+}
+.unit:last-of-type { border-bottom: 0; }
+.unit .num {
+  position: absolute; left: -34px; top: 14px;
+  font: 600 11.5px/1 var(--mono); color: var(--muted); width: 24px; text-align: right; opacity: .75;
+}
+.unit.focus { background: color-mix(in srgb, var(--accent) 4%, transparent); border-radius: 8px; }
+.unit.flash { animation: flash 1.8s ease; }
+@keyframes flash { 0%, 30% { background: var(--accent-soft); } 100% { background: transparent; } }
+
+.en { position: relative; font-family: var(--en); font-size: calc(17.5px * var(--fs)); line-height: 1.95; margin: 0 0 10px; }
+
+.trans {
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9;
+  color: var(--muted); margin: 0 0 10px; padding-left: 12px; border-left: 2px solid var(--line-soft);
+}
+
+.speak {
+  position: absolute; left: -32px; top: .5em;
+  width: 20px; height: 20px; display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--card);
+  color: var(--muted); font-size: 7px; line-height: 1; cursor: pointer;
+  opacity: 0; transition: opacity .16s ease, color .16s ease, border-color .16s ease;
+}
+.en:hover > .speak, .reader p:hover > .speak, .speak:focus { opacity: 1; }
+.speak:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---------- 词 / 句 ---------- */
+
+.chipbar { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0 0; }
+
+details.anno { display: inline-block; border: 1px solid var(--line); border-radius: 7px; background: var(--card); }
+details.anno > summary {
+  list-style: none; cursor: pointer; padding: 4px 10px; font: 500 11.5px/1.7 var(--zh); color: var(--muted);
+  display: flex; align-items: center; gap: 5px; user-select: none;
+}
+details.anno > summary::-webkit-details-marker { display: none; }
+details.anno > summary::before { content: "▸"; font-size: 8px; transition: transform .2s ease; }
+details.anno[open] > summary::before { transform: rotate(90deg); }
+details.anno[open] > summary { color: var(--ink); border-bottom: 1px solid var(--line-soft); }
+details.anno .anno-body { padding: 8px 10px; overflow-x: auto; }
+details.anno[open] { flex: 1 1 100%; }
+
+.wordtable { width: 100%; border-collapse: collapse; font-size: 12.8px; }
+.wordtable th {
+  text-align: left; font: 600 10px/1 var(--zh); letter-spacing: .08em; color: var(--muted);
+  padding: 3px 7px 7px; border-bottom: 1px solid var(--line);
+}
+.wordtable td { padding: 6px 7px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+.wordtable tr:last-child td { border-bottom: 0; }
+.wordtable td:first-child { font-family: var(--mono); font-size: 12px; color: var(--accent); white-space: nowrap; }
+.wordtable td:nth-child(2) { font-family: var(--mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.wordtable td:nth-child(3) { color: var(--ink-soft); line-height: 1.6; }
+
+.sent {
+  border-left: 3px solid var(--accent-2); padding: 5px 0 5px 12px; margin: 8px 0;
+  font-size: 13px; line-height: 1.85; color: var(--ink-soft);
+}
+.sent code {
+  font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--ink);
+  background: none; padding: 0;
+}
+
+/* ---------- 细读 / 写法 ---------- */
+
+details.notes, details.craft {
+  margin: 18px 0 6px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); overflow: hidden;
+}
+details.notes > summary, details.craft > summary {
+  list-style: none; cursor: pointer; user-select: none;
+  padding: 11px 15px; display: flex; align-items: center; gap: 8px;
+  font: 600 12.5px/1 var(--zh); color: var(--ink);
+}
+details.notes > summary::-webkit-details-marker, details.craft > summary::-webkit-details-marker { display: none; }
+details.notes > summary::before, details.craft > summary::before {
+  content: "▸"; font-size: 8px; color: var(--accent); transition: transform .2s ease;
+}
+details[open] > summary::before { transform: rotate(90deg); }
+details.notes > summary em, details.craft > summary em {
+  font-style: normal; font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: auto;
+}
+details .inner {
+  padding: 2px 18px 16px; border-top: 1px solid var(--line-soft);
+  font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.95; color: var(--ink-soft);
+}
+details .inner > :first-child { margin-top: 12px; }
+details .inner strong { color: var(--ink); }
+details .inner ol, details .inner ul { padding-left: 20px; }
+details .inner li { margin-bottom: 7px; }
+details .inner blockquote { font-size: .95em; }
+
+/* ---------- 行内词注 ---------- */
+
+.gloss {
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 50%, transparent);
+  cursor: pointer; position: relative; transition: background .15s ease;
+}
+.gloss:hover { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius: 2px; }
+.gloss.saved { border-bottom-style: solid; border-bottom-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+.gloss::after {
+  content: attr(data-tip);
+  position: absolute; left: 50%; bottom: 138%; transform: translateX(-50%) translateY(4px);
+  background: var(--ink); color: var(--paper);
+  font: 400 11.5px/1.5 var(--zh); padding: 6px 9px; border-radius: 6px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: all .16s ease; z-index: 30;
+  box-shadow: var(--shadow);
+}
+.gloss:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ---------- 分屏讲解 ---------- */
+
+.companion { display: none; }
+
+@container (min-width: 780px) {
+  body[data-split="on"] .scenes-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0 44px; align-items: start;
+  }
+  body[data-split="on"] .companion {
+    display: block; position: sticky; top: 74px;
+    max-height: calc(100vh - 96px); overflow-y: auto;
+    border-left: 1px solid var(--line);
+    padding: 2px 4px 20px 24px;
+    scrollbar-width: thin;
+  }
+  body[data-split="on"] details.notes:not(.answers),
+  body[data-split="on"] details.craft { display: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] { max-width: none; }
+  body[data-split="on"] .sec[data-kind="scenes"] > *:not(.scenes-grid) {
+    max-width: 700px; margin-left: auto; margin-right: auto;
+  }
+}
+body[data-split="on"] details.notes,
+body[data-split="on"] details.craft { display: none; }
+
+.cp { padding: 16px 18px 20px; }
+.cp-head {
+  display: flex; align-items: center; gap: 8px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft); margin-bottom: 12px;
+  font: 600 13px/1.4 var(--zh);
+}
+.cp-head .tag {
+  font: 600 9.5px/1 var(--zh); letter-spacing: .08em; color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  padding: 3px 6px; border-radius: 4px; flex: none;
+}
+.cp-sec { margin-bottom: 18px; }
+.cp-sec h4 {
+  margin: 0 0 6px; font: 600 11px/1 var(--zh); letter-spacing: .12em;
+  color: var(--accent); text-transform: uppercase;
+}
+.cp-inner { font-family: var(--zhb); font-size: 13.5px; line-height: 1.95; color: var(--ink-soft); }
+.cp-inner p { margin: 0 0 10px; }
+.cp-inner strong { color: var(--ink); }
+.cp-inner ul, .cp-inner ol { padding-left: 18px; margin: 0 0 10px; }
+.cp-inner li { margin-bottom: 6px; }
+.cp-inner blockquote { font-size: 13px; margin: 0 0 10px; }
+
+body[data-notes="off"] .cp-sec[data-kind="notes"] { display: none; }
+body[data-craft="off"] .cp-sec[data-kind="craft"] { display: none; }
+
+/* ---------- 表格 ---------- */
+
+.tbl-wrap { overflow-x: auto; margin: 16px 0 20px; }
+table.gen {
+  width: 100%; border-collapse: collapse; font-size: 13px; background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
+}
+table.gen th {
+  text-align: left; padding: 9px 13px; background: var(--paper-2);
+  font: 600 11.5px/1.5 var(--zh); color: var(--ink); border-bottom: 1px solid var(--line);
+}
+table.gen td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); color: var(--ink-soft); vertical-align: top; }
+table.gen tr:last-child td { border-bottom: 0; }
+table.gen tr:hover td { background: var(--paper-2); }
+
+a.ref { text-decoration: none; color: var(--accent); font-weight: 600; padding: 0 1px; border-radius: 3px; }
+a.ref:hover { background: var(--accent-soft); }
+
+hr { border: 0; border-top: 1px solid var(--line-soft); margin: 30px 0; }
+.sec[data-kind="scenes"] hr, .sec[data-kind="craft"] hr { display: none; }
+
+/* ---------- 显示开关 ---------- */
+
+body[data-trans="off"] .trans { display: none; }
+body[data-words="off"] .anno[data-kind="w"] { display: none; }
+body[data-sents="off"] .anno[data-kind="s"] { display: none; }
+body[data-words="off"][data-sents="off"] .chipbar { display: none; }
+body[data-notes="off"] details.notes:not(.answers) { display: none; }
+body[data-craft="off"] details.craft { display: none; }
+
+
+/* ---------- 小测 / 生词本 ---------- */
+
+
+.fab:hover { filter: brightness(1.06); }
+
+.modal { position: fixed; inset: 0; z-index: 60; display: none; background: rgba(18, 15, 11, .48); backdrop-filter: blur(3px); }
+.modal.open { display: grid; place-items: center; padding: 18px; }
+.sheet {
+  width: min(540px, 100%); max-height: 84vh; overflow-y: auto; background: var(--card);
+  border-radius: 14px; box-shadow: var(--shadow); padding: 22px 24px; color: var(--ink);
+}
+.sheet h3 { margin: 0 0 4px; font-size: 17px; }
+.sheet .hint { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+.q { margin-bottom: 16px; }
+.q .w { font: 600 15px/1.5 var(--mono); color: var(--accent); }
+.q .opts { display: grid; gap: 6px; margin-top: 8px; }
+.q .opt {
+  text-align: left; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--paper); color: var(--ink-soft); font: 400 13px/1.6 var(--zh); cursor: pointer;
+}
+.q .opt:hover { border-color: var(--muted); }
+.q .opt.right { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+.q .opt.wrong { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.q .fb { font-size: 12px; color: var(--muted); margin-top: 5px; min-height: 16px; }
+.quiz-foot { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.quiz-foot .score { font-size: 12.5px; color: var(--muted); margin-right: auto; }
+
+.wb-list { display: grid; gap: 6px; }
+.wb-item {
+  display: flex; align-items: baseline; gap: 10px; padding: 8px 10px;
+  border: 1px solid var(--line); border-radius: 8px; text-decoration: none; color: var(--ink-soft);
+}
+.wb-item:hover { border-color: var(--accent); }
+.wb-item b { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+.wb-item span { font-size: 12px; color: var(--muted); }
+.wb-item em { margin-left: auto; font-style: normal; font-size: 11px; color: var(--muted); }
+.wb-empty { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+.toast {
+  position: fixed; left: 50%; bottom: 84px; transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--paper); font: 500 12.5px/1 var(--zh);
+  padding: 9px 14px; border-radius: 8px; opacity: 0; pointer-events: none;
+  transition: all .22s ease; z-index: 70;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- 写作区 ---------- */
+
+.writing {
+  border: 1px solid var(--line); border-radius: 12px; background: var(--card);
+  padding: 20px 22px; margin-top: 30px;
+}
+.writing h3 { margin: 0 0 4px; font-size: 15px; }
+.writing .hint { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+.writing textarea {
+  width: 100%; min-height: 180px; resize: vertical; padding: 13px 15px;
+  border: 1px solid var(--line); border-radius: 9px; background: var(--paper);
+  color: var(--ink); font: 400 14.5px/1.9 var(--zhb); outline: none;
+}
+.writing textarea:focus { border-color: var(--accent); }
+.writing .row { display: flex; align-items: center; gap: 10px; margin-top: 9px; font-size: 12px; color: var(--muted); }
+.writing .row .spacer { margin-left: auto; }
+
+/* ---------- 首页 ---------- */
+
+.home { max-width: none; margin: 0; padding: 26px 0 60px; }
+.home h1 { font: 600 calc(38px * var(--fs))/1.28 var(--title); margin: 0 0 10px; letter-spacing: -.01em; }
+.home .lead { font-size: 14.5px; color: var(--muted); margin-bottom: 30px; line-height: 1.9; }
+.stats { display: flex; gap: 40px; margin: 0 0 40px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.stat b { display: block; font: 600 26px/1.2 var(--title); color: var(--accent); }
+.stat span { font-size: 11.5px; color: var(--muted); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 9px; }
+.cell {
+  aspect-ratio: 1; display: grid; place-items: center; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--card); color: var(--muted);
+  font: 500 12.5px/1 var(--mono); text-decoration: none; transition: all .16s ease;
+}
+a.cell { color: var(--ink); font-weight: 600; border-color: color-mix(in srgb, var(--accent) 30%, var(--line)); background: color-mix(in srgb, var(--accent) 5%, var(--card)); }
+a.cell:hover { background: var(--accent); color: #fff; border-color: var(--accent); transform: translateY(-2px); }
+.cell.done { background: var(--accent); border-color: var(--accent); color: #fff; }
+.cell.todo { opacity: .5; }
+
+.home .links { display: flex; gap: 12px; margin-top: 36px; }
+.home .links a {
+  flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 15px 17px;
+  text-decoration: none; color: var(--ink); background: var(--card); transition: all .16s ease;
+}
+.home .links a:hover { border-color: var(--accent); transform: translateY(-2px); }
+.home .links b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.home .links span { font-size: 11.5px; color: var(--muted); }
+
+/* ---------- 技法页 ---------- */
+
+.doc-main { max-width: none; margin: 0; padding: 6px 0 40px; }
+.doc-main h2 {
+  font: 600 calc(19px * var(--fs))/1.4 var(--zh); margin: 42px 0 12px;
+  padding-bottom: 9px; border-bottom: 1px solid var(--line);
+}
+.doc-main h3 { margin-top: 30px; }
+.search {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px;
+  background: var(--card); color: var(--ink); font: 400 13.5px/1.4 var(--zh); outline: none; margin-bottom: 6px;
+}
+.search:focus { border-color: var(--accent); }
+
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 1179px) {
+  body[data-split="on"] .layout { padding-right: 0; }
+}
+
+@media (max-width: 980px) {
+  .layout { grid-template-columns: 1fr; }
+  aside.side {
+    position: fixed; left: 0; top: 58px; bottom: 0; width: 284px; z-index: 35;
+    transform: translateX(-102%); transition: transform .24s ease;
+    background: var(--paper); box-shadow: var(--shadow);
+  }
+  aside.side.open { transform: none; }
+  .menu-btn { display: grid; }
+  main { padding: 26px 20px 110px; }
+  .unit .num { position: static; display: block; width: auto; text-align: left; margin-bottom: 4px; }
+  .en { font-size: calc(17px * var(--fs)); }
+  .speak { display: none; }
+  h1.doc-title { font-size: calc(24px * var(--fs)); }
+  .crumb { display: none; }
+  .settings { width: min(300px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 560px) {
+  .home { padding: 38px 18px 80px; }
+  .grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+  .tbl-wrap { margin-left: -4px; margin-right: -4px; }
+}
+
+@media print {
+  .top, aside.side, .fab, .writing, .modal, .settings, .companion, .toast { display: none !important; }
+  .layout { display: block; }
+  main { max-width: none; padding: 0; }
+  details { break-inside: avoid; }
+  details .inner { display: block; }
+}
+
+/* 非章节页隐藏与章节无关的开关 */
+body:not([data-page="chapter"]) .settings [data-only="chapter"] { display: none; }
+
+/* 章末翻页 */
+.chnav {
+  display: flex; justify-content: space-between; gap: 12px;
+  margin: 46px auto 0; padding-top: 18px; border-top: 1px solid var(--line);
+  font-size: 13px;
+}
+.chnav a { text-decoration: none; color: var(--accent); }
+.chnav span.off { color: var(--muted); opacity: .5; }
+
+/* 侧栏导航 */
+.side-nav { display: flex; gap: 8px; margin: 10px 0 12px; font-size: 12.5px; }
+.side-nav a, .side-nav .off {
+  flex: 1; text-align: center; padding: 6px 8px; border-radius: 7px;
+  border: 1px solid var(--line); background: var(--card); text-decoration: none; color: var(--ink-soft);
+}
+.side-nav a:hover { border-color: var(--accent); color: var(--accent); }
+.side-nav .off { border-style: dashed; color: var(--muted); opacity: .5; }
+
+.quick-links { display: grid; gap: 2px; font-size: 12.5px; }
+.quick-links a { color: var(--ink-soft); text-decoration: none; padding: 5px 8px; border-radius: 6px; }
+.quick-links a:hover { background: var(--paper-2); color: var(--accent); }
+
+.sec[data-kind="write"] .writing { margin-top: 0; }
+
+
+/* ---------- 头部：篇幅 / 问题 ---------- */
+
+.doc-meta { font-size: 11.5px; color: var(--muted); letter-spacing: .04em; margin: 2px 0 18px; }
+
+.questions {
+  border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  background: var(--card); border-radius: 0 12px 12px 0;
+  padding: 18px 22px 14px; margin: 0 0 26px;
+}
+.questions blockquote { border: 0; padding: 0; margin: 0; }
+.questions p { font-family: var(--zhb); font-size: calc(15px * var(--fs)); line-height: 1.95; margin: 0 0 8px; color: var(--ink); }
+.questions p:first-child { font: 600 12px/1 var(--zh); letter-spacing: .06em; color: var(--accent); margin-bottom: 12px; }
+.questions p:last-child { margin-bottom: 0; }
+
+details.qa { border: 1px solid var(--line); border-radius: 10px; background: var(--card); margin: 14px 0 6px; }
+details.qa > summary {
+  list-style: none; cursor: pointer; padding: 10px 16px;
+  font: 600 12.5px/1.6 var(--zh); color: var(--accent);
+}
+details.qa > summary::-webkit-details-marker { display: none; }
+details.qa > summary::before { content: "▸"; font-size: 9px; margin-right: 6px; display: inline-block; transition: transform .2s ease; }
+details.qa[open] > summary::before { transform: rotate(90deg); }
+details.qa .inner { padding: 4px 18px 14px; border-top: 1px solid var(--line-soft); font-family: var(--zhb); font-size: calc(14.5px * var(--fs)); line-height: 1.9; color: var(--ink-soft); }
+details.qa .inner ul { padding-left: 18px; margin: 8px 0 0; }
+details.qa .inner li { margin-bottom: 6px; }
+
+/* ---------- 移动端：两侧变抽屉 ---------- */
+
+@media (max-width: 1080px) {
+  .app { display: block; }
+  .nav-left, .nav-right {
+    position: fixed; top: 58px; bottom: 0; z-index: 45;
+    width: min(300px, 86vw); height: auto; background: var(--paper); box-shadow: var(--shadow);
+    display: none;
+  }
+  .nav-left { left: 0; border-right: 1px solid var(--line); }
+  .nav-right { right: 0; border-left: 1px solid var(--line); }
+  body:not(.no-left) .nav-left { display: block; }
+  body:not(.no-right) .nav-right { display: block; }
+  main { padding: 24px 18px 100px; }
+  .ch-list { max-height: calc(100vh - 330px); overflow-y: auto; }
+}
+
+/* ---------- 移动端：抽屉、遮罩、表格 ---------- */
+
+.scrim { display: none; }
+
+/* 词注提示：触屏没有 hover，直接关掉，避免长提示撑宽页面 */
+@media (hover: none), (max-width: 700px) {
+  .gloss::after { display: none; }
+}
+
+@media (max-width: 1080px) {
+  .scrim {
+    display: none; position: fixed; inset: 58px 0 0; z-index: 40;
+    background: rgba(18, 15, 11, .32);
+    -webkit-backdrop-filter: blur(1px); backdrop-filter: blur(1px);
+  }
+  body:not(.no-left) .scrim, body:not(.no-right) .scrim { display: block; }
+
+  .nav-left, .nav-right { max-height: calc(100vh - 58px); overflow-y: auto; }
+  .ch-list { max-height: none; }
+
+  main { padding: 22px 16px 96px; }
+  .doc-main { padding: 6px 0 40px; }
+
+  /* 表格：宁可横向滚动，也不挤成一条或截断 */
+  .tbl-wrap { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .tbl-wrap table.gen { min-width: 560px; }
+  .anno-body { overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; }
+  .anno-body .wordtable { min-width: 470px; }
+  .cp-inner table { min-width: 470px; }
+
+  .questions { padding: 14px 16px 10px; }
+  .writing { padding: 16px; }
+  .settings { right: 10px; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉打开时锁住背景滚动 */
+  body:not(.no-left), body:not(.no-right) { overflow: hidden; }
+}
+
+/* ---------- 移动端：工具栏置底 / 全屏抽屉 / 设置底部弹层 ---------- */
+
+.panel-bar { display: none; }
+
+@media (max-width: 1080px) {
+  /* 顶栏变底栏 */
+  .top {
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding: 0 14px env(safe-area-inset-bottom);
+    border-bottom: 0; border-top: 1px solid var(--line);
+    background: var(--paper);
+    box-shadow: 0 -10px 24px -16px rgba(0,0,0,.18);
+    justify-content: space-between;
+  }
+  .top .crumb { display: none; }
+  .top .tools { margin-left: 0; gap: 10px; }
+  .icon-btn { height: 38px; min-width: 42px; font-size: 14px; }
+  .readbar { top: -1px; bottom: auto; }
+
+  /* 正文给底栏留出空间 */
+  main { padding: 22px 16px calc(104px + env(safe-area-inset-bottom)); }
+  .writing { margin-bottom: 8px; }
+
+  /* 侧栏：全屏弹层 */
+  .nav-left, .nav-right {
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    width: 100%; height: auto; max-height: none; border: 0; border-radius: 0;
+    z-index: 55; padding-bottom: 24px;
+  }
+  .scrim { inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0; z-index: 50; }
+
+  .panel-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 2;
+    padding: 12px 18px; margin: -20px -14px 14px;
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    font: 600 12px/1 var(--zh); letter-spacing: .1em; color: var(--muted);
+  }
+  .panel-close {
+    width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--ink); font-size: 17px; line-height: 1; cursor: pointer;
+  }
+  .nav-left, .nav-right { padding-left: 18px; padding-right: 18px; }
+  .nav-left .panel-bar { margin-left: -18px; margin-right: -18px; }
+  .nav-right .rn-head {
+    position: sticky; top: 0; z-index: 2; background: var(--paper);
+    margin: -18px -18px 10px; padding: 14px 18px 10px;
+  }
+
+  /* 设置：底部弹层 */
+  .settings {
+    position: fixed; left: 8px; right: 8px; bottom: calc(64px + env(safe-area-inset-bottom));
+    top: auto; width: auto; max-height: calc(100vh - 140px); overflow-y: auto;
+    border-radius: 16px; padding: 16px 18px 14px;
+    z-index: 60;
+  }
+  .settings .sw { padding: 9px 0; }
+  .set-row button { padding: 7px 14px; }
+
+  /* 弹层与提示避开底栏 */
+  .modal { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
+  .sheet { max-height: calc(100vh - 150px); }
+  .toast { bottom: calc(78px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 1080px) {
+  /* 全屏抽屉：让顶部条与内容对齐 */
+  .nav-left, .nav-right { padding-top: 0; }
+  .nav-left .panel-bar { margin: 0 -18px 14px; }
+  .nav-right .rn-head { margin: 0 -18px 10px; }
+
+  /* 设置弹层的遮罩 */
+  body.settings-open .scrim { display: block; z-index: 55; }
+  .settings { z-index: 60; }
+  body.settings-open { overflow: hidden; }
+}
+
+@media (max-width: 1080px) {
+  /* 抽屉底部渐隐，避免最后一行贴着工具栏 */
+  .nav-left, .nav-right {
+    -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 16px), transparent);
+    padding-bottom: 28px;
+  }
+}
+</style>
+</head>
+<body class="" data-page="craft">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb"><b>人性的枷锁</b> · 技法手册</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+<aside class="nav-left" id="navLeft">
+  <div class="panel-bar"><span>导航</span><button class="panel-close" type="button" data-close="left" aria-label="关闭">×</button></div>
+  <div class="brand">Of Human Bondage</div>
+  <div class="site-name">人性的枷锁 · 精读</div>
+  <nav class="gl-links">
+    <a class="" href="index.html">总览<span>122 章</span></a>
+    <a class="" href="reading.html">阅读方法手册<span>初读</span></a>
+    <a class="cur" href="craft.html">写作技法手册<span>21 条</span></a>
+  </nav>
+  
+  <div class="side-label ch-label">章节</div>
+  <ol class="ch-list"><li><a href="ch01.html"><span class="n">01</span>第 1 章</a></li><li><a href="ch02.html"><span class="n">02</span>第 2 章</a></li><li><a href="ch03.html"><span class="n">03</span>第 3 章</a></li><li><a href="ch04.html"><span class="n">04</span>第 4 章</a></li><li><a href="ch05.html"><span class="n">05</span>第 5 章</a></li><li><a href="review-01-05.html"><span class="n"></span>复习 · 1–5</a></li><li><a href="ch06.html"><span class="n">06</span>第 6 章</a></li><li><a href="ch07.html"><span class="n">07</span>第 7 章</a></li><li><a href="ch08.html"><span class="n">08</span>第 8 章</a></li><li><a href="ch09.html"><span class="n">09</span>第 9 章</a></li><li><a href="ch10.html"><span class="n">10</span>第 10 章</a></li><li><span class="off"><span class="n">11</span>第 11 章</span></li><li><span class="off"><span class="n">12</span>第 12 章</span></li><li><span class="off"><span class="n">13</span>第 13 章</span></li><li><span class="off"><span class="n">14</span>第 14 章</span></li><li><span class="off"><span class="n">15</span>第 15 章</span></li><li><span class="off"><span class="n">16</span>第 16 章</span></li><li><span class="off"><span class="n">17</span>第 17 章</span></li><li><span class="off"><span class="n">18</span>第 18 章</span></li><li><span class="off"><span class="n">19</span>第 19 章</span></li><li><span class="off"><span class="n">20</span>第 20 章</span></li><li><span class="off"><span class="n">21</span>第 21 章</span></li><li><span class="off"><span class="n">22</span>第 22 章</span></li><li><span class="off"><span class="n">23</span>第 23 章</span></li><li><span class="off"><span class="n">24</span>第 24 章</span></li><li><span class="off"><span class="n">25</span>第 25 章</span></li><li><span class="off"><span class="n">26</span>第 26 章</span></li><li><span class="off"><span class="n">27</span>第 27 章</span></li><li><span class="off"><span class="n">28</span>第 28 章</span></li><li><span class="off"><span class="n">29</span>第 29 章</span></li><li><span class="off"><span class="n">30</span>第 30 章</span></li><li><span class="off"><span class="n">31</span>第 31 章</span></li><li><span class="off"><span class="n">32</span>第 32 章</span></li><li><span class="off"><span class="n">33</span>第 33 章</span></li><li><span class="off"><span class="n">34</span>第 34 章</span></li><li><span class="off"><span class="n">35</span>第 35 章</span></li><li><span class="off"><span class="n">36</span>第 36 章</span></li><li><span class="off"><span class="n">37</span>第 37 章</span></li><li><span class="off"><span class="n">38</span>第 38 章</span></li><li><span class="off"><span class="n">39</span>第 39 章</span></li><li><span class="off"><span class="n">40</span>第 40 章</span></li><li><span class="off"><span class="n">41</span>第 41 章</span></li><li><span class="off"><span class="n">42</span>第 42 章</span></li><li><span class="off"><span class="n">43</span>第 43 章</span></li><li><span class="off"><span class="n">44</span>第 44 章</span></li><li><span class="off"><span class="n">45</span>第 45 章</span></li><li><span class="off"><span class="n">46</span>第 46 章</span></li><li><span class="off"><span class="n">47</span>第 47 章</span></li><li><span class="off"><span class="n">48</span>第 48 章</span></li><li><span class="off"><span class="n">49</span>第 49 章</span></li><li><span class="off"><span class="n">50</span>第 50 章</span></li><li><span class="off"><span class="n">51</span>第 51 章</span></li><li><span class="off"><span class="n">52</span>第 52 章</span></li><li><span class="off"><span class="n">53</span>第 53 章</span></li><li><span class="off"><span class="n">54</span>第 54 章</span></li><li><span class="off"><span class="n">55</span>第 55 章</span></li><li><span class="off"><span class="n">56</span>第 56 章</span></li><li><span class="off"><span class="n">57</span>第 57 章</span></li><li><span class="off"><span class="n">58</span>第 58 章</span></li><li><span class="off"><span class="n">59</span>第 59 章</span></li><li><span class="off"><span class="n">60</span>第 60 章</span></li><li><span class="off"><span class="n">61</span>第 61 章</span></li><li><span class="off"><span class="n">62</span>第 62 章</span></li><li><span class="off"><span class="n">63</span>第 63 章</span></li><li><span class="off"><span class="n">64</span>第 64 章</span></li><li><span class="off"><span class="n">65</span>第 65 章</span></li><li><span class="off"><span class="n">66</span>第 66 章</span></li><li><span class="off"><span class="n">67</span>第 67 章</span></li><li><span class="off"><span class="n">68</span>第 68 章</span></li><li><span class="off"><span class="n">69</span>第 69 章</span></li><li><span class="off"><span class="n">70</span>第 70 章</span></li><li><span class="off"><span class="n">71</span>第 71 章</span></li><li><span class="off"><span class="n">72</span>第 72 章</span></li><li><span class="off"><span class="n">73</span>第 73 章</span></li><li><span class="off"><span class="n">74</span>第 74 章</span></li><li><span class="off"><span class="n">75</span>第 75 章</span></li><li><span class="off"><span class="n">76</span>第 76 章</span></li><li><span class="off"><span class="n">77</span>第 77 章</span></li><li><span class="off"><span class="n">78</span>第 78 章</span></li><li><span class="off"><span class="n">79</span>第 79 章</span></li><li><span class="off"><span class="n">80</span>第 80 章</span></li><li><span class="off"><span class="n">81</span>第 81 章</span></li><li><span class="off"><span class="n">82</span>第 82 章</span></li><li><span class="off"><span class="n">83</span>第 83 章</span></li><li><span class="off"><span class="n">84</span>第 84 章</span></li><li><span class="off"><span class="n">85</span>第 85 章</span></li><li><span class="off"><span class="n">86</span>第 86 章</span></li><li><span class="off"><span class="n">87</span>第 87 章</span></li><li><span class="off"><span class="n">88</span>第 88 章</span></li><li><span class="off"><span class="n">89</span>第 89 章</span></li><li><span class="off"><span class="n">90</span>第 90 章</span></li><li><span class="off"><span class="n">91</span>第 91 章</span></li><li><span class="off"><span class="n">92</span>第 92 章</span></li><li><span class="off"><span class="n">93</span>第 93 章</span></li><li><span class="off"><span class="n">94</span>第 94 章</span></li><li><span class="off"><span class="n">95</span>第 95 章</span></li><li><span class="off"><span class="n">96</span>第 96 章</span></li><li><span class="off"><span class="n">97</span>第 97 章</span></li><li><span class="off"><span class="n">98</span>第 98 章</span></li><li><span class="off"><span class="n">99</span>第 99 章</span></li><li><span class="off"><span class="n">100</span>第 100 章</span></li><li><span class="off"><span class="n">101</span>第 101 章</span></li><li><span class="off"><span class="n">102</span>第 102 章</span></li><li><span class="off"><span class="n">103</span>第 103 章</span></li><li><span class="off"><span class="n">104</span>第 104 章</span></li><li><span class="off"><span class="n">105</span>第 105 章</span></li><li><span class="off"><span class="n">106</span>第 106 章</span></li><li><span class="off"><span class="n">107</span>第 107 章</span></li><li><span class="off"><span class="n">108</span>第 108 章</span></li><li><span class="off"><span class="n">109</span>第 109 章</span></li><li><span class="off"><span class="n">110</span>第 110 章</span></li><li><span class="off"><span class="n">111</span>第 111 章</span></li><li><span class="off"><span class="n">112</span>第 112 章</span></li><li><span class="off"><span class="n">113</span>第 113 章</span></li><li><span class="off"><span class="n">114</span>第 114 章</span></li><li><span class="off"><span class="n">115</span>第 115 章</span></li><li><span class="off"><span class="n">116</span>第 116 章</span></li><li><span class="off"><span class="n">117</span>第 117 章</span></li><li><span class="off"><span class="n">118</span>第 118 章</span></li><li><span class="off"><span class="n">119</span>第 119 章</span></li><li><span class="off"><span class="n">120</span>第 120 章</span></li><li><span class="off"><span class="n">121</span>第 121 章</span></li><li><span class="off"><span class="n">122</span>第 122 章</span></li></ol>
+</aside>
+<main>
+<div class="doc-main">
+<header class="doc-head">
+  <h1 class="doc-title">写作技法手册</h1>
+  <div class="doc-sub">技法索引 · 当索引用，别当教材读；真正的教学在每章笔记的「写法」里。</div>
+  <input class="search" type="search" placeholder="搜索关键词…">
+</header>
+<div class="sec"><p><strong>配套</strong>：Of Human Bondage 英读计划。每章一份精读笔记，可迁移的技法在这里累积。<strong>用法</strong>：一页纸打出来贴墙上；写的时候只看规则；写完只看自检清单。<strong>注意</strong>：这里只是<strong>索引</strong>，不是教材。术语给东西起个名字，方便你记住、方便我们指认；真要学会，得回到每章笔记的「写法」和第四节看示范——看我怎么写坏、怎么改、为什么那样选。光背这张表，写不出来。</p>
+<hr>
+<h2 id="h-1">一、一页纸</h2>
+<h3 id="h-2">三个原理（背下来，比记技法有用）</h3>
+<ol><li><strong>具体打败抽象。</strong>“她很难过”谁都能写；“她数了五只脚趾”只有这一对母子会有。</li><li><strong>暗示打败说明。</strong>说破的那一秒，读者的想象就停了。</li><li><strong>让读者干活。</strong>留一步给他走，走完了他就站在你这边。</li></ol>
+<h3 id="h-3">一句话总纲</h3>
+<p>写作不是“把感受写出来”，是<strong>安排读者先看见什么、后看见什么、最后自己想到什么</strong>。</p>
+<p>第二章补一句：<strong>还要安排——谁、在什么时候、隔多远、用哪个词——把真话说出来。</strong> 坏消息从来不是一次说完的，最重的话也很少由当事人说出口。</p>
+<h3 id="h-4">五步流水线（写任何一场戏都能套）</h3>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>步</th><th>问自己</th></tr></thead><tbody><tr><td>① 定视角</td><td>这场戏用谁的眼睛？他站多高？看得见什么？</td></tr><tr><td>② 定信息</td><td>读者最后该明白什么？此刻知道几分？</td></tr><tr><td>③ 找证据</td><td>他能看见、听见、摸到的五样东西是什么？</td></tr><tr><td>④ 排顺序</td><td>哪条最狠？藏在哪儿？</td></tr><tr><td>⑤ 定收尾</td><td>最后一个动作是什么？</td></tr></tbody></table></div>
+<h3 id="h-5">零件与术语</h3>
+<h4>第 1 章（15 条）</h4>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>术语</th><th>白话</th><th>规则</th></tr></thead><tbody><tr><td>冷开场 in medias res</td><td>第一段别自我介绍</td><td>环境 + 习惯动作 + 一件“不对”的事</td></tr><tr><td>移情 pathetic fallacy</td><td>让天气替人说话</td><td>只暗示，不点破</td></tr><tr><td>限制视角 limited point of view</td><td>只写他能看见的</td><td>站哪、多高、看得见什么</td></tr><tr><td>感官锚点 sensory anchoring</td><td>写温情靠布料和温度</td><td>不用形容词</td></tr><tr><td>并置 juxtaposition</td><td>好事坏事同框</td><td>删掉“但是”</td></tr><tr><td>客观对应物 objective correlative</td><td>别写心情，写动作</td><td>手和眼的路径</td></tr><tr><td>动作分镜 beat by beat</td><td>一句一个动作</td><td>大动作拆小动作</td></tr><tr><td>短句刹车 sentence rhythm</td><td>长句后给一句短的</td><td>紧张并列，宣泄刹车</td></tr><tr><td>延迟揭示 delayed disclosure</td><td>别报答案，给线索</td><td>最狠的藏最后</td></tr><tr><td>幕后处理 off-stage action</td><td>最激烈的不演</td><td>只写目击者反应</td></tr><tr><td>省略 ellipsis</td><td>答得比问的少</td><td>关键处闭嘴</td></tr><tr><td>潜台词 subtext</td><td>难过的人聊小事</td><td>谈物件、谈日程</td></tr><tr><td>场景调度 staging</td><td>给秘密一个位置</td><td>楼梯、屏风、门</td></tr><tr><td>称呼 forms of address</td><td>换称呼就是换关系</td><td>少爷、医生、病人</td></tr><tr><td>降调收尾 understatement</td><td>最后一句别解释</td><td>只剩动作或物件</td></tr></tbody></table></div>
+<h4>第 2 章新增（14 条）：怎么写“说不出口的话”</h4>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>术语</th><th>白话</th><th>规则</th></tr></thead><tbody><tr><td>时间跳接 time jump</td><td>一句话跳掉一周</td><td>上一场停在最高点，下一场一句时间状语落地</td></tr><tr><td>清单式布景 catalogue</td><td>一样一样点数</td><td>别形容豪华，数三样东西，报数量</td></tr><tr><td>以玩写人 characterization through play</td><td>看他怎么玩就知道他是谁</td><td>写他一个人时在干什么</td></tr><tr><td>时代锚点 period detail</td><td>一件衣服定住年份</td><td>三样只有那几年才有的东西</td></tr><tr><td>期待落空 withheld expectation</td><td>准备好的话没用上</td><td>让对方的反应不在剧本里</td></tr><tr><td>戏剧反讽 dramatic irony</td><td>读者比人物多知道一点</td><td>给一条人物读不懂的线索，别解释</td></tr><tr><td>委婉语阶梯 euphemism ladder</td><td>一级一级往下说</td><td>每级换更软的词，人越说越难受</td></tr><tr><td>视角借宿 brief POV shift</td><td>借别人的脑子说一句话</td><td>一次就够，借完立刻还</td></tr><tr><td>复沓推进 escalation</td><td>同一个意思说三遍</td><td>中间夹停顿、反问、沉默</td></tr><tr><td>声音先到 sound cue</td><td>先听见，再看见</td><td>进门前先给一段听来的声音</td></tr><tr><td>入场镜头 entrance beat</td><td>一个动词写走路</td><td>最怕被看见的地方，放在众人抬头那一秒</td></tr><tr><td>混合动机 mixed motive</td><td>好人也有小算盘</td><td>体面的动机 + 不体面的，都不解释</td></tr><tr><td>偷听 overheard conversation</td><td>听见不该听的</td><td>门里的对话必须是对彼此说的</td></tr><tr><td>收在事务上 exit on business</td><td>最后一句说正事</td><td>交代地点、行程、东西</td></tr></tbody></table></div>
+<h4>第 3–4 章新增（10 条）：怎么用物件和空间写人</h4>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>术语</th><th>白话</th><th>规则</th></tr></thead><tbody><tr><td>物件先行 object before entrance</td><td>人没到，东西先到</td><td>一只没赶上的花圈、一本垫椅子的《圣经》</td></tr><tr><td>嘴上与心里 double track</td><td>说的和想的是两套</td><td>体面话 + 不体面的内心，中间不解释</td></tr><tr><td>具体数字 exact number</td><td>一个数顶一段形容词</td><td>两千镑、三百镑、一个鸡蛋</td></tr><tr><td>换镜头 cut to the ledger</td><td>哭完算账</td><td>情绪戏后切到别人的俗事</td></tr><tr><td>用远方止痛 the faraway place</td><td>不讲道理，讲别处</td><td>一头刚下崽的牛</td></tr><tr><td>气味记忆 smell as trigger</td><td>怀念先闻后想</td><td>香水、薰衣草、樟脑</td></tr><tr><td>静止收尾 stillness</td><td>最后只写姿势</td><td>“他一动不动地躺着。”</td></tr><tr><td>用门写阶层 doors as hierarchy</td><td>谁走哪道门</td><td>正门、侧门、后门</td></tr><tr><td>绰号里的等级 nicknames as order</td><td>外号说出关系</td><td>丈夫椅、妻子椅、牧师棍</td></tr><tr><td>一只火的经济学 one fire</td><td>写穷写房间</td><td>冬天两个人挤一间屋</td></tr></tbody></table></div>
+<h4>第 2 章复用：同一批零件，形状变了</h4>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>术语</th><th>第 1 章</th><th>第 2 章</th></tr></thead><tbody><tr><td>限制视角</td><td>躺着，只能感觉</td><td>趴着，能听能造；主动权变了</td></tr><tr><td>延迟揭示 → 迟到的理解</td><td>压信息：毛巾下的死婴</td><td>压理解：黑裙子到㉙才被孩子看懂</td></tr><tr><td>延迟揭示 → 词的落地</td><td>作者不肯说 die</td><td>大人背着孩子说 dead，正好被他听见</td></tr><tr><td>场景调度 → 门槛</td><td>屏风、楼梯</td><td>门、楼梯平台</td></tr><tr><td>并置</td><td>快乐与虚弱相邻</td><td>她哭，他拿着棍子等；享受被同情</td></tr><tr><td>降调收尾</td><td>医生摇头</td><td>“她告诉车夫地址”</td></tr></tbody></table></div>
+<h3 id="h-6">什么时候别用（边界）</h3>
+<p>默认展示，需要时告诉。这五种情况直接“说”更好：</p>
+<ul><li><strong>过渡</strong>：“三年过去了。”</li><li><strong>喜剧</strong>：包袱要节奏，绕弯子会死。</li><li><strong>类型小说</strong>：读者要速度。</li><li><strong>说明性信息</strong>：时代、职业、规则，该交代就交代。</li><li><strong>你确实想抒情时</strong>：满篇克制里偶尔一句“他难过极了”，会非常重——前提是全篇只此一处。</li></ul>
+<p>判断标准：<strong>读者会不会因此错过信息？</strong></p>
+<hr>
+<h2 id="h-7">二、读别的书时，用三问</h2>
+<ol><li>这段让我知道了什么？（信息）</li><li>作者是怎么让我知道的？（手段）</li><li>如果换成“直接告诉我”，会损失什么？（边界）</li></ol>
+<p>第三问最重要。答得出来，技法就是你的；答不出来，你只是觉得它好看。</p>
+<hr>
+<h2 id="h-8">三、技法累积表</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>#</th><th>技法</th><th>规则</th><th>出处</th><th>状态</th></tr></thead><tbody><tr><td>1</td><td>冷开场</td><td>环境 + 习惯动作 + 一件不对的事，三句之内不解释</td><td>第 1 章</td><td>待练</td></tr><tr><td>2</td><td>视角</td><td>先答“站哪、多高、看得见什么、听不见什么”</td><td>第 1 章</td><td>待练</td></tr><tr><td>3</td><td>线索</td><td>结论只写给自己看，台上摆五个可观察的证据</td><td>第 1 章</td><td>待练</td></tr><tr><td>4</td><td>动作</td><td>划掉情绪词，只写手和眼的路径</td><td>第 1 章</td><td>待练</td></tr><tr><td>5</td><td>并置</td><td>相反事实相邻，删掉所有转折词</td><td>第 1 章</td><td>待练</td></tr><tr><td>6</td><td>对话</td><td>谈具体物件或日程，台词 ≤15 词</td><td>第 1 章</td><td>待练</td></tr><tr><td>7</td><td>收尾</td><td>删到只剩动作/物件/天气，且刚好还能拼出来</td><td>第 1 章</td><td>待练</td></tr><tr><td>8</td><td>时间跳接</td><td>上一场停在最高点，下一场一句时间状语落地</td><td>第 2 章</td><td>待练</td></tr><tr><td>9</td><td>清单式布景</td><td>别形容豪华，数三样东西，报数量</td><td>第 2 章</td><td>待练</td></tr><tr><td>10</td><td>以玩写人</td><td>看他一个人时在玩什么</td><td>第 2 章</td><td>待练</td></tr><tr><td>11</td><td>时代锚点</td><td>三样只有那几年才有的东西</td><td>第 2 章</td><td>待练</td></tr><tr><td>12</td><td>期待落空</td><td>让他背好台词，再让对方的反应不在剧本里</td><td>第 2 章</td><td>待练</td></tr><tr><td>13</td><td>戏剧反讽</td><td>给读者一条人物读不懂的线索，别解释</td><td>第 2 章</td><td>待练</td></tr><tr><td>14</td><td>委婉语阶梯</td><td>坏消息分三级，每级换更软的词</td><td>第 2 章</td><td>待练</td></tr><tr><td>15</td><td>视角借宿</td><td>一次，且只在人物给不出那句判断时借</td><td>第 2 章</td><td>待练</td></tr><tr><td>16</td><td>复沓推进</td><td>同一意思说三遍，中间夹停顿或反问</td><td>第 2 章</td><td>待练</td></tr><tr><td>17</td><td>声音先到</td><td>人物进门前，先给他一段听来的声音</td><td>第 2 章</td><td>待练</td></tr><tr><td>18</td><td>入场镜头</td><td>最怕被看见的地方，放在众人抬头那一秒，只写动作</td><td>第 2 章</td><td>待练</td></tr><tr><td>19</td><td>混合动机</td><td>体面的动机 + 不体面的动机，都不解释</td><td>第 2 章</td><td>待练</td></tr><tr><td>20</td><td>偷听</td><td>门里的对话必须是对彼此说的，不是对读者说的</td><td>第 2 章</td><td>待练</td></tr><tr><td>21</td><td>收在事务上</td><td>高潮后交代地点/行程/东西，别加感慨</td><td>第 2 章</td><td>待练</td></tr><tr><td>22</td><td>物件先行</td><td>人登场前，先给他身边的一件东西</td><td>第 3 章</td><td>待练</td></tr><tr><td>23</td><td>清单式出场</td><td>列五样看得见的东西，最后一样跟身份有关</td><td>第 3 章</td><td>待练</td></tr><tr><td>24</td><td>嘴上与心里</td><td>一句体面话 + 一段不体面的内心，中间不解释</td><td>第 3 章</td><td>待练</td></tr><tr><td>25</td><td>具体数字</td><td>写窘迫别用形容词，给一个数</td><td>第 3 章</td><td>待练</td></tr><tr><td>26</td><td>换镜头</td><td>情绪戏之后，切到另一个人正在做的俗事</td><td>第 3 章</td><td>待练</td></tr><tr><td>27</td><td>一件东西两种读法</td><td>同一物件，两个人各标一个价</td><td>第 3 章</td><td>待练</td></tr><tr><td>28</td><td>用远方止痛</td><td>不安慰“别哭”，给他一个别处的具体细节</td><td>第 3 章</td><td>待练</td></tr><tr><td>29</td><td>名词清单</td><td>写一个地方，列五样东西，不写“美”“穷”</td><td>第 3 章</td><td>待练</td></tr><tr><td>30</td><td>让孩子恢复</td><td>重头戏后让人物去做一件日常小事</td><td>第 3 章</td><td>待练</td></tr><tr><td>31</td><td>气味记忆</td><td>要写怀念，先找一种气味</td><td>第 3 章</td><td>待练</td></tr><tr><td>32</td><td>孩子的逻辑</td><td>让他用一个错误但自洽的理由否认事实</td><td>第 3 章</td><td>待练</td></tr><tr><td>33</td><td>静止收尾</td><td>大恸之后，最后一句只写姿势</td><td>第 3 章</td><td>待练</td></tr><tr><td>34</td><td>用门写阶层</td><td>谁走哪道门，先画动线</td><td>第 4 章</td><td>待练</td></tr><tr><td>35</td><td>第一句话写人</td><td>给人物一句最本能的话，别给自我介绍</td><td>第 4 章</td><td>待练</td></tr><tr><td>36</td><td>问候当情报</td><td>一句寒暄，同时泄露一个事实</td><td>第 4 章</td><td>待练</td></tr><tr><td>37</td><td>装修即信仰</td><td>写他家墙上挂什么、地上铺什么</td><td>第 4 章</td><td>待练</td></tr><tr><td>38</td><td>尺寸写地位</td><td>分给他的空间，就是他的位置</td><td>第 4 章</td><td>待练</td></tr><tr><td>39</td><td>提问式关心</td><td>不善表达的人，用问句关心别人</td><td>第 4 章</td><td>待练</td></tr><tr><td>40</td><td>绰号里的等级</td><td>给家里的东西起外号，让外号说关系</td><td>第 4 章</td><td>待练</td></tr><tr><td>41</td><td>一只火的经济学</td><td>写穷，写他们怎么用房间</td><td>第 4 章</td><td>待练</td></tr><tr><td>42</td><td>例外说明规矩</td><td>一条家规 + 它唯一的例外，以及例外的理由</td><td>第 4 章</td><td>待练</td></tr><tr><td>43</td><td>荒诞的冲突</td><td>一场关于“规矩”的小危机</td><td>第 4 章</td><td>待练</td></tr><tr><td>44</td><td>一句话写人</td><td>给人物一次“自我辩护”</td><td>第 4 章</td><td>待练</td></tr><tr><td>45</td><td>用钱写人</td><td>给他一张“记忆账单”：他记得住哪些价</td><td>第 5 章</td><td>待练</td></tr><tr><td>46</td><td>复述的一句话</td><td>让人物复述他并不理解的话，别解释</td><td>第 5 章</td><td>待练</td></tr><tr><td>47</td><td>动作清单</td><td>写硬撑，列七八个动作，一个一句</td><td>第 5 章</td><td>待练</td></tr></tbody></table></div>
+<blockquote><p>第二章复用了 6 条旧零件：限制视角、延迟揭示（两次，分别变成“迟到的理解”和“词的落地”）、场景调度（变成“门槛”）、并置、降调收尾。变形记在 <code>ch02-study-guide.md</code> 的 4.3 节。</p><p>同一手法再出现就标 <strong>复用</strong>，并记一句“这次它怎么变了形”——<strong>变形才是重点</strong>，原样搬不算本事。看到第 30 章，这张表会变成你自己的写作地图。</p><p>一条底线：新零件不是越多越好。同一场戏里三个术语打架，就只剩术语，没有戏了。</p></blockquote>
+<hr>
+<h2 id="h-9">四、句式库</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>句式</th><th>作用</th><th>出处</th></tr></thead><tbody><tr><td><code>There was a ___ in the air that suggested ___ .</code></td><td>让空气承载预感，不点破</td><td>1</td></tr><tr><td><code>He did not ask why ___ .</code></td><td>否定句写顺从与无知</td><td>1</td></tr><tr><td><code>Knowing ___, ___ did ___ .</code></td><td>分词句把知情与行动压进一句</td><td>1</td></tr><tr><td><code>She was too ___ to ___ .</code></td><td>too...to：没力气、没资格</td><td>1</td></tr><tr><td><code>___ would not be allowed to ___ .</code></td><td>被动语态：决定权不在她手上</td><td>1</td></tr><tr><td><code>It was in eighteen-eighty-five, and she wore a ___ .</code></td><td>一句话把年代钉死</td><td>2</td></tr><tr><td><code>The ___ she had expected did not come.</code></td><td>写“落空”，比写“失望”狠</td><td>2</td></tr><tr><td><code>Her ___ increased her ___.</code></td><td>反因果：反应变成原因</td><td>2</td></tr><tr><td><code>it seemed to him—he was nine years old—that ___</code></td><td>破折号插一句旁白，提醒人物几岁</td><td>2</td></tr><tr><td><code>He would have been glad to ___, but felt ___.</code></td><td>虚拟语气写“想要而没要”</td><td>2</td></tr><tr><td><code>You oughtn't to have ___.</code></td><td>责备，其实是心疼</td><td>2</td></tr><tr><td><code>It was in a dreary, respectable street.</code></td><td>两个形容词定一个地方</td><td>3</td></tr><tr><td><code>The child put his hand in hers, and she pressed it.</code></td><td>不写舍不得，写两只手</td><td>3</td></tr><tr><td><code>It seemed to him that his mother had just gone out for a walk.</code></td><td>用孩子的解释代替判断</td><td>3</td></tr><tr><td><code>He lay there quite still.</code></td><td>五个词收一章</td><td>3</td></tr><tr><td><code>"A small room for a small boy."</code></td><td>客气话里全是定位</td><td>4</td></tr><tr><td><code>It was not lighted if Mrs. Carey had a cold.</code></td><td>一句否定写冷暖次序</td><td>4</td></tr></tbody></table></div>
+<hr>
+<h2 id="h-10">五、我的仿写</h2>
+<div class="tbl-wrap"><table class="gen"><thead><tr><th>日期</th><th>练的零件</th><th>我的段落</th><th>自评 /5</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<hr>
+<h2 id="h-11">六、我踩过的坑</h2>
+<p>（读到或写到就记一条，只记自己真的犯过的）</p>
+<ul><li>用“然而/但是/tragically”代替并置——抢了读者的活。</li><li>用“他很难过”代替动作——只给结论，没给证据。</li><li>全篇句长一样——没有刹车，就没有速度感。</li><li>视角越界一句——整段可信度就没了。</li><li>含蓄写成漏气——证据不够，读者拼不出来。</li><li>把“孩子不懂”写成“作者装傻”——不懂要有不懂的具体形状（他问“为什么”，他记的是野牛）。</li><li>让门里人把话说给读者听——偷听来的对话，必须是两个人对彼此说的。</li><li>委婉语一路软到底——每退一级都得有理由，否则像糊弄读者。</li></ul>
+<hr>
+<h2 id="h-12">七、每章固定流程</h2>
+<ol><li>取章：<code>python3 extract_chapter.py --next</code></li><li>写 <code>chNN-study-guide.md</code>：通读原文 → <strong>逐场精读（每段：原文＋译文对照 → 细读 → 写法：术语（白话）＋规则）</strong> → 语言点 → 写作总纲与术语表 → 读后自测</li><li>新技法登记进本表；复用时标“复用”并记一句变形</li><li>更新 <code>progress.md</code></li></ol></div>
+</div>
+</main>
+<aside class="nav-right" id="navRight">
+  <div class="rn-head"><span>本页目录</span><button class="rn-toggle" id="toggleRight2" type="button" data-close="right" aria-label="收起目录">×</button></div>
+  <nav class="toc"><a class="lv2" href="#h-1">一、一页纸</a><a class="lv3" href="#h-2">三个原理（背下来，比记技法有用）</a><a class="lv3" href="#h-3">一句话总纲</a><a class="lv3" href="#h-4">五步流水线（写任何一场戏都能套）</a><a class="lv3" href="#h-5">零件与术语</a><a class="lv3" href="#h-6">什么时候别用（边界）</a><a class="lv2" href="#h-7">二、读别的书时，用三问</a><a class="lv2" href="#h-8">三、技法累积表</a><a class="lv2" href="#h-9">四、句式库</a><a class="lv2" href="#h-10">五、我的仿写</a><a class="lv2" href="#h-11">六、我踩过的坑</a><a class="lv2" href="#h-12">七、每章固定流程</a></nav>
+</aside>
+</div>
+
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = {};</script>
+<script>/* ===== Of Human Bondage · 阅读器 ===== */
+(function () {
+  'use strict';
+
+  var LS = {
+    get: function (k, d) {
+      try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); }
+      catch (e) { return d; }
+    },
+    set: function (k, v) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+    }
+  };
+
+  var CH = window.CHAPTER || {};
+  var KEY = 'ohb:' + (CH.id || 'x');
+
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  /* ---------------- 设置 ---------------- */
+
+  var DEFAULTS = { trans: 1, words: 1, sents: 1, notes: 1, craft: 1, split: 0, collapse: 0, openanno: 0 };
+  var cfg = Object.assign({}, DEFAULTS, LS.get('ohb:cfg', {}));
+
+  function applyCfg() {
+    document.body.dataset.trans = cfg.trans ? 'on' : 'off';
+    document.body.dataset.words = cfg.words ? 'on' : 'off';
+    document.body.dataset.sents = cfg.sents ? 'on' : 'off';
+    document.body.dataset.notes = cfg.notes ? 'on' : 'off';
+    document.body.dataset.craft = cfg.craft ? 'on' : 'off';
+    document.body.dataset.split = cfg.split ? 'on' : 'off';
+    $$('details.notes:not(.answers), details.craft').forEach(function (d) {
+      d.open = !cfg.collapse;
+    });
+    $$('details.anno').forEach(function (d) {
+      d.open = !!cfg.openanno;
+    });
+    $$('.settings input[data-set]').forEach(function (i) {
+      i.checked = !!cfg[i.dataset.set];
+    });
+  }
+
+  $$('.settings input[data-set]').forEach(function (i) {
+    i.addEventListener('change', function () {
+      cfg[i.dataset.set] = i.checked ? 1 : 0;
+      LS.set('ohb:cfg', cfg);
+      applyCfg();
+      if (i.dataset.set === 'split') syncCompanion(true);
+    });
+  });
+
+  var setBtn = $('#setBtn'), settings = $('#settings');
+  if (setBtn && settings) {
+    setBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      settings.hidden = !settings.hidden;
+      document.body.classList.toggle('settings-open', !settings.hidden);
+    });
+    document.addEventListener('click', function (e) {
+      if (!settings.hidden && !settings.contains(e.target) && e.target !== setBtn) {
+        settings.hidden = true;
+        document.body.classList.remove('settings-open');
+      }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') settings.hidden = true;
+    });
+  }
+
+  /* ---------------- 主题 / 字号 ---------------- */
+
+  var themeBtn = $('.tools .theme');
+  function setTheme(t, remember) {
+    document.documentElement.dataset.theme = t;
+    if (themeBtn) themeBtn.textContent = t === 'dark' ? '☀' : '☾';
+    if (remember) LS.set('ohb:theme', t);
+  }
+  if (themeBtn) themeBtn.addEventListener('click', function () {
+    setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark', true);
+  });
+
+  var fs = LS.get('ohb:fs', 1);
+  function applyFs() {
+    fs = Math.min(1.32, Math.max(0.86, fs));
+    document.documentElement.style.setProperty('--fs', String(fs));
+    LS.set('ohb:fs', fs);
+  }
+  $$('[data-fs]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      fs += (b.dataset.fs === '+' ? 0.06 : -0.06);
+      applyFs();
+    });
+  });
+
+  /* ---------------- 侧栏 ---------------- */
+
+  var PANELS = { left: 1, right: 1 };
+  try { PANELS = Object.assign(PANELS, LS.get('ohb:panels', {})); } catch (e) {}
+
+  function applyPanels(persist) {
+    document.body.classList.toggle('no-left', !PANELS.left);
+    document.body.classList.toggle('no-right', !PANELS.right);
+    if (persist !== false && window.innerWidth >= 1080) LS.set('ohb:panels', PANELS);
+  }
+
+  var hasLeft = !!$('#navLeft'), hasRight = !!$('#navRight');
+  var forcedMobile = window.innerWidth < 1080;
+  if (forcedMobile) { PANELS.left = 0; PANELS.right = 0; }
+  if (!hasLeft) PANELS.left = 0;
+  if (!hasRight) PANELS.right = 0;
+  applyPanels(false);
+
+  var tl = $('#toggleLeft'), tr = $('#toggleRight'), tr2 = $('#toggleRight2');
+  if (tr && !hasRight) tr.style.display = 'none';
+  $$('[data-close]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.dataset.close === 'left') PANELS.left = 0; else PANELS.right = 0;
+      applyPanels();
+    });
+  });
+
+  var scrim = $('#scrim');
+  if (scrim) scrim.addEventListener('click', function () {
+    PANELS.left = 0; PANELS.right = 0; applyPanels();
+    var st = $('#settings');
+    if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+  });
+  if (tl) tl.addEventListener('click', function () { PANELS.left = PANELS.left ? 0 : 1; applyPanels(); });
+  if (tr) tr.addEventListener('click', function () { PANELS.right = PANELS.right ? 0 : 1; applyPanels(); });
+  if (tr2) tr2.addEventListener('click', function () { PANELS.right = 0; applyPanels(); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+      var st = $('#settings');
+      if (st) { st.hidden = true; document.body.classList.remove('settings-open'); }
+    }
+    if (e.key === 'e' || e.key === 'E') $$('details').forEach(function (d) { d.open = true; });
+    if (e.key === 'q' || e.key === 'Q') $$('details').forEach(function (d) { d.open = false; });
+  });
+
+  // 移动端：点目录后收起右栏
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('.nav-right a, .nav-left a');
+    if (!a) return;
+    if (window.innerWidth < 1080) {
+      PANELS.left = 0; PANELS.right = 0; applyPanels();
+    }
+  });
+
+  /* ---------------- 阅读进度 ---------------- */
+
+  var readbar = $('#readbar');
+  function paintProgress() {
+    if (!readbar) return;
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    readbar.style.width = (h > 0 ? Math.min(100, window.scrollY / h * 100) : 0) + '%';
+  }
+
+  /* ---------------- 目录高亮 ---------------- */
+
+  var tocLinks = $$('.toc a');
+  var targets = tocLinks.map(function (a) { return document.getElementById(a.getAttribute('href').slice(1)); }).filter(Boolean);
+
+  if ('IntersectionObserver' in window && targets.length) {
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { visible[en.target.id] = en.isIntersecting; });
+      var current = null;
+      for (var i = 0; i < targets.length; i++) {
+        if (visible[targets[i].id]) { current = targets[i].id; break; }
+      }
+      if (current) {
+        tocLinks.forEach(function (a) {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+        });
+      }
+    }, { rootMargin: '-64px 0px -72% 0px', threshold: 0 });
+    targets.forEach(function (t) { io.observe(t); });
+  }
+
+  /* ---------------- 段号跳转 ---------------- */
+
+  function flash(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('flash');
+    void el.offsetWidth;
+    el.classList.add('flash');
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href^="#p-"]');
+    if (!a) return;
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (!el) return;
+    e.preventDefault();
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(id);
+    history.replaceState(null, '', '#' + id);
+  });
+  if (location.hash && /^#p-/.test(location.hash)) setTimeout(function () { flash(location.hash.slice(1)); }, 300);
+
+  /* ---------------- J / K 逐段 ---------------- */
+
+  var units = $$('.unit');
+  function currentUnit() {
+    var best = 0, bestD = 1e9;
+    units.forEach(function (u, i) {
+      var d = Math.abs(u.getBoundingClientRect().top - 120);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    return best;
+  }
+  function gotoUnit(i) {
+    if (!units.length) return;
+    i = Math.max(0, Math.min(units.length - 1, i));
+    units.forEach(function (u) { u.classList.remove('focus'); });
+    units[i].classList.add('focus');
+    units[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.target.matches('input, textarea')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'j' || e.key === 'J') { gotoUnit(currentUnit() + 1); }
+    if (e.key === 'k' || e.key === 'K') { gotoUnit(currentUnit() - 1); }
+  });
+
+  /* ---------------- 朗读 ---------------- */
+
+  if ('speechSynthesis' in window) {
+    $$('.reader p, .en').forEach(function (p) {
+      var btn = document.createElement('button');
+      btn.className = 'speak';
+      btn.type = 'button';
+      btn.title = '朗读这一段';
+      btn.textContent = '▶';
+      btn.addEventListener('click', function (ev) {
+        ev.stopPropagation();
+        if (speechSynthesis.speaking) { speechSynthesis.cancel(); return; }
+        var u = new SpeechSynthesisUtterance(p.innerText.replace('▶', ''));
+        u.lang = 'en-GB';
+        u.rate = 0.9;
+        speechSynthesis.speak(u);
+      });
+      p.appendChild(btn);
+    });
+  }
+
+  /* ---------------- 分屏讲解 ---------------- */
+
+  var scenes = $$('.scene');
+  var panes = $$('.companion .cp');
+  var currentScene = null;
+
+  function syncCompanion(force) {
+    if (!scenes.length || !panes.length) return;
+    if (document.body.dataset.split !== 'on') return;
+    var active = null;
+    for (var i = 0; i < scenes.length; i++) {
+      var r = scenes[i].getBoundingClientRect();
+      if (r.top <= 200) active = scenes[i].dataset.scene;
+    }
+    if (!active) active = scenes[0].dataset.scene;
+    if (active !== currentScene || force) {
+      currentScene = active;
+      panes.forEach(function (p) { p.hidden = p.dataset.scene !== active; });
+    }
+  }
+
+  /* ---------------- 打卡 ---------------- */
+
+  var checks = $$('.check input');
+  var bar = $('.bar i');
+  var barText = $('.bar-label span:last-child');
+
+  function loadChecks() {
+    var saved = LS.get(KEY, {});
+    checks.forEach(function (c) { c.checked = !!saved[c.dataset.k]; });
+    paintChecks();
+  }
+  function paintChecks() {
+    var done = checks.filter(function (c) { return c.checked; }).length;
+    var pct = checks.length ? Math.round(done / checks.length * 100) : 0;
+    if (bar) bar.style.width = pct + '%';
+    if (barText) barText.textContent = done + ' / ' + checks.length;
+  }
+  checks.forEach(function (c) {
+    c.addEventListener('change', function () {
+      var saved = LS.get(KEY, {});
+      saved[c.dataset.k] = c.checked;
+      LS.set(KEY, saved);
+      paintChecks();
+    });
+  });
+
+  /* ---------------- 写作区 ---------------- */
+
+  var ta = $('.writing textarea');
+  if (ta) {
+    var countEl = $('.writing .count');
+    var statusEl = $('.writing .status');
+
+    function count(text) {
+      var en = (text.match(/[A-Za-z][A-Za-z'’\-]*/g) || []).length;
+      var zh = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+      return en + zh;
+    }
+    ta.value = LS.get(KEY + ':writing', '');
+    var t;
+    function upd() {
+      if (countEl) countEl.textContent = count(ta.value) + ' 词';
+      clearTimeout(t);
+      t = setTimeout(function () {
+        LS.set(KEY + ':writing', ta.value);
+        if (statusEl) { statusEl.textContent = '已保存'; setTimeout(function () { statusEl.textContent = ''; }, 1500); }
+      }, 600);
+    }
+    ta.addEventListener('input', upd);
+    upd();
+
+    var copyBtn = $('.writing .copy');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      ta.select(); document.execCommand('copy');
+      if (statusEl) statusEl.textContent = '已复制';
+    });
+    var clearBtn = $('.writing .clear');
+    if (clearBtn) clearBtn.addEventListener('click', function () {
+      if (!confirm('清空这段练习？')) return;
+      ta.value = ''; upd();
+    });
+  }
+
+  /* ---------------- 生词本 ---------------- */
+
+  var WB_KEY = 'ohb:words';
+
+  function wbAll() { return LS.get(WB_KEY, []); }
+  function wbKey(ch, pid, w) { return ch + '|' + pid + '|' + w; }
+
+  function paintWbCount() {
+    var n = wbAll().length;
+    var c = $('#wbCount');
+    if (c) c.textContent = n;
+  }
+
+  function markSaved() {
+    var set = {};
+    wbAll().forEach(function (x) { set[wbKey(x.ch, x.pid, x.w)] = 1; });
+    $$('.gloss').forEach(function (g) {
+      var unit = g.closest('.unit');
+      var pid = unit ? unit.id : '';
+      g.classList.toggle('saved', !!set[wbKey(CH.id, pid, g.textContent)]);
+    });
+  }
+
+  function toast(msg) {
+    var el = $('#toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(function () { el.classList.remove('show'); }, 1500);
+  }
+
+  document.addEventListener('click', function (e) {
+    var g = e.target.closest('.gloss');
+    if (!g) return;
+    var unit = g.closest('.unit');
+    var pid = unit ? unit.id : '';
+    var w = g.textContent;
+    var tip = g.dataset.tip || '';
+    var list = wbAll();
+    var k = wbKey(CH.id, pid, w);
+    var idx = list.findIndex(function (x) { return wbKey(x.ch, x.pid, x.w) === k; });
+    if (idx > -1) {
+      list.splice(idx, 1);
+      LS.set(WB_KEY, list);
+      g.classList.remove('saved');
+      toast('已移出生词本');
+    } else {
+      list.push({ w: w, tip: tip, ch: CH.id, href: CH.href, pid: pid, n: (CH.num || '') });
+      LS.set(WB_KEY, list);
+      g.classList.add('saved');
+      toast('已加入生词本');
+    }
+    paintWbCount();
+  });
+
+  var wbBtn = $('#wbBtn');
+  if (wbBtn) {
+    wbBtn.addEventListener('click', function () {
+      var list = wbAll();
+      var html = '<h3>生词本</h3><p class="hint">在原文里点虚线词即可收进来；再点一次移出。</p>';
+      if (!list.length) {
+        html += '<div class="wb-empty">还是空的。读到不认识的词，点一下它。</div>';
+      } else {
+        html += '<div class="wb-list">';
+        list.slice().sort(function (a, b) {
+          return (a.n || '').localeCompare(b.n || '', 'zh-Hans-CN', { numeric: true });
+        }).forEach(function (x) {
+          var file = x.href || String(x.ch || '').replace(/^ch(\d)$/, 'ch0$1') + '.html';
+          var href = x.pid ? (file + '#' + x.pid) : file;
+          html += '<a class="wb-item" href="' + href + '"><b>' + esc(x.w) + '</b><span>' +
+                  esc(x.tip) + '</span><em>' + esc(x.n || '') + '</em></a>';
+        });
+        html += '</div>';
+      }
+      html += '<div class="quiz-foot" style="margin-top:14px"><button class="btn" id="closeWb" type="button">关闭</button></div>';
+      openSheet(html);
+      var c = $('#closeWb');
+      if (c) c.addEventListener('click', closeSheet);
+    });
+  }
+
+  /* ---------------- 词汇小测 ---------------- */
+
+  function cleanGloss(g) {
+    var t = String(g || '').replace(/^[=＝]\s*/, '');
+    t = t.split('（')[0].trim();
+    return t.replace(/[；;]\s*$/, '');
+  }
+
+  var words = (CH.words || []).map(function (w) {
+    return { w: w.w, g: cleanGloss(w.g) };
+  }).filter(function (w) { return w.g && w.g.length >= 2 && /[\u4e00-\u9fff]/.test(w.g); });
+
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+
+  function buildQuiz() {
+    if (words.length < 5) return;
+    var picked = shuffle(words.slice()).slice(0, Math.min(8, words.length));
+    var html = '<h3>词义小测</h3><p class="hint">从本章词表里抽 8 个，选一个正确释义。</p>';
+    picked.forEach(function (w) {
+      var others = shuffle(words.filter(function (x) { return x.g !== w.g; })).slice(0, 3).map(function (x) { return x.g; });
+      var opts = shuffle(others.concat([w.g]));
+      html += '<div class="q" data-answer="' + esc(w.g) + '"><div class="w">' + esc(w.w) + '</div><div class="opts">';
+      opts.forEach(function (o) { html += '<button class="opt" type="button">' + esc(o) + '</button>'; });
+      html += '</div><div class="fb"></div></div>';
+    });
+    html += '<div class="quiz-foot"><span class="score"></span><button class="btn" id="closeQuiz" type="button">关闭</button></div>';
+    openSheet(html);
+
+    var total = picked.length, right = 0, answered = 0;
+    $$('.sheet .q').forEach(function (q) {
+      var ans = q.dataset.answer;
+      $$('.opt', q).forEach(function (o) {
+        if (o.textContent === ans) o.dataset.correct = '1';
+        o.addEventListener('click', function () {
+          if (q.dataset.done) return;
+          q.dataset.done = '1';
+          answered++;
+          if (o.dataset.correct === '1') { right++; o.classList.add('right'); $('.fb', q).textContent = '对。'; }
+          else {
+            o.classList.add('wrong');
+            $('.opt[data-correct="1"]', q).classList.add('right');
+            $('.fb', q).textContent = '正确释义：' + ans;
+          }
+          var sc = $('.score');
+          if (sc) sc.textContent = answered + ' / ' + total + ' · 答对 ' + right;
+        });
+      });
+    });
+    var c = $('#closeQuiz');
+    if (c) c.addEventListener('click', closeSheet);
+  }
+
+  /* ---------------- 弹层 ---------------- */
+
+  function openSheet(html) {
+    var modal = $('#sheetModal');
+    if (!modal) return;
+    $('.sheet', modal).innerHTML = html;
+    modal.classList.add('open');
+  }
+  function closeSheet() {
+    var modal = $('#sheetModal');
+    if (modal) modal.classList.remove('open');
+  }
+
+  var sheetModal = document.createElement('div');
+  sheetModal.className = 'modal';
+  sheetModal.id = 'sheetModal';
+  sheetModal.innerHTML = '<div class="sheet"></div>';
+  document.body.appendChild(sheetModal);
+  sheetModal.addEventListener('click', function (e) { if (e.target === sheetModal) closeSheet(); });
+
+  ['#quizBtn', '#quizBtn2'].forEach(function (sel) {
+    var b = $(sel);
+    if (b) b.addEventListener('click', buildQuiz);
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  /* ---------------- 搜索（技法页） ---------------- */
+
+  var search = $('.search');
+  if (search) {
+    search.addEventListener('input', function () {
+      var q = search.value.trim().toLowerCase();
+      $$('table.gen tr').forEach(function (tr) {
+        if (tr.querySelector('th')) return;
+        tr.style.display = (!q || tr.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+      $$('.doc-main h2, .doc-main h3, .doc-main p').forEach(function (el) {
+        el.style.display = (!q || el.textContent.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ---------------- 首页进度 ---------------- */
+
+  var cells = $$('.cell[data-ch]');
+  cells.forEach(function (c) {
+    var saved = LS.get('ohb:ch' + c.dataset.ch, {});
+    var n = Object.keys(saved).filter(function (k) { return saved[k]; }).length;
+    if (n >= 5) c.classList.add('done');
+  });
+
+  /* ---------------- 初始化 ---------------- */
+
+  setTheme(LS.get('ohb:theme', 'light'), false);
+  applyFs();
+  applyCfg();
+  loadChecks();
+  paintWbCount();
+  markSaved();
+
+  if (document.body.dataset.split === 'on') syncCompanion(true);
+
+  var raf = null;
+  window.addEventListener('scroll', function () {
+    paintProgress();
+    if (raf) return;
+    raf = requestAnimationFrame(function () {
+      raf = null;
+      syncCompanion(false);
+    });
+  }, { passive: true });
+  paintProgress();
+})();
+</script>
+</body>
+</html>
