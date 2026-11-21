@@ -87,7 +87,6 @@
 | 词 | 音标 | 释义 |
 |---|---|---|
 | sexton | /ˈsekstən/ | 教堂司事 |
-| surplice | /ˈsɜːplɪs/ | 白罩衣（第六章已出现） |
 | sherry | /ˈʃeri/ | 雪利酒 |
 
 【句】`It was extraordinary that after thirty years of marriage his wife could not be ready in time on Sunday morning.`：it 是形式主语，真正的主语是 that 从句；`after thirty years of marriage` 插在从句开头，把“三十年”和“还是不准时”顶在一起。

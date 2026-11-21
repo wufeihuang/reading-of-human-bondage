@@ -419,7 +419,6 @@
 |---|---|---|
 | humiliation | /hjuːˌmɪliˈeɪʃn/ | 羞辱 |
 | frame of mind | — | 心境、情绪状态 |
-| shrivelled | /ˈʃrɪvld/ | 干瘪的（第四章已出现） |
 | sallow | /ˈsæləʊ/ | 蜡黄的 |
 
 【句】`She loved him now with a new love because he had made her suffer.`：with a new love 是方式状语；because 从句点出因果——爱因为受苦而更新。这一句是全章的落点。

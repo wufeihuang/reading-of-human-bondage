@@ -42,7 +42,7 @@ NAMES = [
 
 CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚㉛㉜㉝㉞㉟㊱㊲㊳㊴㊵㊶㊷㊸㊹㊺㊻㊼㊽㊾㊿"
 NUM = {c: i + 1 for i, c in enumerate(CIRCLED)}
-UNIT_RE = re.compile(r'^\*\*([①-⑳㉑-㉟㊱-㊿])\*\*$')
+UNIT_RE = re.compile(r'^\*\*(?:([①-⑳㉑-㉟㊱-㊿])|(\d{1,3}))\*\*$')
 CJK = re.compile(r'[\u4e00-\u9fff]')
 CJK_JOIN = re.compile(r'[\u4e00-\u9fff，。、；：？！“”‘’（）《》〈〉—…·]')
 
@@ -443,8 +443,9 @@ def render_scene(title, lines, toc):
     marks_u = [k2 for k2, l in enumerate(body) if UNIT_RE.match(l.strip())]
     for idx, start in enumerate(marks_u):
         stop = marks_u[idx + 1] if idx + 1 < len(marks_u) else len(body)
-        label = UNIT_RE.match(body[start].strip()).group(1)
-        n = NUM[label]
+        mm = UNIT_RE.match(body[start].strip())
+        label = mm.group(1) or mm.group(2)
+        n = NUM[label] if mm.group(1) else int(mm.group(2))
         inner, _ = parse_unit(body[start + 1:stop], [])
         units.append('<div class="unit" id="p-%d"><span class="num">%s</span>%s</div>' % (n, label, inner))
 
