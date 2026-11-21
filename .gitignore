@@ -1,0 +1,30 @@
+# ---- 生成物（改 md 后由 build.py / extract_chapter.py 重新生成）----
+site/
+preview/
+chapter-*.txt
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# ---- 编辑器 / IDE ----
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---- macOS ----
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# ---- 临时文件 ----
+*.tmp
+*.log
+*.bak
+~$*
+.~lock.*

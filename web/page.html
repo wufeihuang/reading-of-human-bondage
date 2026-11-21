@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-zh="sans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>%%TITLE%%</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ohb:theme')||'"light"');document.documentElement.dataset.theme=t;}catch(e){}</script>
+<style>%%CSS%%</style>
+</head>
+<body class="%%BODYCLASS%%" data-page="%%PAGE%%">
+<header class="top">
+  <button class="icon-btn nav-toggle" id="toggleLeft" type="button" aria-label="切换左栏" title="章节导航">☰</button>
+  <div class="crumb">%%CRUMB%%</div>
+  <div class="readbar"><i id="readbar"></i></div>
+  <div class="tools">
+    <button class="icon-btn" id="toggleRight" type="button" aria-label="切换右栏" title="本页目录">≡</button>
+    <button class="icon-btn set-btn" id="setBtn" type="button" aria-label="显示设置" title="显示设置">Aa</button>
+    <button class="icon-btn theme" type="button" aria-label="深浅色" title="深浅色">☾</button>
+  </div>
+</header>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="settings" id="settings" hidden>
+  <div class="set-title">显示设置</div>
+  <label class="sw"><input type="checkbox" data-set="trans" data-only="chapter" checked><span>译文</span></label>
+  <label class="sw"><input type="checkbox" data-set="words" data-only="chapter" checked><span>词表</span></label>
+  <label class="sw"><input type="checkbox" data-set="sents" data-only="chapter" checked><span>句注</span></label>
+  <label class="sw"><input type="checkbox" data-set="openanno" data-only="chapter"><span>词句默认展开</span></label>
+  <label class="sw"><input type="checkbox" data-set="notes" data-only="chapter" checked><span>细读</span></label>
+  <label class="sw"><input type="checkbox" data-set="craft" data-only="chapter" checked><span>写法</span></label>
+  <div class="set-sep"></div>
+  <label class="sw"><input type="checkbox" data-set="split" data-only="chapter"><span>左右分屏 <em>原文｜讲解</em></span></label>
+  <label class="sw"><input type="checkbox" data-set="collapse" data-only="chapter"><span>讲解默认收起</span></label>
+  <div class="set-sep"></div>
+  <div class="set-row"><span>字号</span><button type="button" data-fs="-">A−</button><button type="button" data-fs="+">A＋</button></div>
+  <div class="set-note">设置保存在本机浏览器</div>
+</div>
+
+<div class="app">
+%%LEFT%%
+<main>
+%%CONTENT%%
+</main>
+%%RIGHT%%
+</div>
+%%FAB%%
+<div class="toast" id="toast"></div>
+<script>window.CHAPTER = %%DATA%%;</script>
+<script>%%JS%%</script>
+</body>
+</html>
